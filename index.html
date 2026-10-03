@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablero de Higiene y Seguridad</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f5f7;
+            color: #1f2937;
+        }
+
+        header {
+            background: #17202a;
+            color: white;
+            padding: 22px 30px;
+        }
+
+        header h1 {
+            font-size: 26px;
+            margin-bottom: 6px;
+        }
+
+        header p {
+            color: #cbd5e1;
+        }
+
+        .container {
+            padding: 30px;
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 22px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .card h3 {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 12px;
+        }
+
+        .number {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .green {
+            border-left: 5px solid #16a34a;
+        }
+
+        .yellow {
+            border-left: 5px solid #eab308;
+        }
+
+        .red {
+            border-left: 5px solid #dc2626;
+        }
+
+        .blue {
+            border-left: 5px solid #2563eb;
+        }
+
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .section h2 {
+            margin-bottom: 18px;
+            font-size: 20px;
+        }
+
+        .menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .menu button {
+            border: none;
+            background: #e8eef5;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .menu button:hover {
+            background: #d8e2ed;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Tablero de Control — Higiene y Seguridad</h1>
+    <p>Sistema de gestión preventiva</p>
+</header>
+
+<main class="container">
+
+    <div class="cards">
+
+        <div class="card green">
+            <h3>Nivel general de riesgo</h3>
+            <div class="number">Bajo</div>
+        </div>
+
+        <div class="card red">
+            <h3>Acciones vencidas</h3>
+            <div class="number">0</div>
+        </div>
+
+        <div class="card yellow">
+            <h3>Inspecciones pendientes</h3>
+            <div class="number">0</div>
+        </div>
+
+        <div class="card blue">
+            <h3>Capacitaciones</h3>
+            <div class="number">0%</div>
+        </div>
+
+    </div>
+
+    <div class="section">
+        <h2>Módulos del sistema</h2>
+
+        <div class="menu">
+            <button>Gestión de Riesgos</button>
+            <button>Inspecciones</button>
+            <button>Accidentes e Incidentes</button>
+            <button>Mediciones Ambientales</button>
+            <button>Gestión de EPP</button>
+            <button>Capacitaciones</button>
+            <button>Documentación Legal</button>
+            <button>Planes de Acción</button>
+            <button>Equipos e Instalaciones</button>
+            <button>Indicadores</button>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Estado de la gestión</h2>
+        <p>
+            Este tablero permitirá centralizar la información de Higiene
+            y Seguridad, realizar seguimiento de riesgos, inspecciones,
+            accidentes, capacitaciones, mediciones y acciones correctivas.
+        </p>
+    </div>
+
+</main>
+
+<footer>
+    Sistema de Gestión de Higiene y Seguridad — Versión inicial
+</footer>
+
+</body>
+</html>
