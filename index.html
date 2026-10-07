@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tablero de Higiene y Seguridad</title>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         * {
             box-sizing: border-box;
@@ -18,10 +20,81 @@
             color: #1f2937;
         }
 
+        #loginScreen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+        }
+
+        .login-box h1 {
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .login-box p {
+            color: #64748b;
+            margin-bottom: 25px;
+        }
+
+        .login-box label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 18px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        .login-box button {
+            width: 100%;
+            border: none;
+            background: #17202a;
+            color: white;
+            padding: 13px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .login-box button:hover {
+            background: #263544;
+        }
+
+        #loginMessage {
+            margin-top: 15px;
+            color: #dc2626;
+            font-size: 14px;
+        }
+
+        #app {
+            display: none;
+        }
+
         header {
             background: #17202a;
             color: white;
             padding: 22px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         header h1 {
@@ -31,6 +104,12 @@
 
         header p {
             color: #cbd5e1;
+        }
+
+        #logoutButton {
+            width: auto;
+            padding: 10px 16px;
+            background: #dc2626;
         }
 
         .container {
@@ -123,68 +202,254 @@
 
 <body>
 
-<header>
-    <h1>Tablero de Control — Higiene y Seguridad</h1>
-    <p>Sistema de gestión preventiva</p>
-</header>
+<!-- LOGIN -->
 
-<main class="container">
+<div id="loginScreen">
 
-    <div class="cards">
+    <div class="login-box">
 
-        <div class="card green">
-            <h3>Nivel general de riesgo</h3>
-            <div class="number">Bajo</div>
-        </div>
+        <h1>Higiene y Seguridad</h1>
 
-        <div class="card red">
-            <h3>Acciones vencidas</h3>
-            <div class="number">0</div>
-        </div>
+        <p>Ingrese sus credenciales para acceder al sistema.</p>
 
-        <div class="card yellow">
-            <h3>Inspecciones pendientes</h3>
-            <div class="number">0</div>
-        </div>
+        <label for="email">Correo electrónico</label>
+        <input
+            type="email"
+            id="email"
+            placeholder="correo@ejemplo.com"
+        >
 
-        <div class="card blue">
-            <h3>Capacitaciones</h3>
-            <div class="number">0%</div>
-        </div>
+        <label for="password">Contraseña</label>
+        <input
+            type="password"
+            id="password"
+            placeholder="Contraseña"
+        >
+
+        <button id="loginButton">
+            Ingresar
+        </button>
+
+        <div id="loginMessage"></div>
 
     </div>
 
-    <div class="section">
-        <h2>Módulos del sistema</h2>
+</div>
 
-        <div class="menu">
-            <button>Gestión de Riesgos</button>
-            <button>Inspecciones</button>
-            <button>Accidentes e Incidentes</button>
-            <button>Mediciones Ambientales</button>
-            <button>Gestión de EPP</button>
-            <button>Capacitaciones</button>
-            <button>Documentación Legal</button>
-            <button>Planes de Acción</button>
-            <button>Equipos e Instalaciones</button>
-            <button>Indicadores</button>
+
+<!-- APLICACIÓN -->
+
+<div id="app">
+
+    <header>
+
+        <div>
+            <h1>Tablero de Control — Higiene y Seguridad</h1>
+            <p>Sistema de gestión preventiva</p>
         </div>
-    </div>
 
-    <div class="section">
-        <h2>Estado de la gestión</h2>
-        <p>
-            Este tablero permitirá centralizar la información de Higiene
-            y Seguridad, realizar seguimiento de riesgos, inspecciones,
-            accidentes, capacitaciones, mediciones y acciones correctivas.
-        </p>
-    </div>
+        <button id="logoutButton">
+            Cerrar sesión
+        </button>
 
-</main>
+    </header>
 
-<footer>
-    Sistema de Gestión de Higiene y Seguridad — Versión inicial
-</footer>
+    <main class="container">
+
+        <div class="cards">
+
+            <div class="card green">
+                <h3>Nivel general de riesgo</h3>
+                <div class="number">Bajo</div>
+            </div>
+
+            <div class="card red">
+                <h3>Acciones vencidas</h3>
+                <div class="number">0</div>
+            </div>
+
+            <div class="card yellow">
+                <h3>Inspecciones pendientes</h3>
+                <div class="number">0</div>
+            </div>
+
+            <div class="card blue">
+                <h3>Capacitaciones</h3>
+                <div class="number">0%</div>
+            </div>
+
+        </div>
+
+        <div class="section">
+
+            <h2>Módulos del sistema</h2>
+
+            <div class="menu">
+
+                <button>Gestión de Riesgos</button>
+                <button>Inspecciones</button>
+                <button>Accidentes e Incidentes</button>
+                <button>Mediciones Ambientales</button>
+                <button>Gestión de EPP</button>
+                <button>Capacitaciones</button>
+                <button>Documentación Legal</button>
+                <button>Planes de Acción</button>
+                <button>Equipos e Instalaciones</button>
+                <button>Indicadores</button>
+
+            </div>
+
+        </div>
+
+        <div class="section">
+
+            <h2>Estado de la gestión</h2>
+
+            <p>
+                Este tablero permitirá centralizar la información de Higiene
+                y Seguridad, realizar seguimiento de riesgos, inspecciones,
+                accidentes, capacitaciones, mediciones y acciones correctivas.
+            </p>
+
+        </div>
+
+    </main>
+
+    <footer>
+        Sistema de Gestión de Higiene y Seguridad — Versión inicial
+    </footer>
+
+</div>
+
+
+<script>
+
+    // =====================================================
+    // CONFIGURACIÓN SUPABASE
+    // =====================================================
+
+    const SUPABASE_URL = "https://dpssgowiftbtclzsaprc.supabase.co";
+     const SUPABASE_ANON_KEY = "sb_publishable_NIV3CQpZcbvnOBfY7-_a7g_PtYfNIsG";
+
+    const supabaseClient = supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
+
+
+    // =====================================================
+    // ELEMENTOS DE LA PÁGINA
+    // =====================================================
+
+    const loginScreen = document.getElementById("loginScreen");
+    const app = document.getElementById("app");
+    const loginButton = document.getElementById("loginButton");
+    const logoutButton = document.getElementById("logoutButton");
+    const loginMessage = document.getElementById("loginMessage");
+
+
+    // =====================================================
+    // MOSTRAR / OCULTAR APLICACIÓN
+    // =====================================================
+
+    function mostrarAplicacion() {
+
+        loginScreen.style.display = "none";
+        app.style.display = "block";
+
+    }
+
+
+    function mostrarLogin() {
+
+        loginScreen.style.display = "flex";
+        app.style.display = "none";
+
+    }
+
+
+    // =====================================================
+    // LOGIN
+    // =====================================================
+
+    loginButton.addEventListener("click", async function () {
+
+        loginMessage.textContent = "";
+
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+
+        if (!email || !password) {
+
+            loginMessage.textContent =
+                "Ingrese correo electrónico y contraseña.";
+
+            return;
+        }
+
+        loginButton.disabled = true;
+        loginButton.textContent = "Ingresando...";
+
+        const { data, error } =
+            await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+        loginButton.disabled = false;
+        loginButton.textContent = "Ingresar";
+
+        if (error) {
+
+            loginMessage.textContent =
+                "No se pudo iniciar sesión: " + error.message;
+
+            return;
+        }
+
+        mostrarAplicacion();
+
+    });
+
+
+    // =====================================================
+    // CERRAR SESIÓN
+    // =====================================================
+
+    logoutButton.addEventListener("click", async function () {
+
+        await supabaseClient.auth.signOut();
+
+        mostrarLogin();
+
+    });
+
+
+    // =====================================================
+    // COMPROBAR SESIÓN EXISTENTE
+    // =====================================================
+
+    async function comprobarSesion() {
+
+        const { data } =
+            await supabaseClient.auth.getSession();
+
+        if (data.session) {
+
+            mostrarAplicacion();
+
+        } else {
+
+            mostrarLogin();
+
+        }
+
+    }
+
+
+    comprobarSesion();
+
+</script>
 
 </body>
 </html>
