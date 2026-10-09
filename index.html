@@ -505,113 +505,172 @@
                     .select("organizacion_id")
                     .eq("activo", true);
 
-            if (errorMembresias) {
-                throw errorMembresias;
-            }
+            if (errorMembresias) throw errorMembresias;
 
             const organizaciones = [
                 ...new Set(
                     (membresias || [])
-                        .map(membresia => membresia.organizacion_id)
+                        .map(m => m.organizacion_id)
                         .filter(Boolean)
                 )
             ];
 
             if (organizaciones.length === 0) {
-
                 tabla.innerHTML = `
-                    <tr>
-                        <td colspan="3" style="padding: 10px;">
-                            No hay organizaciones activas asociadas a su usuario.
-                        </td>
-                    </tr>
-                `;
-
+                    <tr><td colspan="3" style="padding:10px;">
+                        No hay organizaciones activas asociadas a su usuario.
+                    </td></tr>`;
                 mensaje.textContent = "No se encontraron organizaciones asociadas.";
                 return;
-
             }
 
-            const { data: establecimientos, error } =
-                await supabaseClient
-                    .from("establecimientos")
-                    .select("id, Nombre, Codigo, Activo")
-                    .in("organizacion_id", organizaciones)
-                    .order("Nombre", { ascending: true });
+            const { data: establecimientos, error } = await supabaseClient
+                .from("establecimientos")
+                .select("id, Nombre, Codigo, Activo")
+                .in("organizacion_id", organizaciones)
+                .order("Nombre", { ascending: true });
 
-            if (error) {
-                throw error;
-            }
-
-            if (!establecimientos || establecimientos.length === 0) {
-
-                tabla.innerHTML = `
-                    <tr>
-                        <td colspan="3" style="padding: 10px;">
-                            No hay establecimientos registrados.
-                        </td>
-                    </tr>
-                `;
-
-                mensaje.textContent =
-                    "Consulta completada. No hay establecimientos registrados.";
-
-                return;
-
-            }
+            if (error) throw error;
 
             tabla.innerHTML = "";
 
-            establecimientos.forEach(establecimiento => {
+            if (!establecimientos || establecimientos.length === 0) {
+                tabla.innerHTML = `
+                    <tr><td colspan="3" style="padding:10px;">
+                        No hay establecimientos registrados.
+                    </td></tr>`;
+                mensaje.textContent = "Consulta completada. No hay establecimientos registrados.";
+                return;
+            }
 
+            establecimientos.forEach(establecimiento => {
                 const fila = document.createElement("tr");
 
-                const valores = [
+                [
                     establecimiento.Nombre || "—",
                     establecimiento.Codigo || "—",
                     establecimiento.Activo ? "Activo" : "Inactivo"
-                ];
-
-                valores.forEach(valor => {
-
+                ].forEach(valor => {
                     const celda = document.createElement("td");
                     celda.style.padding = "10px";
                     celda.style.borderBottom = "1px solid #e2e8f0";
                     celda.textContent = valor;
                     fila.appendChild(celda);
-
                 });
 
                 tabla.appendChild(fila);
-
             });
 
             mensaje.textContent =
                 `Se encontraron ${establecimientos.length} establecimiento(s).`;
 
         } catch (error) {
-
             console.error("Error al cargar establecimientos:", error);
-
             tabla.innerHTML = `
-                <tr>
-                    <td colspan="3" style="padding: 10px;">
-                        No se pudieron cargar los datos.
-                    </td>
-                </tr>
-            `;
-
+                <tr><td colspan="3" style="padding:10px;">
+                    No se pudieron cargar los datos.
+                </td></tr>`;
             mensaje.textContent =
                 "Error al consultar Supabase: " +
                 (error.message || "Error desconocido");
-
         } finally {
-
             boton.disabled = false;
-
         }
-
     }
+
+
+    // =====================================================
+    // GUARDAR NUEVO ESTABLECIMIENTO
+    // =====================================================
+
+    async function guardarEstablecimiento(evento) {
+
+        evento.preventDefault();
+
+        const formulario = document.getElementById("formularioEstablecimiento");
+        const mensaje = document.getElementById("mensajeFormularioEstablecimiento");
+        const boton = document.getElementById("guardarEstablecimientoButton");
+
+        mensaje.textContent = "";
+        boton.disabled = true;
+
+        try {
+
+            const nombre = document.getElementById("nuevoNombre").value.trim();
+            const codigo = document.getElementById("nuevoCodigo").value.trim();
+            const direccion = document.getElementById("nuevaDireccion").value.trim();
+            const localidad = document.getElementById("nuevaLocalidad").value.trim();
+            const provincia = document.getElementById("nuevaProvincia").value.trim();
+
+            if (!nombre) {
+                mensaje.textContent = "El nombre del establecimiento es obligatorio.";
+                return;
+            }
+
+            const { data: membresias, error: errorMembresias } =
+                await supabaseClient
+                    .from("usuarios_organizaciones")
+                    .select("organizacion_id")
+                    .eq("activo", true);
+
+            if (errorMembresias) throw errorMembresias;
+
+            const organizaciones = [
+                ...new Set(
+                    (membresias || [])
+                        .map(m => m.organizacion_id)
+                        .filter(Boolean)
+                )
+            ];
+
+            if (organizaciones.length !== 1) {
+                throw new Error(
+                    "Se necesita exactamente una organización activa asociada al usuario para dar de alta el establecimiento."
+                );
+            }
+
+            const nuevoEstablecimiento = {
+                organizacion_id: organizaciones[0],
+                Nombre: nombre,
+                Codigo: codigo || null,
+                Direccion: direccion || null,
+                Localidad: localidad || null,
+                Provincia: provincia || null,
+                Activo: true
+            };
+
+            const { error } = await supabaseClient
+                .from("establecimientos")
+                .insert(nuevoEstablecimiento);
+
+            if (error) throw error;
+
+            mensaje.textContent = "Establecimiento guardado correctamente.";
+            formulario.reset();
+
+            await cargarEstablecimientos();
+
+        } catch (error) {
+            console.error("Error al guardar establecimiento:", error);
+            mensaje.textContent =
+                "No se pudo guardar: " + (error.message || "Error desconocido");
+        } finally {
+            boton.disabled = false;
+        }
+    }
+
+
+    // =====================================================
+    // CONECTAR LOS BOTONES Y EL FORMULARIO
+    // =====================================================
+
+    document
+        .getElementById("actualizarEstablecimientosButton")
+        .addEventListener("click", cargarEstablecimientos);
+
+    document
+        .getElementById("formularioEstablecimiento")
+        .addEventListener("submit", guardarEstablecimiento);
 
 
     // =====================================================
