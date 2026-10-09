@@ -301,6 +301,43 @@
 
         </div>
 
+        <div class="section" id="establecimientosSection">
+
+            <h2>Establecimientos</h2>
+
+            <p id="establecimientosMensaje">
+                Presione «Actualizar listado» para consultar los establecimientos registrados.
+            </p>
+
+            <button
+                id="actualizarEstablecimientosButton"
+                type="button"
+                style="margin-top: 15px; padding: 10px 16px; border: none; border-radius: 7px; background: #17202a; color: white; cursor: pointer;"
+            >
+                Actualizar listado
+            </button>
+
+            <div style="overflow-x: auto; margin-top: 18px;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 10px; border-bottom: 1px solid #cbd5e1;">Nombre</th>
+                            <th style="padding: 10px; border-bottom: 1px solid #cbd5e1;">Código</th>
+                            <th style="padding: 10px; border-bottom: 1px solid #cbd5e1;">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="establecimientosTabla">
+                        <tr>
+                            <td colspan="3" style="padding: 10px;">
+                                Todavía no se consultaron datos.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
         <div class="section">
 
             <h2>Estado de la gestión</h2>
@@ -445,6 +482,153 @@
         }
 
     }
+
+
+    // =====================================================
+    // CARGAR ESTABLECIMIENTOS DESDE SUPABASE
+    // =====================================================
+
+    async function cargarEstablecimientos() {
+
+        const mensaje = document.getElementById("establecimientosMensaje");
+        const tabla = document.getElementById("establecimientosTabla");
+        const boton = document.getElementById("actualizarEstablecimientosButton");
+
+        mensaje.textContent = "Consultando establecimientos...";
+        boton.disabled = true;
+
+        try {
+
+            const { data: membresias, error: errorMembresias } =
+                await supabaseClient
+                    .from("usuarios_organizaciones")
+                    .select("organizacion_id")
+                    .eq("activo", true);
+
+            if (errorMembresias) {
+                throw errorMembresias;
+            }
+
+            const organizaciones = [
+                ...new Set(
+                    (membresias || [])
+                        .map(membresia => membresia.organizacion_id)
+                        .filter(Boolean)
+                )
+            ];
+
+            if (organizaciones.length === 0) {
+
+                tabla.innerHTML = `
+                    <tr>
+                        <td colspan="3" style="padding: 10px;">
+                            No hay organizaciones activas asociadas a su usuario.
+                        </td>
+                    </tr>
+                `;
+
+                mensaje.textContent = "No se encontraron organizaciones asociadas.";
+                return;
+
+            }
+
+            const { data: establecimientos, error } =
+                await supabaseClient
+                    .from("establecimientos")
+                    .select("id, Nombre, Codigo, Activo")
+                    .in("organizacion_id", organizaciones)
+                    .order("Nombre", { ascending: true });
+
+            if (error) {
+                throw error;
+            }
+
+            if (!establecimientos || establecimientos.length === 0) {
+
+                tabla.innerHTML = `
+                    <tr>
+                        <td colspan="3" style="padding: 10px;">
+                            No hay establecimientos registrados.
+                        </td>
+                    </tr>
+                `;
+
+                mensaje.textContent =
+                    "Consulta completada. No hay establecimientos registrados.";
+
+                return;
+
+            }
+
+            tabla.innerHTML = "";
+
+            establecimientos.forEach(establecimiento => {
+
+                const fila = document.createElement("tr");
+
+                const valores = [
+                    establecimiento.Nombre || "—",
+                    establecimiento.Codigo || "—",
+                    establecimiento.Activo ? "Activo" : "Inactivo"
+                ];
+
+                valores.forEach(valor => {
+
+                    const celda = document.createElement("td");
+                    celda.style.padding = "10px";
+                    celda.style.borderBottom = "1px solid #e2e8f0";
+                    celda.textContent = valor;
+                    fila.appendChild(celda);
+
+                });
+
+                tabla.appendChild(fila);
+
+            });
+
+            mensaje.textContent =
+                `Se encontraron ${establecimientos.length} establecimiento(s).`;
+
+        } catch (error) {
+
+            console.error("Error al cargar establecimientos:", error);
+
+            tabla.innerHTML = `
+                <tr>
+                    <td colspan="3" style="padding: 10px;">
+                        No se pudieron cargar los datos.
+                    </td>
+                </tr>
+            `;
+
+            mensaje.textContent =
+                "Error al consultar Supabase: " +
+                (error.message || "Error desconocido");
+
+        } finally {
+
+            boton.disabled = false;
+
+        }
+
+    }
+
+
+    // =====================================================
+    // BOTÓN PARA ACTUALIZAR ESTABLECIMIENTOS
+    // =====================================================
+
+    document
+        .getElementById("actualizarEstablecimientosButton")
+        .addEventListener("click", cargarEstablecimientos);
+
+
+    // =====================================================
+    // INICIAR COMPROBACIÓN DE SESIÓN
+    // =====================================================
+
+    comprobarSesion();
+
 
 
     comprobarSesion();
