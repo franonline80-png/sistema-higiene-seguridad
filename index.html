@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -74,10 +75,6 @@
             font-size: 15px;
         }
 
-        .login-box button:hover {
-            background: #263544;
-        }
-
         #loginMessage {
             margin-top: 15px;
             color: #dc2626;
@@ -95,6 +92,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 15px;
         }
 
         header h1 {
@@ -110,6 +108,10 @@
             width: auto;
             padding: 10px 16px;
             background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
         }
 
         .container {
@@ -143,21 +145,10 @@
             font-weight: bold;
         }
 
-        .green {
-            border-left: 5px solid #16a34a;
-        }
-
-        .yellow {
-            border-left: 5px solid #eab308;
-        }
-
-        .red {
-            border-left: 5px solid #dc2626;
-        }
-
-        .blue {
-            border-left: 5px solid #2563eb;
-        }
+        .green { border-left: 5px solid #16a34a; }
+        .yellow { border-left: 5px solid #eab308; }
+        .red { border-left: 5px solid #dc2626; }
+        .blue { border-left: 5px solid #2563eb; }
 
         .section {
             background: white;
@@ -170,6 +161,11 @@
         .section h2 {
             margin-bottom: 18px;
             font-size: 20px;
+        }
+
+        .section h3 {
+            margin: 20px 0 15px;
+            font-size: 17px;
         }
 
         .menu {
@@ -191,73 +187,133 @@
             background: #d8e2ed;
         }
 
+        .field {
+            margin-bottom: 14px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .field input {
+            width: 100%;
+            max-width: 600px;
+            padding: 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        .primary-button {
+            padding: 11px 16px;
+            border: none;
+            border-radius: 7px;
+            background: #17202a;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .save-button {
+            background: #166534;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .status-message {
+            margin-top: 12px;
+            line-height: 1.5;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 18px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 11px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f8fafc;
+        }
+
         footer {
             text-align: center;
             padding: 20px;
             color: #64748b;
             font-size: 13px;
         }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 18px;
+                flex-wrap: wrap;
+            }
+
+            header h1 {
+                font-size: 21px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .section {
+                padding: 18px;
+            }
+        }
     </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
+<!-- INICIO DE SESIÓN -->
 
 <div id="loginScreen">
-
     <div class="login-box">
-
         <h1>Higiene y Seguridad</h1>
-
         <p>Ingrese sus credenciales para acceder al sistema.</p>
 
         <label for="email">Correo electrónico</label>
-        <input
-            type="email"
-            id="email"
-            placeholder="correo@ejemplo.com"
-        >
+        <input type="email" id="email" placeholder="correo@ejemplo.com" autocomplete="username">
 
         <label for="password">Contraseña</label>
-        <input
-            type="password"
-            id="password"
-            placeholder="Contraseña"
-        >
+        <input type="password" id="password" placeholder="Contraseña" autocomplete="current-password">
 
-        <button id="loginButton">
-            Ingresar
-        </button>
-
-        <div id="loginMessage"></div>
-
+        <button id="loginButton" type="button">Ingresar</button>
+        <div id="loginMessage" role="status" aria-live="polite"></div>
     </div>
-
 </div>
-
 
 <!-- APLICACIÓN -->
 
 <div id="app">
 
     <header>
-
         <div>
             <h1>Tablero de Control — Higiene y Seguridad</h1>
             <p>Sistema de gestión preventiva</p>
         </div>
-
-        <button id="logoutButton">
-            Cerrar sesión
-        </button>
-
+        <button id="logoutButton" type="button">Cerrar sesión</button>
     </header>
 
     <main class="container">
 
         <div class="cards">
-
             <div class="card green">
                 <h3>Nivel general de riesgo</h3>
                 <div class="number">Bajo</div>
@@ -277,60 +333,96 @@
                 <h3>Capacitaciones</h3>
                 <div class="number">0%</div>
             </div>
-
         </div>
 
         <div class="section">
-
             <h2>Módulos del sistema</h2>
-
             <div class="menu">
-
-                <button>Gestión de Riesgos</button>
-                <button>Inspecciones</button>
-                <button>Accidentes e Incidentes</button>
-                <button>Mediciones Ambientales</button>
-                <button>Gestión de EPP</button>
-                <button>Capacitaciones</button>
-                <button>Documentación Legal</button>
-                <button>Planes de Acción</button>
-                <button>Equipos e Instalaciones</button>
-                <button>Indicadores</button>
-
+                <button type="button">Gestión de Riesgos</button>
+                <button type="button">Inspecciones</button>
+                <button type="button">Accidentes e Incidentes</button>
+                <button type="button">Mediciones Ambientales</button>
+                <button type="button">Gestión de EPP</button>
+                <button type="button">Capacitaciones</button>
+                <button type="button">Documentación Legal</button>
+                <button type="button">Planes de Acción</button>
+                <button type="button">Equipos e Instalaciones</button>
+                <button type="button">Indicadores</button>
             </div>
-
         </div>
+
+        <!-- MÓDULO DE ESTABLECIMIENTOS -->
 
         <div class="section" id="establecimientosSection">
 
             <h2>Establecimientos</h2>
 
-            <p id="establecimientosMensaje">
+            <h3>Registrar nuevo establecimiento</h3>
+
+            <form id="formularioEstablecimiento">
+
+                <div class="field">
+                    <label for="nuevoNombre">Nombre del establecimiento *</label>
+                    <input type="text" id="nuevoNombre" maxlength="150"
+                           placeholder="Ej.: Depósito principal" required>
+                </div>
+
+                <div class="field">
+                    <label for="nuevoCodigo">Código interno</label>
+                    <input type="text" id="nuevoCodigo" maxlength="50"
+                           placeholder="Ej.: EST-001">
+                </div>
+
+                <div class="field">
+                    <label for="nuevaDireccion">Dirección</label>
+                    <input type="text" id="nuevaDireccion" maxlength="200">
+                </div>
+
+                <div class="field">
+                    <label for="nuevaLocalidad">Localidad</label>
+                    <input type="text" id="nuevaLocalidad" maxlength="100">
+                </div>
+
+                <div class="field">
+                    <label for="nuevaProvincia">Provincia</label>
+                    <input type="text" id="nuevaProvincia" maxlength="100">
+                </div>
+
+                <button type="submit" id="guardarEstablecimientoButton"
+                        class="primary-button save-button">
+                    Guardar establecimiento
+                </button>
+
+                <p id="mensajeFormularioEstablecimiento"
+                   class="status-message" role="status" aria-live="polite"></p>
+
+            </form>
+
+            <hr style="margin: 25px 0; border: 0; border-top: 1px solid #e2e8f0;">
+
+            <h3>Establecimientos registrados</h3>
+
+            <p id="establecimientosMensaje" class="status-message">
                 Presione «Actualizar listado» para consultar los establecimientos registrados.
             </p>
 
-            <button
-                id="actualizarEstablecimientosButton"
-                type="button"
-                style="margin-top: 15px; padding: 10px 16px; border: none; border-radius: 7px; background: #17202a; color: white; cursor: pointer;"
-            >
+            <button id="actualizarEstablecimientosButton"
+                    type="button" class="primary-button" style="margin-top: 12px;">
                 Actualizar listado
             </button>
 
-            <div style="overflow-x: auto; margin-top: 18px;">
-                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <div class="table-wrapper">
+                <table>
                     <thead>
                         <tr>
-                            <th style="padding: 10px; border-bottom: 1px solid #cbd5e1;">Nombre</th>
-                            <th style="padding: 10px; border-bottom: 1px solid #cbd5e1;">Código</th>
-                            <th style="padding: 10px; border-bottom: 1px solid #cbd5e1;">Estado</th>
+                            <th>Nombre</th>
+                            <th>Código</th>
+                            <th>Estado</th>
                         </tr>
                     </thead>
                     <tbody id="establecimientosTabla">
                         <tr>
-                            <td colspan="3" style="padding: 10px;">
-                                Todavía no se consultaron datos.
-                            </td>
+                            <td colspan="3">Todavía no se consultaron datos.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -339,15 +431,12 @@
         </div>
 
         <div class="section">
-
             <h2>Estado de la gestión</h2>
-
             <p>
                 Este tablero permitirá centralizar la información de Higiene
                 y Seguridad, realizar seguimiento de riesgos, inspecciones,
                 accidentes, capacitaciones, mediciones y acciones correctivas.
             </p>
-
         </div>
 
     </main>
@@ -358,21 +447,18 @@
 
 </div>
 
-
 <script>
-
     // =====================================================
     // CONFIGURACIÓN SUPABASE
     // =====================================================
 
     const SUPABASE_URL = "https://dpssgowiftbtclzsaprc.supabase.co";
-     const SUPABASE_ANON_KEY = "sb_publishable_NIV3CQpZcbvnOBfY7-_a7g_PtYfNIsG";
+    const SUPABASE_ANON_KEY = "sb_publishable_NIV3CQpZcbvnOBfY7-_a7g_PtYfNIsG";
 
     const supabaseClient = supabase.createClient(
         SUPABASE_URL,
         SUPABASE_ANON_KEY
     );
-
 
     // =====================================================
     // ELEMENTOS DE LA PÁGINA
@@ -384,112 +470,140 @@
     const logoutButton = document.getElementById("logoutButton");
     const loginMessage = document.getElementById("loginMessage");
 
-
     // =====================================================
     // MOSTRAR / OCULTAR APLICACIÓN
     // =====================================================
 
     function mostrarAplicacion() {
-
         loginScreen.style.display = "none";
         app.style.display = "block";
-
     }
-
 
     function mostrarLogin() {
-
         loginScreen.style.display = "flex";
         app.style.display = "none";
-
     }
 
-
     // =====================================================
-    // LOGIN
+    // INICIAR SESIÓN
     // =====================================================
 
     loginButton.addEventListener("click", async function () {
-
         loginMessage.textContent = "";
 
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value;
 
         if (!email || !password) {
-
             loginMessage.textContent =
                 "Ingrese correo electrónico y contraseña.";
-
             return;
         }
 
         loginButton.disabled = true;
         loginButton.textContent = "Ingresando...";
 
-        const { data, error } =
-            await supabaseClient.auth.signInWithPassword({
+        try {
+            const { error } = await supabaseClient.auth.signInWithPassword({
                 email: email,
                 password: password
             });
 
-        loginButton.disabled = false;
-        loginButton.textContent = "Ingresar";
+            if (error) throw error;
 
-        if (error) {
+            mostrarAplicacion();
 
+        } catch (error) {
             loginMessage.textContent =
-                "No se pudo iniciar sesión: " + error.message;
-
-            return;
+                "No se pudo iniciar sesión: " +
+                (error.message || "Error desconocido");
+        } finally {
+            loginButton.disabled = false;
+            loginButton.textContent = "Ingresar";
         }
-
-        mostrarAplicacion();
-
     });
 
+    // Permitir iniciar sesión presionando Enter en el campo de contraseña.
+    document.getElementById("password").addEventListener("keydown", function (evento) {
+        if (evento.key === "Enter") {
+            loginButton.click();
+        }
+    });
 
     // =====================================================
     // CERRAR SESIÓN
     // =====================================================
 
     logoutButton.addEventListener("click", async function () {
+        logoutButton.disabled = true;
 
-        await supabaseClient.auth.signOut();
-
-        mostrarLogin();
-
+        try {
+            const { error } = await supabaseClient.auth.signOut();
+            if (error) throw error;
+            mostrarLogin();
+        } catch (error) {
+            alert("No se pudo cerrar la sesión: " + error.message);
+        } finally {
+            logoutButton.disabled = false;
+        }
     });
-
 
     // =====================================================
     // COMPROBAR SESIÓN EXISTENTE
     // =====================================================
 
     async function comprobarSesion() {
+        const { data, error } = await supabaseClient.auth.getSession();
 
-        const { data } =
-            await supabaseClient.auth.getSession();
-
-        if (data.session) {
-
-            mostrarAplicacion();
-
-        } else {
-
+        if (error) {
+            console.error("Error al comprobar sesión:", error);
             mostrarLogin();
-
+            return;
         }
 
+        if (data.session) {
+            mostrarAplicacion();
+        } else {
+            mostrarLogin();
+        }
     }
 
+    // =====================================================
+    // OBTENER ORGANIZACIONES DEL USUARIO AUTENTICADO
+    // =====================================================
+
+    async function obtenerOrganizacionesUsuario() {
+        const { data: usuarioData, error: errorUsuario } =
+            await supabaseClient.auth.getUser();
+
+        if (errorUsuario) throw errorUsuario;
+
+        if (!usuarioData.user) {
+            throw new Error("Debe iniciar sesión para continuar.");
+        }
+
+        const { data: membresias, error } = await supabaseClient
+            .from("usuarios_organizaciones")
+            .select("organizacion_id")
+            .eq("usuario_id", usuarioData.user.id)
+            .eq("activo", true);
+
+        if (error) throw error;
+
+        return [
+            ...new Set(
+                (membresias || [])
+                    .map(m => m.organizacion_id)
+                    .filter(Boolean)
+            )
+        ];
+    }
 
     // =====================================================
-    // CARGAR ESTABLECIMIENTOS DESDE SUPABASE
+    // CARGAR ESTABLECIMIENTOS
     // =====================================================
 
     async function cargarEstablecimientos() {
-
         const mensaje = document.getElementById("establecimientosMensaje");
         const tabla = document.getElementById("establecimientosTabla");
         const boton = document.getElementById("actualizarEstablecimientosButton");
@@ -498,28 +612,14 @@
         boton.disabled = true;
 
         try {
-
-            const { data: membresias, error: errorMembresias } =
-                await supabaseClient
-                    .from("usuarios_organizaciones")
-                    .select("organizacion_id")
-                    .eq("activo", true);
-
-            if (errorMembresias) throw errorMembresias;
-
-            const organizaciones = [
-                ...new Set(
-                    (membresias || [])
-                        .map(m => m.organizacion_id)
-                        .filter(Boolean)
-                )
-            ];
+            const organizaciones = await obtenerOrganizacionesUsuario();
 
             if (organizaciones.length === 0) {
                 tabla.innerHTML = `
-                    <tr><td colspan="3" style="padding:10px;">
+                    <tr><td colspan="3">
                         No hay organizaciones activas asociadas a su usuario.
                     </td></tr>`;
+
                 mensaje.textContent = "No se encontraron organizaciones asociadas.";
                 return;
             }
@@ -536,24 +636,24 @@
 
             if (!establecimientos || establecimientos.length === 0) {
                 tabla.innerHTML = `
-                    <tr><td colspan="3" style="padding:10px;">
-                        No hay establecimientos registrados.
-                    </td></tr>`;
-                mensaje.textContent = "Consulta completada. No hay establecimientos registrados.";
+                    <tr><td colspan="3">No hay establecimientos registrados.</td></tr>`;
+
+                mensaje.textContent =
+                    "Consulta completada. No hay establecimientos registrados.";
                 return;
             }
 
             establecimientos.forEach(establecimiento => {
                 const fila = document.createElement("tr");
 
-                [
+                const valores = [
                     establecimiento.Nombre || "—",
                     establecimiento.Codigo || "—",
                     establecimiento.Activo ? "Activo" : "Inactivo"
-                ].forEach(valor => {
+                ];
+
+                valores.forEach(valor => {
                     const celda = document.createElement("td");
-                    celda.style.padding = "10px";
-                    celda.style.borderBottom = "1px solid #e2e8f0";
                     celda.textContent = valor;
                     fila.appendChild(celda);
                 });
@@ -566,10 +666,10 @@
 
         } catch (error) {
             console.error("Error al cargar establecimientos:", error);
+
             tabla.innerHTML = `
-                <tr><td colspan="3" style="padding:10px;">
-                    No se pudieron cargar los datos.
-                </td></tr>`;
+                <tr><td colspan="3">No se pudieron cargar los datos.</td></tr>`;
+
             mensaje.textContent =
                 "Error al consultar Supabase: " +
                 (error.message || "Error desconocido");
@@ -578,13 +678,11 @@
         }
     }
 
-
     // =====================================================
     // GUARDAR NUEVO ESTABLECIMIENTO
     // =====================================================
 
     async function guardarEstablecimiento(evento) {
-
         evento.preventDefault();
 
         const formulario = document.getElementById("formularioEstablecimiento");
@@ -592,40 +690,27 @@
         const boton = document.getElementById("guardarEstablecimientoButton");
 
         mensaje.textContent = "";
+
+        const nombre = document.getElementById("nuevoNombre").value.trim();
+        const codigo = document.getElementById("nuevoCodigo").value.trim();
+        const direccion = document.getElementById("nuevaDireccion").value.trim();
+        const localidad = document.getElementById("nuevaLocalidad").value.trim();
+        const provincia = document.getElementById("nuevaProvincia").value.trim();
+
+        if (!nombre) {
+            mensaje.textContent = "El nombre del establecimiento es obligatorio.";
+            return;
+        }
+
         boton.disabled = true;
+        boton.textContent = "Guardando...";
 
         try {
-
-            const nombre = document.getElementById("nuevoNombre").value.trim();
-            const codigo = document.getElementById("nuevoCodigo").value.trim();
-            const direccion = document.getElementById("nuevaDireccion").value.trim();
-            const localidad = document.getElementById("nuevaLocalidad").value.trim();
-            const provincia = document.getElementById("nuevaProvincia").value.trim();
-
-            if (!nombre) {
-                mensaje.textContent = "El nombre del establecimiento es obligatorio.";
-                return;
-            }
-
-            const { data: membresias, error: errorMembresias } =
-                await supabaseClient
-                    .from("usuarios_organizaciones")
-                    .select("organizacion_id")
-                    .eq("activo", true);
-
-            if (errorMembresias) throw errorMembresias;
-
-            const organizaciones = [
-                ...new Set(
-                    (membresias || [])
-                        .map(m => m.organizacion_id)
-                        .filter(Boolean)
-                )
-            ];
+            const organizaciones = await obtenerOrganizacionesUsuario();
 
             if (organizaciones.length !== 1) {
                 throw new Error(
-                    "Se necesita exactamente una organización activa asociada al usuario para dar de alta el establecimiento."
+                    "El usuario debe tener exactamente una organización activa asociada para dar de alta el establecimiento."
                 );
             }
 
@@ -645,23 +730,25 @@
 
             if (error) throw error;
 
-            mensaje.textContent = "Establecimiento guardado correctamente.";
             formulario.reset();
+            mensaje.textContent = "Establecimiento guardado correctamente.";
 
             await cargarEstablecimientos();
 
         } catch (error) {
             console.error("Error al guardar establecimiento:", error);
+
             mensaje.textContent =
-                "No se pudo guardar: " + (error.message || "Error desconocido");
+                "No se pudo guardar: " +
+                (error.message || "Error desconocido");
         } finally {
             boton.disabled = false;
+            boton.textContent = "Guardar establecimiento";
         }
     }
 
-
     // =====================================================
-    // CONECTAR LOS BOTONES Y EL FORMULARIO
+    // CONECTAR EVENTOS
     // =====================================================
 
     document
@@ -672,27 +759,13 @@
         .getElementById("formularioEstablecimiento")
         .addEventListener("submit", guardarEstablecimiento);
 
-
     // =====================================================
-    // BOTÓN PARA ACTUALIZAR ESTABLECIMIENTOS
-    // =====================================================
-
-    document
-        .getElementById("actualizarEstablecimientosButton")
-        .addEventListener("click", cargarEstablecimientos);
-
-
-    // =====================================================
-    // INICIAR COMPROBACIÓN DE SESIÓN
+    // INICIAR
     // =====================================================
 
     comprobarSesion();
-
-
-
-    comprobarSesion();
-
 </script>
 
 </body>
 </html>
+
