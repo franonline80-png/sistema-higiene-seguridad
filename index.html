@@ -2,1475 +2,662 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tablero de Higiene y Seguridad</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: Arial, sans-serif;
-            background: #f3f5f7;
-            color: #1f2937;
-        }
-
-        #loginScreen {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .login-box {
-            width: 100%;
-            max-width: 420px;
-            background: white;
-            padding: 35px;
-            border-radius: 12px;
-            box-shadow: 0 4px 18px rgba(0,0,0,.12);
-        }
-
-        .login-box h1 { margin-bottom: 10px; font-size: 24px; }
-        .login-box p { color: #64748b; margin-bottom: 25px; }
-
-        .login-box label, .field label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .login-box input, .field input, .field select,
-        .field textarea {
-            width: 100%;
-            max-width: 600px;
-            padding: 11px;
-            margin-bottom: 15px;
-            border: 1px solid #cbd5e1;
-            border-radius: 7px;
-            font-size: 15px;
-            background: white;
-        }
-
-        .login-box input { margin-bottom: 18px; }
-
-        .login-box button {
-            width: 100%;
-            border: none;
-            background: #17202a;
-            color: white;
-            padding: 13px;
-            border-radius: 7px;
-            cursor: pointer;
-            font-size: 15px;
-        }
-
-        #loginMessage { margin-top: 15px; color: #dc2626; font-size: 14px; }
-        #app { display: none; }
-
-        header {
-            background: #17202a;
-            color: white;
-            padding: 22px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-        }
-
-        header h1 { font-size: 26px; margin-bottom: 6px; }
-        header p { color: #cbd5e1; }
-
-        #logoutButton {
-            padding: 10px 16px;
-            background: #dc2626;
-            color: white;
-            border: none;
-            border-radius: 7px;
-            cursor: pointer;
-        }
-
-        .container { padding: 30px; max-width: 1400px; margin: auto; }
-
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-            gap: 18px;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 10px;
-            padding: 22px;
-            box-shadow: 0 2px 8px rgba(0,0,0,.08);
-        }
-
-        .card h3 { font-size: 14px; color: #64748b; margin-bottom: 12px; }
-        .number { font-size: 30px; font-weight: bold; }
-        .green { border-left: 5px solid #16a34a; }
-        .yellow { border-left: 5px solid #eab308; }
-        .red { border-left: 5px solid #dc2626; }
-        .blue { border-left: 5px solid #2563eb; }
-
-        .section {
-            background: white;
-            border-radius: 10px;
-            padding: 24px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 8px rgba(0,0,0,.08);
-            scroll-margin-top: 20px;
-        }
-
-        .section h2 { margin-bottom: 18px; font-size: 20px; }
-        .section h3 { margin: 20px 0 15px; font-size: 17px; }
-
-        .menu {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-        }
-
-        .menu button {
-            border: none;
-            background: #e8eef5;
-            padding: 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 15px;
-        }
-
-        .menu button:hover { background: #d8e2ed; }
-
-        .primary-button {
-            padding: 11px 16px;
-            border: none;
-            border-radius: 7px;
-            background: #17202a;
-            color: white;
-            cursor: pointer;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
-        .save-button { background: #166534; }
-        .secondary-button { background: #475569; }
-        .small-button { padding: 7px 10px; font-size: 12px; }
-
-        button:disabled { opacity: .6; cursor: not-allowed; }
-
-        .status-message { margin-top: 12px; line-height: 1.5; }
-        .table-wrapper { overflow-x: auto; margin-top: 18px; }
-
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 11px; border-bottom: 1px solid #e2e8f0; }
-        th { background: #f8fafc; }
-
-        .section-note {
-            color: #64748b;
-            font-size: 14px;
-            line-height: 1.5;
-            margin-bottom: 12px;
-        }
-
-        footer {
-            text-align: center;
-            padding: 20px;
-            color: #64748b;
-            font-size: 13px;
-        }
-
-        @media (max-width: 600px) {
-            header { padding: 18px; flex-wrap: wrap; }
-            header h1 { font-size: 21px; }
-            .container { padding: 15px; }
-            .section { padding: 18px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tablero de Higiene y Seguridad</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f3f5f7;color:#1f2937}
+#loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{width:100%;max-width:420px;background:white;padding:35px;border-radius:12px;box-shadow:0 4px 18px #0002}
+.login-box h1{margin-bottom:10px;font-size:24px}
+.login-box p{color:#64748b;margin-bottom:25px}
+label{display:block;margin-bottom:6px;font-weight:bold;font-size:14px}
+input,select,textarea{width:100%;max-width:650px;padding:11px;margin-bottom:15px;border:1px solid #cbd5e1;border-radius:7px;font-size:15px;background:white}
+.login-box button{width:100%;border:0;background:#17202a;color:white;padding:13px;border-radius:7px;cursor:pointer}
+#loginMessage{margin-top:15px;color:#dc2626}
+#app{display:none}
+header{background:#17202a;color:white;padding:22px 30px;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+header h1{font-size:25px;margin-bottom:6px}
+header p{color:#cbd5e1}
+.container{padding:25px;max-width:1500px;margin:auto}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:25px}
+.card,.section{background:white;border-radius:10px;padding:22px;box-shadow:0 2px 8px #0001}
+.card h3{font-size:14px;color:#64748b;margin-bottom:12px}
+.number{font-size:30px;font-weight:bold}
+.green{border-left:5px solid #16a34a}.yellow{border-left:5px solid #eab308}.red{border-left:5px solid #dc2626}.blue{border-left:5px solid #2563eb}
+.section{margin-bottom:25px;scroll-margin-top:15px}
+.section h2{font-size:21px;margin-bottom:15px}
+.section h3{font-size:17px;margin:20px 0 14px}
+.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+button{cursor:pointer}
+.menu button{border:0;background:#e8eef5;padding:14px;border-radius:8px;font-size:14px}
+.menu button:hover{background:#d8e2ed}
+.primary-button{padding:10px 14px;border:0;border-radius:7px;background:#17202a;color:white;margin:4px 4px 4px 0}
+.save-button{background:#166534}.secondary-button{background:#475569}.danger-button{background:#b91c1c}
+.small-button{padding:7px 9px;font-size:12px}
+button:disabled{opacity:.6;cursor:not-allowed}
+.status-message{margin-top:10px;line-height:1.5;overflow-wrap:anywhere}
+.section-note{color:#64748b;font-size:14px;line-height:1.5;margin-bottom:12px}
+.table-wrapper{overflow-x:auto;margin-top:15px}
+table{width:100%;border-collapse:collapse;text-align:left;font-size:14px}
+th,td{padding:10px;border-bottom:1px solid #e2e8f0;vertical-align:top}
+th{background:#f8fafc}
+footer{text-align:center;padding:20px;color:#64748b;font-size:13px}
+hr{margin:24px 0;border:0;border-top:1px solid #e2e8f0}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 15px}
+.form-grid input,.form-grid select,.form-grid textarea{max-width:100%}
+.editing-note{padding:10px;background:#fef3c7;border-radius:7px;margin:10px 0}
+.module-placeholder{background:#f8fafc;padding:18px;border-radius:8px;line-height:1.6}
+@media(max-width:600px){header{padding:18px}.container{padding:12px}.section{padding:16px}table{font-size:12px}th,td{padding:8px}}
+</style>
 </head>
-
 <body>
-
 <div id="loginScreen">
-    <div class="login-box">
-        <h1>Higiene y Seguridad</h1>
-        <p>Ingrese sus credenciales para acceder al sistema.</p>
-
-        <label for="email">Correo electrónico</label>
-        <input type="email" id="email" placeholder="correo@ejemplo.com"
-               autocomplete="username">
-
-        <label for="password">Contraseña</label>
-        <input type="password" id="password" placeholder="Contraseña"
-               autocomplete="current-password">
-
-        <button id="loginButton" type="button">Ingresar</button>
-        <div id="loginMessage" role="status" aria-live="polite"></div>
-    </div>
+  <div class="login-box">
+    <h1>Higiene y Seguridad</h1>
+    <p>Ingrese sus credenciales para acceder al sistema.</p>
+    <label for="email">Correo electrónico</label>
+    <input type="email" id="email" autocomplete="username" placeholder="correo@ejemplo.com">
+    <label for="password">Contraseña</label>
+    <input type="password" id="password" autocomplete="current-password" placeholder="Contraseña">
+    <button id="loginButton" type="button">Ingresar</button>
+    <div id="loginMessage" role="status"></div>
+  </div>
 </div>
 
 <div id="app">
-    <header>
-        <div>
-            <h1>Tablero de Control — Higiene y Seguridad</h1>
-            <p>Sistema de gestión preventiva</p>
-        </div>
-        <button id="logoutButton" type="button">Cerrar sesión</button>
-    </header>
+<header>
+  <div>
+    <h1>Tablero de Control — Higiene y Seguridad</h1>
+    <p>Sistema de gestión preventiva</p>
+    <p id="organizacionActual"></p>
+  </div>
+  <button id="logoutButton" class="primary-button danger-button">Cerrar sesión</button>
+</header>
 
-    <main class="container">
-        <div class="cards">
-            <div class="card green">
-                <h3>Nivel general de riesgo</h3>
-                <div class="number">—</div>
-            </div>
-            <div class="card red">
-                <h3>Acciones vencidas</h3>
-                <div class="number">—</div>
-            </div>
-            <div class="card yellow">
-                <h3>Inspecciones pendientes</h3>
-                <div class="number">—</div>
-            </div>
-            <div class="card blue">
-                <h3>Capacitaciones</h3>
-                <div class="number">—</div>
-            </div>
-        </div>
+<main class="container">
+  <div class="cards">
+    <div class="card green"><h3>Establecimientos activos</h3><div id="totalEstablecimientos" class="number">—</div></div>
+    <div class="card blue"><h3>Sectores activos</h3><div id="totalSectores" class="number">—</div></div>
+    <div class="card yellow"><h3>Puestos activos</h3><div id="totalPuestos" class="number">—</div></div>
+    <div class="card red"><h3>Personas activas</h3><div id="totalPersonas" class="number">—</div></div>
+  </div>
 
-        <div class="section">
-            <h2>Módulos del sistema</h2>
-            <div class="menu">
-                <button type="button" onclick="irA('establecimientosSection')">Establecimientos</button>
-                <button type="button" onclick="irA('sectoresSection')">Sectores</button>
-                <button type="button" onclick="irA('puestosSection')">Puestos</button>
-                <button type="button" onclick="irA('personasSection')">Personas</button>
-                <button type="button">Gestión de Riesgos</button>
-                <button type="button">Inspecciones</button>
-                <button type="button">Accidentes e Incidentes</button>
-                <button type="button">Mediciones Ambientales</button>
-                <button type="button">Gestión de EPP</button>
-                <button type="button">Capacitaciones</button>
-                <button type="button">Documentación Legal</button>
-                <button type="button">Planes de Acción</button>
-                <button type="button">Equipos e Instalaciones</button>
-                <button type="button">Indicadores</button>
-            </div>
-        </div>
+  <section class="section">
+    <h2>Módulos del sistema</h2>
+    <div class="menu">
+      <button onclick="irA('establecimientosSection')">Establecimientos</button>
+      <button onclick="irA('sectoresSection')">Sectores</button>
+      <button onclick="irA('puestosSection')">Puestos</button>
+      <button onclick="irA('personasSection')">Personas</button>
+      <button onclick="irA('riesgosSection')">Gestión de Riesgos</button>
+      <button onclick="irA('inspeccionesSection')">Inspecciones</button>
+      <button onclick="irA('accidentesSection')">Accidentes e Incidentes</button>
+      <button onclick="irA('medicionesSection')">Mediciones Ambientales</button>
+      <button onclick="irA('eppSection')">Gestión de EPP</button>
+      <button onclick="irA('capacitacionesSection')">Capacitaciones</button>
+      <button onclick="irA('documentacionSection')">Documentación Legal</button>
+      <button onclick="irA('accionesSection')">Planes de Acción</button>
+      <button onclick="irA('equiposSection')">Equipos e Instalaciones</button>
+      <button onclick="irA('indicadoresSection')">Indicadores</button>
+    </div>
+  </section>
 
-        <!-- ESTABLECIMIENTOS -->
+  <!-- ESTABLECIMIENTOS -->
+  <section class="section" id="establecimientosSection">
+    <h2>Establecimientos</h2>
+    <h3 id="tituloEstablecimiento">Registrar establecimiento</h3>
+    <p id="avisoEdicionEstablecimiento" class="editing-note" hidden>Está editando un establecimiento.</p>
+    <form id="formularioEstablecimiento">
+      <div class="form-grid">
+        <div><label for="nuevoNombre">Nombre *</label><input id="nuevoNombre" maxlength="150" required></div>
+        <div><label for="nuevoCodigo">Código</label><input id="nuevoCodigo" maxlength="50"></div>
+        <div><label for="nuevaDireccion">Dirección</label><input id="nuevaDireccion" maxlength="200"></div>
+        <div><label for="nuevaLocalidad">Localidad</label><input id="nuevaLocalidad" maxlength="100"></div>
+        <div><label for="nuevaProvincia">Provincia</label><input id="nuevaProvincia" maxlength="100"></div>
+      </div>
+      <button type="submit" id="guardarEstablecimientoButton" class="primary-button save-button">Guardar establecimiento</button>
+      <button type="button" id="cancelarEdicionEstablecimiento" class="primary-button secondary-button" hidden>Cancelar edición</button>
+      <p id="mensajeFormularioEstablecimiento" class="status-message" role="status"></p>
+    </form>
+    <hr>
+    <h3>Establecimientos registrados</h3>
+    <button id="actualizarEstablecimientosButton" class="primary-button">Actualizar listado</button>
+    <p id="establecimientosMensaje" class="status-message" role="status"></p>
+    <div class="table-wrapper"><table>
+      <thead><tr><th>Nombre</th><th>Código</th><th>Dirección</th><th>Localidad</th><th>Provincia</th><th>Estado</th><th>Acciones</th></tr></thead>
+      <tbody id="establecimientosTabla"><tr><td colspan="7">Inicie sesión para consultar.</td></tr></tbody>
+    </table></div>
+  </section>
 
-        <div class="section" id="establecimientosSection">
-            <h2>Establecimientos</h2>
-            <h3>Registrar nuevo establecimiento</h3>
+  <!-- SECTORES -->
+  <section class="section" id="sectoresSection">
+    <h2>Sectores</h2>
+    <p class="section-note">Cada sector debe estar asociado a un establecimiento de su organización.</p>
+    <h3 id="tituloSector">Registrar sector</h3>
+    <p id="avisoEdicionSector" class="editing-note" hidden>Está editando un sector.</p>
+    <form id="formularioSector">
+      <div class="form-grid">
+        <div><label for="sectorEstablecimiento">Establecimiento *</label><select id="sectorEstablecimiento" required></select></div>
+        <div><label for="sectorNombre">Nombre del sector *</label><input id="sectorNombre" maxlength="150" required></div>
+        <div><label for="sectorCodigo">Código</label><input id="sectorCodigo" maxlength="50"></div>
+        <div><label for="sectorDescripcion">Descripción</label><textarea id="sectorDescripcion" maxlength="1000" rows="3"></textarea></div>
+      </div>
+      <button type="submit" id="guardarSectorButton" class="primary-button save-button">Guardar sector</button>
+      <button type="button" id="cancelarEdicionSector" class="primary-button secondary-button" hidden>Cancelar edición</button>
+      <p id="mensajeFormularioSector" class="status-message" role="status"></p>
+    </form>
+    <hr>
+    <h3>Sectores registrados</h3>
+    <button id="actualizarSectoresButton" class="primary-button">Actualizar sectores</button>
+    <p id="sectoresMensaje" class="status-message" role="status"></p>
+    <div class="table-wrapper"><table>
+      <thead><tr><th>Establecimiento</th><th>Sector</th><th>Código</th><th>Descripción</th><th>Estado</th><th>Acciones</th></tr></thead>
+      <tbody id="sectoresTabla"><tr><td colspan="6">Inicie sesión para consultar.</td></tr></tbody>
+    </table></div>
+  </section>
 
-            <form id="formularioEstablecimiento">
-                <div class="field">
-                    <label for="nuevoNombre">Nombre del establecimiento *</label>
-                    <input type="text" id="nuevoNombre" maxlength="150"
-                           placeholder="Ej.: Depósito principal" required>
-                </div>
+  <!-- PUESTOS -->
+  <section class="section" id="puestosSection">
+    <h2>Puestos</h2>
+    <p class="section-note">Los puestos se vinculan a un sector y pueden asignarse a personas.</p>
+    <h3 id="tituloPuesto">Registrar puesto</h3>
+    <p id="avisoEdicionPuesto" class="editing-note" hidden>Está editando un puesto.</p>
+    <form id="formularioPuesto">
+      <div class="form-grid">
+        <div><label for="puestoSector">Sector *</label><select id="puestoSector" required></select></div>
+        <div><label for="puestoNombre">Nombre del puesto *</label><input id="puestoNombre" maxlength="150" required></div>
+        <div><label for="puestoCodigo">Código</label><input id="puestoCodigo" maxlength="50"></div>
+        <div><label for="puestoDescripcion">Descripción</label><textarea id="puestoDescripcion" maxlength="1000" rows="3"></textarea></div>
+      </div>
+      <button type="submit" id="guardarPuestoButton" class="primary-button save-button">Guardar puesto</button>
+      <button type="button" id="cancelarEdicionPuesto" class="primary-button secondary-button" hidden>Cancelar edición</button>
+      <p id="mensajeFormularioPuesto" class="status-message" role="status"></p>
+    </form>
+    <hr>
+    <h3>Puestos registrados</h3>
+    <button id="actualizarPuestosButton" class="primary-button">Actualizar puestos</button>
+    <p id="puestosMensaje" class="status-message" role="status"></p>
+    <div class="table-wrapper"><table>
+      <thead><tr><th>Establecimiento</th><th>Sector</th><th>Puesto</th><th>Código</th><th>Descripción</th><th>Estado</th><th>Acciones</th></tr></thead>
+      <tbody id="puestosTabla"><tr><td colspan="7">Inicie sesión para consultar.</td></tr></tbody>
+    </table></div>
+  </section>
 
-                <div class="field">
-                    <label for="nuevoCodigo">Código interno</label>
-                    <input type="text" id="nuevoCodigo" maxlength="50"
-                           placeholder="Ej.: EST-001">
-                </div>
+  <!-- PERSONAS -->
+  <section class="section" id="personasSection">
+    <h2>Personas</h2>
+    <p class="section-note">La organización se obtiene de la membresía del usuario. Seleccione un puesto activo.</p>
+    <h3 id="tituloPersona">Registrar persona</h3>
+    <p id="avisoEdicionPersona" class="editing-note" hidden>Está editando una persona.</p>
+    <form id="formularioPersona">
+      <div class="form-grid">
+        <div><label for="personaLegajo">Legajo</label><input id="personaLegajo" maxlength="100"></div>
+        <div><label for="personaNombre">Nombre *</label><input id="personaNombre" maxlength="150" required></div>
+        <div><label for="personaApellido">Apellido *</label><input id="personaApellido" maxlength="150" required></div>
+        <div><label for="personaDocumento">Documento</label><input id="personaDocumento" maxlength="50"></div>
+        <div><label for="personaCargo">Cargo</label><input id="personaCargo" maxlength="150"></div>
+        <div><label for="personaFechaIngreso">Fecha de ingreso</label><input type="date" id="personaFechaIngreso"></div>
+        <div><label for="personaPuesto">Puesto asignado *</label><select id="personaPuesto" required></select></div>
+      </div>
+      <button type="submit" id="guardarPersonaButton" class="primary-button save-button">Guardar persona</button>
+      <button type="button" id="cancelarEdicionPersona" class="primary-button secondary-button" hidden>Cancelar edición</button>
+      <p id="mensajeFormularioPersona" class="status-message" role="status"></p>
+    </form>
+    <hr>
+    <h3>Personas registradas</h3>
+    <button id="actualizarPersonasButton" class="primary-button">Actualizar personas</button>
+    <p id="personasMensaje" class="status-message" role="status"></p>
+    <div class="table-wrapper"><table>
+      <thead><tr><th>Legajo</th><th>Apellido y nombre</th><th>Documento</th><th>Cargo</th><th>Fecha ingreso</th><th>Establecimiento</th><th>Sector</th><th>Puesto</th><th>Estado</th><th>Acciones</th></tr></thead>
+      <tbody id="personasTabla"><tr><td colspan="10">Inicie sesión para consultar.</td></tr></tbody>
+    </table></div>
+  </section>
 
-                <div class="field">
-                    <label for="nuevaDireccion">Dirección</label>
-                    <input type="text" id="nuevaDireccion" maxlength="200">
-                </div>
-
-                <div class="field">
-                    <label for="nuevaLocalidad">Localidad</label>
-                    <input type="text" id="nuevaLocalidad" maxlength="100">
-                </div>
-
-                <div class="field">
-                    <label for="nuevaProvincia">Provincia</label>
-                    <input type="text" id="nuevaProvincia" maxlength="100">
-                </div>
-
-                <button type="submit" id="guardarEstablecimientoButton"
-                        class="primary-button save-button">
-                    Guardar establecimiento
-                </button>
-
-                <p id="mensajeFormularioEstablecimiento"
-                   class="status-message" role="status" aria-live="polite"></p>
-            </form>
-
-            <hr style="margin:25px 0;border:0;border-top:1px solid #e2e8f0;">
-
-            <h3>Establecimientos registrados</h3>
-            <p id="establecimientosMensaje" class="status-message">
-                Presione «Actualizar listado» para consultar los establecimientos.
-            </p>
-
-            <button id="actualizarEstablecimientosButton"
-                    type="button" class="primary-button">
-                Actualizar listado
-            </button>
-
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr><th>Nombre</th><th>Código</th><th>Estado</th></tr>
-                    </thead>
-                    <tbody id="establecimientosTabla">
-                        <tr><td colspan="3">Todavía no se consultaron datos.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- SECTORES -->
-
-        <div class="section" id="sectoresSection">
-            <h2>Gestión de Sectores</h2>
-            <p class="section-note">
-                Cada sector debe estar vinculado a un establecimiento de su organización.
-            </p>
-
-            <h3>Registrar nuevo sector</h3>
-
-            <form id="formularioSector">
-                <div class="field">
-                    <label for="sectorEstablecimiento">Establecimiento *</label>
-                    <select id="sectorEstablecimiento" required>
-                        <option value="">Primero cargue los establecimientos</option>
-                    </select>
-                </div>
-
-                <div class="field">
-                    <label for="sectorNombre">Nombre del sector *</label>
-                    <input type="text" id="sectorNombre" maxlength="150"
-                           placeholder="Ej.: Taller de mantenimiento" required>
-                </div>
-
-                <div class="field">
-                    <label for="sectorCodigo">Código del sector</label>
-                    <input type="text" id="sectorCodigo" maxlength="50"
-                           placeholder="Ej.: SEC-001">
-                </div>
-
-                <div class="field">
-                    <label for="sectorDescripcion">Descripción</label>
-                    <textarea id="sectorDescripcion" maxlength="1000"
-                              rows="3" placeholder="Descripción de las actividades del sector"
-                              style="width:100%;max-width:600px;padding:11px;border:1px solid #cbd5e1;border-radius:7px;font:15px Arial;"></textarea>
-                </div>
-
-                <button type="submit" id="guardarSectorButton"
-                        class="primary-button save-button">
-                    Guardar sector
-                </button>
-
-                <p id="mensajeFormularioSector" class="status-message"
-                   role="status" aria-live="polite"></p>
-            </form>
-
-            <hr style="margin:25px 0;border:0;border-top:1px solid #e2e8f0;">
-
-            <h3>Sectores registrados</h3>
-            <p id="sectoresMensaje" class="status-message">
-                Presione «Actualizar sectores» para consultar los datos.
-            </p>
-
-            <button id="actualizarSectoresButton"
-                    type="button" class="primary-button">
-                Actualizar sectores
-            </button>
-
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Establecimiento</th>
-                            <th>Sector</th>
-                            <th>Código</th>
-                            <th>Descripción</th>
-                            <th>Estado</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="sectoresTabla">
-                        <tr><td colspan="6">Todavía no se consultaron datos.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- PUESTOS -->
-
-        <div class="section" id="puestosSection">
-            <h2>Gestión de Puestos</h2>
-            <p class="section-note">
-                Los puestos se vinculan con un sector. En esta etapa el sistema
-                permite consultarlos y seleccionarlos para asignarlos a una persona.
-                La creación y modificación de puestos se administrará desde Supabase
-                hasta que incorporemos el formulario correspondiente.
-            </p>
-
-            <button id="actualizarPuestosButton" type="button"
-                    class="primary-button">
-                Actualizar puestos
-            </button>
-
-            <p id="puestosMensaje" class="status-message" role="status" aria-live="polite">
-                Presione «Actualizar puestos» para consultar los puestos registrados.
-            </p>
-
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Establecimiento</th>
-                            <th>Sector</th>
-                            <th>Puesto</th>
-                            <th>Código</th>
-                            <th>Descripción</th>
-                            <th>Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody id="puestosTabla">
-                        <tr><td colspan="6">Todavía no se consultaron datos.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- PERSONAS -->
-
-        <div class="section" id="personasSection">
-            <h2>Gestión de Personas</h2>
-            <p class="section-note">
-                Registre a cada persona y asóciela con un puesto existente.
-                La organización se obtiene de la membresía del usuario conectado.
-                Solo se mostrarán puestos activos pertenecientes a su organización.
-            </p>
-
-            <h3>Registrar nueva persona</h3>
-
-            <form id="formularioPersona">
-                <div class="field">
-                    <label for="personaLegajo">Legajo</label>
-                    <input type="text" id="personaLegajo" maxlength="100"
-                           placeholder="Número o código de legajo">
-                </div>
-
-                <div class="field">
-                    <label for="personaNombre">Nombre *</label>
-                    <input type="text" id="personaNombre" maxlength="150"
-                           autocomplete="given-name" required>
-                </div>
-
-                <div class="field">
-                    <label for="personaApellido">Apellido *</label>
-                    <input type="text" id="personaApellido" maxlength="150"
-                           autocomplete="family-name" required>
-                </div>
-
-                <div class="field">
-                    <label for="personaDocumento">Documento</label>
-                    <input type="text" id="personaDocumento" maxlength="50"
-                           placeholder="Tipo y número de documento">
-                </div>
-
-                <div class="field">
-                    <label for="personaCargo">Cargo</label>
-                    <input type="text" id="personaCargo" maxlength="150"
-                           placeholder="Cargo o función">
-                </div>
-
-                <div class="field">
-                    <label for="personaFechaIngreso">Fecha de ingreso</label>
-                    <input type="date" id="personaFechaIngreso">
-                </div>
-
-                <div class="field">
-                    <label for="personaPuesto">Puesto asignado *</label>
-                    <select id="personaPuesto" required>
-                        <option value="">Primero actualice los puestos</option>
-                    </select>
-                </div>
-
-                <button type="submit" id="guardarPersonaButton"
-                        class="primary-button save-button">
-                    Guardar persona
-                </button>
-
-                <p id="mensajeFormularioPersona" class="status-message"
-                   role="status" aria-live="polite"></p>
-            </form>
-
-            <hr style="margin:25px 0;border:0;border-top:1px solid #e2e8f0;">
-
-            <h3>Personas registradas</h3>
-
-            <button id="actualizarPersonasButton" type="button"
-                    class="primary-button">
-                Actualizar personas
-            </button>
-
-            <p id="personasMensaje" class="status-message" role="status" aria-live="polite">
-                Presione «Actualizar personas» para consultar los registros.
-            </p>
-
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Legajo</th>
-                            <th>Apellido y nombre</th>
-                            <th>Documento</th>
-                            <th>Cargo</th>
-                            <th>Fecha de ingreso</th>
-                            <th>Establecimiento</th>
-                            <th>Sector</th>
-                            <th>Puesto</th>
-                            <th>Estado</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="personasTabla">
-                        <tr><td colspan="10">Todavía no se consultaron datos.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2>Estado de la gestión</h2>
-            <p>
-                Este tablero permitirá centralizar la información de Higiene
-                y Seguridad, realizar seguimiento de riesgos, inspecciones,
-                accidentes, capacitaciones, mediciones y acciones correctivas.
-            </p>
-        </div>
-    </main>
-
-    <footer>
-        Sistema de Gestión de Higiene y Seguridad — Versión inicial
-    </footer>
+  <!-- OTROS MÓDULOS: NAVEGACIÓN Y ESTADO EXPLÍCITO -->
+  <section class="section" id="riesgosSection"><h2>Gestión de Riesgos</h2><div class="module-placeholder">Módulo pendiente de integración CRUD. Antes de guardar se debe confirmar el esquema de la tabla <code>riesgos</code> y sus relaciones con peligros, puestos y sectores.</div></section>
+  <section class="section" id="inspeccionesSection"><h2>Inspecciones</h2><div class="module-placeholder">Módulo pendiente de integración CRUD. Se deben verificar los campos de <code>inspecciones</code> y sus relaciones.</div></section>
+  <section class="section" id="accidentesSection"><h2>Accidentes e Incidentes</h2><div class="module-placeholder">Módulo pendiente de integración CRUD. Se deben verificar los campos de <code>accidentes_incidentes</code> antes de habilitar altas y cambios.</div></section>
+  <section class="section" id="medicionesSection"><h2>Mediciones Ambientales</h2><div class="module-placeholder">Módulo pendiente de integración CRUD. Se deben verificar los campos de <code>mediciones_ambientales</code>.</div></section>
+  <section class="section" id="eppSection"><h2>Gestión de EPP</h2><div class="module-placeholder">Módulo pendiente de integración CRUD para <code>epp</code> y <code>epp_personas</code>.</div></section>
+  <section class="section" id="capacitacionesSection"><h2>Capacitaciones</h2><div class="module-placeholder">Módulo pendiente de integración CRUD para <code>capacitaciones</code> y <code>capacitaciones_personas</code>.</div></section>
+  <section class="section" id="documentacionSection"><h2>Documentación Legal</h2><div class="module-placeholder">Módulo pendiente de integración CRUD para <code>documentacion</code> y su relación con establecimientos.</div></section>
+  <section class="section" id="accionesSection"><h2>Planes de Acción</h2><div class="module-placeholder">Módulo pendiente de integración CRUD para <code>acciones_correctivas</code> y <code>hallazgos</code>.</div></section>
+  <section class="section" id="equiposSection"><h2>Equipos e Instalaciones</h2><div class="module-placeholder">Módulo pendiente de integración CRUD para <code>equipos_instalaciones</code> y sus vencimientos.</div></section>
+  <section class="section" id="indicadoresSection"><h2>Indicadores</h2><p class="section-note">Indicadores disponibles para los módulos actualmente integrados.</p><div id="indicadoresMensaje" class="status-message">Los indicadores se actualizan al consultar los módulos principales.</div></section>
+</main>
+<footer>Sistema de Gestión de Higiene y Seguridad — Versión de prueba</footer>
 </div>
 
 <script>
-    // CONFIGURACIÓN SUPABASE
-    const SUPABASE_URL = "https://dpssgowiftbtclzsaprc.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_NIV3CQpZcbvnOBfY7-_a7g_PtYfNIsG";
+"use strict";
 
-    const supabaseClient = supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
-    );
+const SUPABASE_URL = "https://dpssgowiftbtclzsaprc.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_NIV3CQpZcbvnOBfY7-_a7g_PtYfNIsG";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const loginScreen = document.getElementById("loginScreen");
-    const app = document.getElementById("app");
-    const loginButton = document.getElementById("loginButton");
-    const logoutButton = document.getElementById("logoutButton");
-    const loginMessage = document.getElementById("loginMessage");
+const $ = id => document.getElementById(id);
+let establecimientosCache = [], sectoresCache = [], puestosCache = [], personasCache = [];
+let editandoEstablecimiento = null, editandoSector = null, editandoPuesto = null, editandoPersona = null;
 
-    let establecimientosCache = [];
-    let sectoresCache = [];
-    let puestosCache = [];
-    let personasCache = [];
-
-    function irA(id) {
-        document.getElementById(id).scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-    }
-
-    function mostrarAplicacion() {
-        loginScreen.style.display = "none";
-        app.style.display = "block";
-    }
-
-    function mostrarLogin() {
-        loginScreen.style.display = "flex";
-        app.style.display = "none";
-    }
-
-    function mostrarFilaVacia(tabla, columnas, mensaje) {
-        tabla.replaceChildren();
-        const fila = document.createElement("tr");
-        const celda = document.createElement("td");
-        celda.colSpan = columnas;
-        celda.textContent = mensaje;
-        fila.appendChild(celda);
-        tabla.appendChild(fila);
-    }
-
-    function agregarCelda(fila, valor) {
-        const celda = document.createElement("td");
-        celda.textContent = valor === null || valor === undefined || valor === ""
-            ? "—"
-            : String(valor);
-        fila.appendChild(celda);
-        return celda;
-    }
-
-    function fechaLegible(fecha) {
-        if (!fecha) return "—";
-        const partes = String(fecha).split("-");
-        if (partes.length !== 3) return fecha;
-        return `${partes[2]}/${partes[1]}/${partes[0]}`;
-    }
-
-    function mostrarError(mensajeElemento, prefijo, error) {
-        console.error(prefijo, error);
-        mensajeElemento.textContent =
-            `${prefijo}: ${error?.message || "Error desconocido."}`;
-    }
-
-    // INICIO DE SESIÓN
-    loginButton.addEventListener("click", async function () {
-        loginMessage.textContent = "";
-
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value;
-
-        if (!email || !password) {
-            loginMessage.textContent =
-                "Ingrese correo electrónico y contraseña.";
-            return;
-        }
-
-        loginButton.disabled = true;
-        loginButton.textContent = "Ingresando...";
-
-        try {
-            const { error } = await supabaseClient.auth.signInWithPassword({
-                email,
-                password
-            });
-
-            if (error) throw error;
-
-            mostrarAplicacion();
-            await cargarEstablecimientos();
-            await cargarSectores();
-            await cargarPuestos();
-            await cargarPersonas();
-
-        } catch (error) {
-            loginMessage.textContent =
-                "No se pudo iniciar sesión: " + error.message;
-        } finally {
-            loginButton.disabled = false;
-            loginButton.textContent = "Ingresar";
-        }
+function irA(id) { $(id).scrollIntoView({behavior:"smooth",block:"start"}); }
+function mostrarAplicacion() { $("loginScreen").style.display="none"; $("app").style.display="block"; }
+function mostrarLogin() { $("loginScreen").style.display="flex"; $("app").style.display="none"; }
+function mensaje(id,texto) { $(id).textContent=texto || ""; }
+function errorEn(id,prefijo,error) {
+  console.error(prefijo,error);
+  mensaje(id,`${prefijo}: ${error?.message || "Error desconocido"}`);
+}
+function celda(fila,valor) {
+  const td=document.createElement("td");
+  td.textContent=valor===null || valor===undefined || valor==="" ? "—" : String(valor);
+  fila.appendChild(td); return td;
+}
+function vacia(tbody,columnas,texto) {
+  tbody.replaceChildren();
+  const tr=document.createElement("tr"),td=document.createElement("td");
+  td.colSpan=columnas; td.textContent=texto; tr.appendChild(td); tbody.appendChild(tr);
+}
+function fechaLegible(v) {
+  if(!v)return "—";
+  const p=String(v).split("-");
+  return p.length===3 ? `${p[2]}/${p[1]}/${p[0]}` : v;
+}
+function botonAccion(texto,clase,fn) {
+  const b=document.createElement("button"); b.type="button";
+  b.className=`primary-button small-button ${clase||""}`;
+  b.textContent=texto; b.addEventListener("click",fn); return b;
+}
+function confirmarEstado(nombre,activo) {
+  return confirm(`¿Confirma que desea ${activo?"desactivar":"activar"} "${nombre}"?`);
+}
+async function obtenerOrganizacionesUsuario() {
+  const {data:u,error:eu}=await supabaseClient.auth.getUser();
+  if(eu)throw eu;
+  if(!u.user)throw new Error("Debe iniciar sesión.");
+  const {data,error}=await supabaseClient.from("usuarios_organizaciones")
+    .select("organizacion_id").eq("usuario_id",u.user.id).eq("activo",true);
+  if(error)throw error;
+  return [...new Set((data||[]).map(x=>x.organizacion_id).filter(Boolean))];
+}
+async function obtenerEstablecimientosUsuario() {
+  const ids=await obtenerOrganizacionesUsuario();
+  if(!ids.length)return [];
+  const {data,error}=await supabaseClient.from("establecimientos")
+    .select('id, organizacion_id, "Nombre", "Codigo", "Direccion", "Localidad", "Provincia", "Activo"')
+    .in("organizacion_id",ids).order("Nombre");
+  if(error)throw error;
+  return data||[];
+}
+async function obtenerSectoresUsuario() {
+  const es=await obtenerEstablecimientosUsuario(),ids=es.map(e=>e.id);
+  if(!ids.length)return [];
+  const {data,error}=await supabaseClient.from("sectores")
+    .select("id, establecimiento_id, nombre, codigo, descripcion, activo")
+    .in("establecimiento_id",ids).order("nombre");
+  if(error)throw error;
+  return data||[];
+}
+function ponerOpciones(select,opciones,valor,textoInicial) {
+  select.replaceChildren();
+  const inicial=document.createElement("option");inicial.value="";inicial.textContent=textoInicial;
+  select.appendChild(inicial);
+  opciones.forEach(o=>{
+    const op=document.createElement("option");op.value=o.id;op.textContent=o.label;select.appendChild(op);
+  });
+  if(valor && opciones.some(o=>o.id===valor))select.value=valor;
+}
+async function cargarSelectores() {
+  establecimientosCache=await obtenerEstablecimientosUsuario();
+  sectoresCache=await obtenerSectoresUsuario();
+  const esActivos=establecimientosCache.filter(e=>e.Activo);
+  ponerOpciones($("sectorEstablecimiento"),esActivos.map(e=>({id:e.id,label:e.Nombre})),
+    editandoSector?.establecimiento_id,"Seleccione un establecimiento activo");
+  const sectorOpciones=sectoresCache.filter(s=>s.activo && esActivos.some(e=>e.id===s.establecimiento_id))
+    .map(s=>({id:s.id,label:`${esActivos.find(e=>e.id===s.establecimiento_id)?.Nombre||"Establecimiento"} — ${s.nombre}`}));
+  ponerOpciones($("puestoSector"),sectorOpciones,editandoPuesto?.sector_id,"Seleccione un sector activo");
+  await actualizarSelectorPersona();
+}
+async function actualizarSelectorPersona() {
+  const anteriores=$("personaPuesto").value;
+  const es=await obtenerEstablecimientosUsuario();
+  const esActivos=es.filter(e=>e.Activo);
+  const sectores=await obtenerSectoresUsuario();
+  const ss=sectores.filter(s=>s.activo && esActivos.some(e=>e.id===s.establecimiento_id));
+  let ps=[];
+  if(ss.length){
+    const {data,error}=await supabaseClient.from("puestos")
+      .select('id, sector_id, "Nombre", "Codigo", "Activo"')
+      .in("sector_id",ss.map(s=>s.id)).eq("Activo",true).order("Nombre");
+    if(error)throw error; ps=data||[];
+  }
+  const opciones=ps.map(p=>{
+    const s=ss.find(x=>x.id===p.sector_id),e=esActivos.find(x=>x.id===s?.establecimiento_id);
+    return {id:p.id,label:`${e?.Nombre||"Establecimiento"} — ${s?.nombre||"Sector"} — ${p.Nombre}`};
+  });
+  ponerOpciones($("personaPuesto"),opciones,editandoPersona?.puesto_id||anteriores,
+    opciones.length?"Seleccione un puesto activo":"No hay puestos activos disponibles");
+}
+function actualizarContadores() {
+  $("totalEstablecimientos").textContent=establecimientosCache.filter(x=>x.Activo).length;
+  $("totalSectores").textContent=sectoresCache.filter(x=>x.activo).length;
+  $("totalPuestos").textContent=puestosCache.filter(x=>x.Activo).length;
+  $("totalPersonas").textContent=personasCache.filter(x=>x.Activo).length;
+}
+function limpiarEdicion(tipo) {
+  const mapa={
+    establecimiento:["formularioEstablecimiento","tituloEstablecimiento","avisoEdicionEstablecimiento","guardarEstablecimientoButton","cancelarEdicionEstablecimiento","Guardar establecimiento","Registrar establecimiento"],
+    sector:["formularioSector","tituloSector","avisoEdicionSector","guardarSectorButton","cancelarEdicionSector","Guardar sector","Registrar sector"],
+    puesto:["formularioPuesto","tituloPuesto","avisoEdicionPuesto","guardarPuestoButton","cancelarEdicionPuesto","Guardar puesto","Registrar puesto"],
+    persona:["formularioPersona","tituloPersona","avisoEdicionPersona","guardarPersonaButton","cancelarEdicionPersona","Guardar persona","Registrar persona"]
+  };
+  const a=mapa[tipo]; $(a[0]).reset(); $(a[1]).textContent=a[6]; $(a[2]).hidden=true;
+  $(a[3]).textContent=a[5]; $(a[4]).hidden=true;
+  if(tipo==="establecimiento")editandoEstablecimiento=null;
+  if(tipo==="sector")editandoSector=null;
+  if(tipo==="puesto")editandoPuesto=null;
+  if(tipo==="persona")editandoPersona=null;
+}
+function prepararEdicionEstablecimiento(e) {
+  editandoEstablecimiento=e;
+  $("nuevoNombre").value=e.Nombre||"";$("nuevoCodigo").value=e.Codigo||"";
+  $("nuevaDireccion").value=e.Direccion||"";$("nuevaLocalidad").value=e.Localidad||"";
+  $("nuevaProvincia").value=e.Provincia||"";
+  $("tituloEstablecimiento").textContent="Editar establecimiento";
+  $("avisoEdicionEstablecimiento").hidden=false;
+  $("guardarEstablecimientoButton").textContent="Guardar cambios";
+  $("cancelarEdicionEstablecimiento").hidden=false;irA("establecimientosSection");
+}
+async function cargarEstablecimientos() {
+  mensaje("establecimientosMensaje","Consultando establecimientos...");
+  $("actualizarEstablecimientosButton").disabled=true;
+  try{
+    establecimientosCache=await obtenerEstablecimientosUsuario();
+    const tb=$("establecimientosTabla");tb.replaceChildren();
+    establecimientosCache.forEach(e=>{
+      const tr=document.createElement("tr");
+      celda(tr,e.Nombre);celda(tr,e.Codigo);celda(tr,e.Direccion);celda(tr,e.Localidad);celda(tr,e.Provincia);celda(tr,e.Activo?"Activo":"Inactivo");
+      const td=document.createElement("td");
+      td.append(botonAccion("Editar","secondary-button",()=>prepararEdicionEstablecimiento(e)),
+        botonAccion(e.Activo?"Desactivar":"Activar","secondary-button",()=>cambiarEstadoEstablecimiento(e)));
+      tr.appendChild(td);tb.appendChild(tr);
     });
-
-    document.getElementById("password").addEventListener("keydown", function (evento) {
-        if (evento.key === "Enter") loginButton.click();
+    if(!establecimientosCache.length)vacia(tb,7,"No hay establecimientos para esta organización.");
+    const {data:orgs,error}=await supabaseClient.from("organizaciones").select("id, nombre").in("id",establecimientosCache.map(e=>e.organizacion_id));
+    if(!error && orgs?.length)$("organizacionActual").textContent="Organización: "+orgs[0].nombre;
+    mensaje("establecimientosMensaje",`Se encontraron ${establecimientosCache.length} establecimiento(s).`);
+    await cargarSelectores();
+    actualizarContadores();
+  }catch(e){errorEn("establecimientosMensaje","Error al consultar establecimientos",e);}
+  finally{$("actualizarEstablecimientosButton").disabled=false;}
+}
+async function guardarEstablecimiento(ev) {
+  ev.preventDefault();mensaje("mensajeFormularioEstablecimiento","");
+  const nombre=$("nuevoNombre").value.trim();if(!nombre){mensaje("mensajeFormularioEstablecimiento","El nombre es obligatorio.");return;}
+  const b=$("guardarEstablecimientoButton");b.disabled=true;
+  try{
+    let payload={Nombre:nombre,Codigo:$("nuevoCodigo").value.trim()||null,
+      Direccion:$("nuevaDireccion").value.trim()||null,Localidad:$("nuevaLocalidad").value.trim()||null,
+      Provincia:$("nuevaProvincia").value.trim()||null};
+    let result;
+    if(editandoEstablecimiento){
+      result=await supabaseClient.from("establecimientos").update(payload).eq("id",editandoEstablecimiento.id);
+    }else{
+      const ids=await obtenerOrganizacionesUsuario();
+      if(ids.length!==1)throw new Error("Se requiere exactamente una organización activa para dar de alta.");
+      payload.organizacion_id=ids[0];payload.Activo=true;
+      result=await supabaseClient.from("establecimientos").insert(payload);
+    }
+    if(result.error)throw result.error;
+    mensaje("mensajeFormularioEstablecimiento",editandoEstablecimiento?"Cambios guardados.":"Establecimiento creado.");
+    limpiarEdicion("establecimiento");await cargarEstablecimientos();await cargarSectores();await cargarPuestos();await cargarPersonas();
+  }catch(e){errorEn("mensajeFormularioEstablecimiento","No se pudo guardar",e);}
+  finally{b.disabled=false;}
+}
+async function cambiarEstadoEstablecimiento(e) {
+  if(!confirmarEstado(e.Nombre,e.Activo))return;
+  try{
+    const {error}=await supabaseClient.from("establecimientos").update({Activo:!e.Activo}).eq("id",e.id);
+    if(error)throw error;await cargarEstablecimientos();await cargarSectores();await cargarPuestos();await cargarPersonas();
+  }catch(err){errorEn("establecimientosMensaje","No se pudo cambiar el estado",err);}
+}
+function prepararEdicionSector(s) {
+  editandoSector=s;$("sectorNombre").value=s.nombre||"";$("sectorCodigo").value=s.codigo||"";
+  $("sectorDescripcion").value=s.descripcion||"";$("tituloSector").textContent="Editar sector";
+  $("avisoEdicionSector").hidden=false;$("guardarSectorButton").textContent="Guardar cambios";
+  $("cancelarEdicionSector").hidden=false;
+  cargarSelectores().then(()=>{$("sectorEstablecimiento").value=s.establecimiento_id;});
+  irA("sectoresSection");
+}
+async function cargarSectores() {
+  mensaje("sectoresMensaje","Consultando sectores...");
+  $("actualizarSectoresButton").disabled=true;
+  try{
+    establecimientosCache=await obtenerEstablecimientosUsuario();
+    sectoresCache=await obtenerSectoresUsuario();
+    const tb=$("sectoresTabla");tb.replaceChildren();
+    sectoresCache.forEach(s=>{
+      const e=establecimientosCache.find(x=>x.id===s.establecimiento_id),tr=document.createElement("tr");
+      celda(tr,e?.Nombre);celda(tr,s.nombre);celda(tr,s.codigo);celda(tr,s.descripcion);celda(tr,s.activo?"Activo":"Inactivo");
+      const td=document.createElement("td");
+      td.append(botonAccion("Editar","secondary-button",()=>prepararEdicionSector(s)),
+        botonAccion(s.activo?"Desactivar":"Activar","secondary-button",()=>cambiarEstadoSector(s)));
+      tr.appendChild(td);tb.appendChild(tr);
     });
-
-    // CERRAR SESIÓN
-    logoutButton.addEventListener("click", async function () {
-        logoutButton.disabled = true;
-
-        try {
-            const { error } = await supabaseClient.auth.signOut();
-            if (error) throw error;
-
-            mostrarLogin();
-            establecimientosCache = [];
-            sectoresCache = [];
-            puestosCache = [];
-            personasCache = [];
-        } catch (error) {
-            alert("No se pudo cerrar la sesión: " + error.message);
-        } finally {
-            logoutButton.disabled = false;
-        }
+    if(!sectoresCache.length)vacia(tb,6,"No hay sectores registrados.");
+    mensaje("sectoresMensaje",`Se encontraron ${sectoresCache.length} sector(es).`);
+    await cargarSelectores();actualizarContadores();
+  }catch(e){errorEn("sectoresMensaje","Error al consultar sectores",e);}
+  finally{$("actualizarSectoresButton").disabled=false;}
+}
+async function guardarSector(ev) {
+  ev.preventDefault();mensaje("mensajeFormularioSector","");
+  const establecimiento_id=$("sectorEstablecimiento").value,nombre=$("sectorNombre").value.trim();
+  if(!establecimiento_id||!nombre){mensaje("mensajeFormularioSector","Seleccione establecimiento e ingrese el nombre.");return;}
+  if(!establecimientosCache.some(e=>e.id===establecimiento_id&&e.Activo)){mensaje("mensajeFormularioSector","El establecimiento no está activo o no está disponible.");return;}
+  const payload={establecimiento_id,nombre,codigo:$("sectorCodigo").value.trim()||null,descripcion:$("sectorDescripcion").value.trim()||null};
+  const b=$("guardarSectorButton");b.disabled=true;
+  try{
+    const r=editandoSector
+      ?await supabaseClient.from("sectores").update(payload).eq("id",editandoSector.id)
+      :await supabaseClient.from("sectores").insert({...payload,activo:true});
+    if(r.error)throw r.error;
+    mensaje("mensajeFormularioSector",editandoSector?"Cambios guardados.":"Sector creado.");
+    limpiarEdicion("sector");await cargarSectores();await cargarPuestos();await cargarPersonas();
+  }catch(e){errorEn("mensajeFormularioSector","No se pudo guardar el sector",e);}
+  finally{b.disabled=false;}
+}
+async function cambiarEstadoSector(s) {
+  if(!confirmarEstado(s.nombre,s.activo))return;
+  try{
+    const {error}=await supabaseClient.from("sectores").update({activo:!s.activo}).eq("id",s.id);
+    if(error)throw error;await cargarSectores();await cargarPuestos();await cargarPersonas();
+  }catch(e){errorEn("sectoresMensaje","No se pudo cambiar el estado",e);}
+}
+function prepararEdicionPuesto(p) {
+  editandoPuesto=p;$("puestoNombre").value=p.Nombre||"";$("puestoCodigo").value=p.Codigo||"";
+  $("puestoDescripcion").value=p.Descripcion||"";$("tituloPuesto").textContent="Editar puesto";
+  $("avisoEdicionPuesto").hidden=false;$("guardarPuestoButton").textContent="Guardar cambios";
+  $("cancelarEdicionPuesto").hidden=false;
+  cargarSelectores().then(()=>{$("puestoSector").value=p.sector_id;});
+  irA("puestosSection");
+}
+async function cargarPuestos() {
+  mensaje("puestosMensaje","Consultando puestos...");$("actualizarPuestosButton").disabled=true;
+  try{
+    establecimientosCache=await obtenerEstablecimientosUsuario();
+    sectoresCache=await obtenerSectoresUsuario();
+    const ids=sectoresCache.map(s=>s.id),tb=$("puestosTabla");tb.replaceChildren();
+    if(!ids.length){puestosCache=[];vacia(tb,7,"No hay sectores disponibles.");mensaje("puestosMensaje","No hay sectores.");await cargarSelectores();actualizarContadores();return;}
+    const {data,error}=await supabaseClient.from("puestos")
+      .select('id, sector_id, "Nombre", "Codigo", "Descripcion", "Activo"')
+      .in("sector_id",ids).order("Nombre");
+    if(error)throw error;puestosCache=data||[];
+    puestosCache.forEach(p=>{
+      const s=sectoresCache.find(x=>x.id===p.sector_id),e=establecimientosCache.find(x=>x.id===s?.establecimiento_id),tr=document.createElement("tr");
+      celda(tr,e?.Nombre);celda(tr,s?.nombre);celda(tr,p.Nombre);celda(tr,p.Codigo);celda(tr,p.Descripcion);celda(tr,p.Activo?"Activo":"Inactivo");
+      const td=document.createElement("td");
+      td.append(botonAccion("Editar","secondary-button",()=>prepararEdicionPuesto(p)),
+        botonAccion(p.Activo?"Desactivar":"Activar","secondary-button",()=>cambiarEstadoPuesto(p)));
+      tr.appendChild(td);tb.appendChild(tr);
     });
-
-    // SESIÓN EXISTENTE
-    async function comprobarSesion() {
-        const { data, error } = await supabaseClient.auth.getSession();
-
-        if (error) {
-            console.error(error);
-            mostrarLogin();
-            return;
-        }
-
-        if (data.session) {
-            mostrarAplicacion();
-            await cargarEstablecimientos();
-            await cargarSectores();
-            await cargarPuestos();
-            await cargarPersonas();
-        } else {
-            mostrarLogin();
-        }
-    }
-
-    // ORGANIZACIONES DEL USUARIO
-    async function obtenerOrganizacionesUsuario() {
-        const { data: usuarioData, error: errorUsuario } =
-            await supabaseClient.auth.getUser();
-
-        if (errorUsuario) throw errorUsuario;
-        if (!usuarioData.user) {
-            throw new Error("Debe iniciar sesión para continuar.");
-        }
-
-        const { data: membresias, error } = await supabaseClient
-            .from("usuarios_organizaciones")
-            .select("organizacion_id")
-            .eq("usuario_id", usuarioData.user.id)
-            .eq("activo", true);
-
-        if (error) throw error;
-
-        return [...new Set(
-            (membresias || [])
-                .map(m => m.organizacion_id)
-                .filter(Boolean)
-        )];
-    }
-
-    // ESTABLECIMIENTOS DE LAS ORGANIZACIONES DEL USUARIO
-    async function obtenerEstablecimientosUsuario() {
-        const organizaciones = await obtenerOrganizacionesUsuario();
-
-        if (organizaciones.length === 0) return [];
-
-        const { data, error } = await supabaseClient
-            .from("establecimientos")
-            .select("id, organizacion_id, Nombre, Codigo, Activo")
-            .in("organizacion_id", organizaciones)
-            .order("Nombre", { ascending: true });
-
-        if (error) throw error;
-        return data || [];
-    }
-
-    // CARGAR ESTABLECIMIENTOS
-    async function cargarEstablecimientos() {
-        const mensaje = document.getElementById("establecimientosMensaje");
-        const tabla = document.getElementById("establecimientosTabla");
-        const boton = document.getElementById("actualizarEstablecimientosButton");
-        const selector = document.getElementById("sectorEstablecimiento");
-
-        mensaje.textContent = "Consultando establecimientos...";
-        boton.disabled = true;
-
-        try {
-            establecimientosCache = await obtenerEstablecimientosUsuario();
-            tabla.replaceChildren();
-            selector.replaceChildren();
-
-            const opcionInicial = document.createElement("option");
-            opcionInicial.value = "";
-            opcionInicial.textContent = establecimientosCache.length
-                ? "Seleccione un establecimiento"
-                : "No hay establecimientos disponibles";
-            selector.appendChild(opcionInicial);
-
-            establecimientosCache.forEach(est => {
-                const opcion = document.createElement("option");
-                opcion.value = est.id;
-                opcion.textContent = est.Nombre;
-                selector.appendChild(opcion);
-
-                const fila = document.createElement("tr");
-                agregarCelda(fila, est.Nombre);
-                agregarCelda(fila, est.Codigo);
-                agregarCelda(fila, est.Activo ? "Activo" : "Inactivo");
-                tabla.appendChild(fila);
-            });
-
-            if (establecimientosCache.length === 0) {
-                mostrarFilaVacia(tabla, 3, "No hay establecimientos registrados.");
-                mensaje.textContent =
-                    "No hay establecimientos disponibles para su usuario.";
-            } else {
-                mensaje.textContent =
-                    `Se encontraron ${establecimientosCache.length} establecimiento(s).`;
-            }
-
-        } catch (error) {
-            mostrarError(mensaje, "Error al consultar establecimientos", error);
-            mostrarFilaVacia(tabla, 3, "No se pudieron cargar los establecimientos.");
-            selector.replaceChildren();
-            const opcion = document.createElement("option");
-            opcion.value = "";
-            opcion.textContent = "No se pudieron cargar";
-            selector.appendChild(opcion);
-        } finally {
-            boton.disabled = false;
-        }
-    }
-
-    // GUARDAR ESTABLECIMIENTO
-    async function guardarEstablecimiento(evento) {
-        evento.preventDefault();
-
-        const formulario = document.getElementById("formularioEstablecimiento");
-        const mensaje = document.getElementById("mensajeFormularioEstablecimiento");
-        const boton = document.getElementById("guardarEstablecimientoButton");
-
-        mensaje.textContent = "";
-
-        const nombre = document.getElementById("nuevoNombre").value.trim();
-        const codigo = document.getElementById("nuevoCodigo").value.trim();
-        const direccion = document.getElementById("nuevaDireccion").value.trim();
-        const localidad = document.getElementById("nuevaLocalidad").value.trim();
-        const provincia = document.getElementById("nuevaProvincia").value.trim();
-
-        if (!nombre) {
-            mensaje.textContent = "El nombre del establecimiento es obligatorio.";
-            return;
-        }
-
-        boton.disabled = true;
-        boton.textContent = "Guardando...";
-
-        try {
-            const organizaciones = await obtenerOrganizacionesUsuario();
-
-            if (organizaciones.length !== 1) {
-                throw new Error(
-                    "Para dar de alta un establecimiento, el usuario debe tener exactamente una organización activa asociada."
-                );
-            }
-
-            const nuevoEstablecimiento = {
-                organizacion_id: organizaciones[0],
-                Nombre: nombre,
-                Codigo: codigo || null,
-                Direccion: direccion || null,
-                Localidad: localidad || null,
-                Provincia: provincia || null,
-                Activo: true
-            };
-
-            const { error } = await supabaseClient
-                .from("establecimientos")
-                .insert(nuevoEstablecimiento);
-
-            if (error) throw error;
-
-            formulario.reset();
-            mensaje.textContent = "Establecimiento guardado correctamente.";
-
-            await cargarEstablecimientos();
-            await cargarSectores();
-            await cargarPuestos();
-            await cargarPersonas();
-
-        } catch (error) {
-            mostrarError(mensaje, "No se pudo guardar el establecimiento", error);
-        } finally {
-            boton.disabled = false;
-            boton.textContent = "Guardar establecimiento";
-        }
-    }
-
-    // CARGAR SECTORES
-    async function cargarSectores() {
-        const mensaje = document.getElementById("sectoresMensaje");
-        const tabla = document.getElementById("sectoresTabla");
-        const boton = document.getElementById("actualizarSectoresButton");
-
-        mensaje.textContent = "Consultando sectores...";
-        boton.disabled = true;
-
-        try {
-            const establecimientos = await obtenerEstablecimientosUsuario();
-            const ids = establecimientos.map(e => e.id);
-            const nombresPorId = new Map(
-                establecimientos.map(e => [e.id, e.Nombre])
-            );
-
-            tabla.replaceChildren();
-
-            if (ids.length === 0) {
-                mostrarFilaVacia(
-                    tabla, 6,
-                    "Primero debe registrar un establecimiento en su organización."
-                );
-                mensaje.textContent = "No hay establecimientos disponibles.";
-                sectoresCache = [];
-                return;
-            }
-
-            const { data: sectores, error } = await supabaseClient
-                .from("sectores")
-                .select("id, establecimiento_id, nombre, codigo, descripcion, activo")
-                .in("establecimiento_id", ids)
-                .order("nombre", { ascending: true });
-
-            if (error) throw error;
-
-            sectoresCache = sectores || [];
-
-            if (sectoresCache.length === 0) {
-                mostrarFilaVacia(tabla, 6, "No hay sectores registrados.");
-                mensaje.textContent = "Consulta completada. No hay sectores registrados.";
-                await actualizarSelectoresPuestos();
-                return;
-            }
-
-            sectoresCache.forEach(sector => {
-                const fila = document.createElement("tr");
-
-                agregarCelda(fila, nombresPorId.get(sector.establecimiento_id) || "—");
-                agregarCelda(fila, sector.nombre);
-                agregarCelda(fila, sector.codigo);
-                agregarCelda(fila, sector.descripcion);
-                agregarCelda(fila, sector.activo ? "Activo" : "Inactivo");
-
-                const celdaAccion = document.createElement("td");
-                const botonEstado = document.createElement("button");
-
-                botonEstado.type = "button";
-                botonEstado.className =
-                    "primary-button small-button secondary-button";
-                botonEstado.textContent = sector.activo ? "Desactivar" : "Activar";
-                botonEstado.addEventListener("click", () => cambiarEstadoSector(sector));
-
-                celdaAccion.appendChild(botonEstado);
-                fila.appendChild(celdaAccion);
-                tabla.appendChild(fila);
-            });
-
-            mensaje.textContent = `Se encontraron ${sectoresCache.length} sector(es).`;
-            await actualizarSelectoresPuestos();
-
-        } catch (error) {
-            mostrarError(mensaje, "Error al consultar sectores", error);
-            mostrarFilaVacia(tabla, 6, "No se pudieron cargar los sectores.");
-        } finally {
-            boton.disabled = false;
-        }
-    }
-
-    // GUARDAR SECTOR
-    async function guardarSector(evento) {
-        evento.preventDefault();
-
-        const formulario = document.getElementById("formularioSector");
-        const mensaje = document.getElementById("mensajeFormularioSector");
-        const boton = document.getElementById("guardarSectorButton");
-
-        mensaje.textContent = "";
-
-        const establecimientoId =
-            document.getElementById("sectorEstablecimiento").value;
-        const nombre = document.getElementById("sectorNombre").value.trim();
-        const codigo = document.getElementById("sectorCodigo").value.trim();
-        const descripcion = document.getElementById("sectorDescripcion").value.trim();
-
-        if (!establecimientoId || !nombre) {
-            mensaje.textContent =
-                "Seleccione un establecimiento e ingrese el nombre del sector.";
-            return;
-        }
-
-        if (!establecimientosCache.some(est => est.id === establecimientoId)) {
-            mensaje.textContent =
-                "El establecimiento seleccionado no está disponible para su usuario.";
-            return;
-        }
-
-        boton.disabled = true;
-        boton.textContent = "Guardando...";
-
-        try {
-            const { error } = await supabaseClient
-                .from("sectores")
-                .insert({
-                    establecimiento_id: establecimientoId,
-                    nombre,
-                    codigo: codigo || null,
-                    descripcion: descripcion || null,
-                    activo: true
-                });
-
-            if (error) throw error;
-
-            formulario.reset();
-            mensaje.textContent = "Sector guardado correctamente.";
-
-            await cargarEstablecimientos();
-            await cargarSectores();
-            await cargarPuestos();
-            await cargarPersonas();
-
-        } catch (error) {
-            mostrarError(mensaje, "No se pudo guardar el sector", error);
-        } finally {
-            boton.disabled = false;
-            boton.textContent = "Guardar sector";
-        }
-    }
-
-    // ACTIVAR / DESACTIVAR SECTOR
-    async function cambiarEstadoSector(sector) {
-        const mensaje = document.getElementById("sectoresMensaje");
-        const nuevoEstado = !sector.activo;
-        const accion = nuevoEstado ? "activar" : "desactivar";
-
-        if (!confirm(`¿Confirma que desea ${accion} el sector "${sector.nombre}"?`)) {
-            return;
-        }
-
-        try {
-            const { error } = await supabaseClient
-                .from("sectores")
-                .update({ activo: nuevoEstado })
-                .eq("id", sector.id);
-
-            if (error) throw error;
-
-            mensaje.textContent =
-                `Sector ${nuevoEstado ? "activado" : "desactivado"} correctamente.`;
-
-            await cargarSectores();
-            await cargarPuestos();
-            await cargarPersonas();
-
-        } catch (error) {
-            mostrarError(mensaje, "No se pudo cambiar el estado del sector", error);
-        }
-    }
-
-    // CARGAR PUESTOS DE LOS SECTORES VISIBLES PARA EL USUARIO
-    async function cargarPuestos() {
-        const mensaje = document.getElementById("puestosMensaje");
-        const tabla = document.getElementById("puestosTabla");
-        const boton = document.getElementById("actualizarPuestosButton");
-
-        mensaje.textContent = "Consultando puestos...";
-        boton.disabled = true;
-
-        try {
-            const sectores = await obtenerSectoresUsuario();
-            const sectorIds = sectores.map(s => s.id);
-            const sectoresPorId = new Map(sectores.map(s => [s.id, s]));
-
-            const establecimientos = await obtenerEstablecimientosUsuario();
-            const establecimientosPorId = new Map(
-                establecimientos.map(e => [e.id, e])
-            );
-
-            tabla.replaceChildren();
-
-            if (sectorIds.length === 0) {
-                puestosCache = [];
-                mostrarFilaVacia(tabla, 6, "No hay sectores disponibles.");
-                mensaje.textContent = "No se pueden consultar puestos sin sectores.";
-                await actualizarSelectoresPuestos();
-                return;
-            }
-
-            const { data, error } = await supabaseClient
-                .from("puestos")
-                .select("id, sector_id, Nombre, Codigo, Descripcion, Activo")
-                .in("sector_id", sectorIds)
-                .order("Nombre", { ascending: true });
-
-            if (error) throw error;
-
-            puestosCache = data || [];
-
-            if (puestosCache.length === 0) {
-                mostrarFilaVacia(tabla, 6, "No hay puestos registrados.");
-                mensaje.textContent =
-                    "No hay puestos registrados en los sectores disponibles.";
-                await actualizarSelectoresPuestos();
-                return;
-            }
-
-            puestosCache.forEach(puesto => {
-                const sector = sectoresPorId.get(puesto.sector_id);
-                const establecimiento = sector
-                    ? establecimientosPorId.get(sector.establecimiento_id)
-                    : null;
-
-                const fila = document.createElement("tr");
-                agregarCelda(fila, establecimiento?.Nombre || "—");
-                agregarCelda(fila, sector?.nombre || "—");
-                agregarCelda(fila, puesto.Nombre);
-                agregarCelda(fila, puesto.Codigo);
-                agregarCelda(fila, puesto.Descripcion);
-                agregarCelda(fila, puesto.Activo ? "Activo" : "Inactivo");
-                tabla.appendChild(fila);
-            });
-
-            mensaje.textContent = `Se encontraron ${puestosCache.length} puesto(s).`;
-            await actualizarSelectoresPuestos();
-
-        } catch (error) {
-            mostrarError(mensaje, "Error al consultar puestos", error);
-            mostrarFilaVacia(tabla, 6, "No se pudieron cargar los puestos.");
-        } finally {
-            boton.disabled = false;
-        }
-    }
-
-    async function obtenerSectoresUsuario() {
-        const establecimientos = await obtenerEstablecimientosUsuario();
-        const ids = establecimientos.map(e => e.id);
-
-        if (ids.length === 0) return [];
-
-        const { data, error } = await supabaseClient
-            .from("sectores")
-            .select("id, establecimiento_id, nombre, codigo, descripcion, activo")
-            .in("establecimiento_id", ids)
-            .order("nombre", { ascending: true });
-
-        if (error) throw error;
-        return data || [];
-    }
-
-    // ACTUALIZAR EL SELECTOR DE PUESTOS DE PERSONAS
-    async function actualizarSelectoresPuestos() {
-        const selector = document.getElementById("personaPuesto");
-        const seleccionAnterior = selector.value;
-
-        selector.replaceChildren();
-
-        const inicial = document.createElement("option");
-        inicial.value = "";
-        inicial.textContent = "Seleccione un puesto activo";
-        selector.appendChild(inicial);
-
-        try {
-            const establecimientos = await obtenerEstablecimientosUsuario();
-            const establecimientosActivos = new Map(
-                establecimientos
-                    .filter(e => e.Activo)
-                    .map(e => [e.id, e])
-            );
-
-            const sectores = await obtenerSectoresUsuario();
-            const sectoresActivos = new Map(
-                sectores
-                    .filter(s => s.activo && establecimientosActivos.has(s.establecimiento_id))
-                    .map(s => [s.id, s])
-            );
-
-            const { data: puestos, error } = await supabaseClient
-                .from("puestos")
-                .select("id, sector_id, Nombre, Codigo, Activo")
-                .eq("Activo", true)
-                .order("Nombre", { ascending: true });
-
-            if (error) throw error;
-
-            const disponibles = (puestos || []).filter(
-                p => p.Activo && sectoresActivos.has(p.sector_id)
-            );
-
-            disponibles.forEach(puesto => {
-                const sector = sectoresActivos.get(puesto.sector_id);
-                const establecimiento = establecimientosActivos.get(
-                    sector.establecimiento_id
-                );
-
-                const opcion = document.createElement("option");
-                opcion.value = puesto.id;
-                opcion.textContent =
-                    `${establecimiento.Nombre} — ${sector.nombre} — ${puesto.Nombre}`;
-                selector.appendChild(opcion);
-            });
-
-            if (disponibles.some(p => p.id === seleccionAnterior)) {
-                selector.value = seleccionAnterior;
-            }
-
-            if (disponibles.length === 0) {
-                inicial.textContent =
-                    "No hay puestos activos disponibles; verifique los puestos en Supabase.";
-            }
-
-        } catch (error) {
-            console.error("Error al actualizar puestos disponibles:", error);
-            inicial.textContent = "Error al consultar puestos.";
-        }
-    }
-
-    // GUARDAR PERSONA
-    async function guardarPersona(evento) {
-        evento.preventDefault();
-
-        const formulario = document.getElementById("formularioPersona");
-        const mensaje = document.getElementById("mensajeFormularioPersona");
-        const boton = document.getElementById("guardarPersonaButton");
-
-        mensaje.textContent = "";
-
-        const legajo = document.getElementById("personaLegajo").value.trim();
-        const nombre = document.getElementById("personaNombre").value.trim();
-        const apellido = document.getElementById("personaApellido").value.trim();
-        const documento = document.getElementById("personaDocumento").value.trim();
-        const cargo = document.getElementById("personaCargo").value.trim();
-        const fechaIngreso = document.getElementById("personaFechaIngreso").value;
-        const puestoId = document.getElementById("personaPuesto").value;
-
-        if (!nombre || !apellido || !puestoId) {
-            mensaje.textContent =
-                "Complete nombre, apellido y puesto asignado.";
-            return;
-        }
-
-        boton.disabled = true;
-        boton.textContent = "Guardando...";
-
-        try {
-            const organizaciones = await obtenerOrganizacionesUsuario();
-
-            if (organizaciones.length !== 1) {
-                throw new Error(
-                    "Para registrar una persona, el usuario debe tener exactamente una organización activa asociada."
-                );
-            }
-
-            // Comprobar que el puesto elegido pertenece a un sector visible
-            // y activo de la organización del usuario.
-            const puestosDisponibles = await obtenerPuestosActivosUsuario();
-            const puestoValido = puestosDisponibles.some(p => p.id === puestoId);
-
-            if (!puestoValido) {
-                throw new Error(
-                    "El puesto seleccionado no está activo o no pertenece a su organización. Actualice los puestos y vuelva a intentarlo."
-                );
-            }
-
-            const nuevaPersona = {
-                organizacion_id: organizaciones[0],
-                Legajo: legajo || null,
-                Nombre: nombre,
-                Apellido: apellido,
-                Documneto: documento || null,
-                Cargo: cargo || null,
-                "Fecha de Ingreso": fechaIngreso || null,
-                Activo: true,
-                puesto_id: puestoId
-            };
-
-            const { error } = await supabaseClient
-                .from("personas")
-                .insert(nuevaPersona);
-
-            if (error) throw error;
-
-            formulario.reset();
-            mensaje.textContent = "Persona guardada correctamente.";
-
-            await cargarPersonas();
-
-        } catch (error) {
-            mostrarError(mensaje, "No se pudo guardar la persona", error);
-        } finally {
-            boton.disabled = false;
-            boton.textContent = "Guardar persona";
-        }
-    }
-
-    async function obtenerPuestosActivosUsuario() {
-        const establecimientos = await obtenerEstablecimientosUsuario();
-        const establecimientosActivos = new Map(
-            establecimientos.filter(e => e.Activo).map(e => [e.id, e])
-        );
-
-        if (establecimientosActivos.size === 0) return [];
-
-        const { data: sectores, error: errorSectores } = await supabaseClient
-            .from("sectores")
-            .select("id, establecimiento_id, activo")
-            .in("establecimiento_id", [...establecimientosActivos.keys()])
-            .eq("activo", true);
-
-        if (errorSectores) throw errorSectores;
-
-        const sectoresActivos = sectores || [];
-        if (sectoresActivos.length === 0) return [];
-
-        const sectorIds = sectoresActivos.map(s => s.id);
-
-        const { data: puestos, error: errorPuestos } = await supabaseClient
-            .from("puestos")
-            .select("id, sector_id, Activo")
-            .in("sector_id", sectorIds)
-            .eq("Activo", true);
-
-        if (errorPuestos) throw errorPuestos;
-
-        return puestos || [];
-    }
-
-    // LISTAR PERSONAS DE LA ORGANIZACIÓN DEL USUARIO
-    async function cargarPersonas() {
-        const mensaje = document.getElementById("personasMensaje");
-        const tabla = document.getElementById("personasTabla");
-        const boton = document.getElementById("actualizarPersonasButton");
-
-        mensaje.textContent = "Consultando personas...";
-        boton.disabled = true;
-
-        try {
-            const organizaciones = await obtenerOrganizacionesUsuario();
-            tabla.replaceChildren();
-
-            if (organizaciones.length === 0) {
-                personasCache = [];
-                mostrarFilaVacia(tabla, 10, "El usuario no tiene una organización activa asociada.");
-                mensaje.textContent = "No hay una organización activa disponible.";
-                return;
-            }
-
-            const { data: personas, error } = await supabaseClient
-                .from("personas")
-                .select('id, organizacion_id, Legajo, Nombre, Apellido, Documneto, Cargo, "Fecha de Ingreso", Activo, puesto_id')
-                .in("organizacion_id", organizaciones)
-                .order("Apellido", { ascending: true });
-
-            if (error) throw error;
-
-            personasCache = personas || [];
-
-            if (personasCache.length === 0) {
-                mostrarFilaVacia(tabla, 10, "No hay personas registradas.");
-                mensaje.textContent = "Consulta completada. No hay personas registradas.";
-                return;
-            }
-
-            const establecimientos = await obtenerEstablecimientosUsuario();
-            const establecimientosPorId = new Map(
-                establecimientos.map(e => [e.id, e])
-            );
-
-            const sectores = await obtenerSectoresUsuario();
-            const sectoresPorId = new Map(sectores.map(s => [s.id, s]));
-
-            const { data: todosPuestos, error: errorPuestos } = await supabaseClient
-                .from("puestos")
-                .select("id, sector_id, Nombre");
-
-            if (errorPuestos) throw errorPuestos;
-
-            const puestosPorId = new Map((todosPuestos || []).map(p => [p.id, p]));
-
-            personasCache.forEach(persona => {
-                const puesto = puestosPorId.get(persona.puesto_id);
-                const sector = puesto ? sectoresPorId.get(puesto.sector_id) : null;
-                const establecimiento = sector
-                    ? establecimientosPorId.get(sector.establecimiento_id)
-                    : null;
-
-                const fila = document.createElement("tr");
-
-                agregarCelda(fila, persona.Legajo);
-                agregarCelda(
-                    fila,
-                    `${persona.Apellido || ""}, ${persona.Nombre || ""}`.trim().replace(/^, |, $/g, "")
-                );
-                agregarCelda(fila, persona.Documneto);
-                agregarCelda(fila, persona.Cargo);
-                agregarCelda(fila, fechaLegible(persona["Fecha de Ingreso"]));
-                agregarCelda(fila, establecimiento?.Nombre || "—");
-                agregarCelda(fila, sector?.nombre || "—");
-                agregarCelda(fila, puesto?.Nombre || "—");
-                agregarCelda(fila, persona.Activo ? "Activo" : "Inactivo");
-
-                const celdaAccion = document.createElement("td");
-                const botonEstado = document.createElement("button");
-                botonEstado.type = "button";
-                botonEstado.className =
-                    "primary-button small-button secondary-button";
-                botonEstado.textContent = persona.Activo ? "Desactivar" : "Activar";
-                botonEstado.addEventListener("click", () => cambiarEstadoPersona(persona));
-                celdaAccion.appendChild(botonEstado);
-                fila.appendChild(celdaAccion);
-
-                tabla.appendChild(fila);
-            });
-
-            mensaje.textContent = `Se encontraron ${personasCache.length} persona(s).`;
-
-        } catch (error) {
-            mostrarError(mensaje, "Error al consultar personas", error);
-            mostrarFilaVacia(tabla, 10, "No se pudieron cargar las personas.");
-        } finally {
-            boton.disabled = false;
-        }
-    }
-
-    // ACTIVAR / DESACTIVAR PERSONA
-    async function cambiarEstadoPersona(persona) {
-        const mensaje = document.getElementById("personasMensaje");
-        const nuevoEstado = !persona.Activo;
-        const accion = nuevoEstado ? "activar" : "desactivar";
-        const nombreCompleto =
-            `${persona.Apellido || ""}, ${persona.Nombre || ""}`.trim();
-
-        if (!confirm(`¿Confirma que desea ${accion} a "${nombreCompleto}"?`)) {
-            return;
-        }
-
-        try {
-            const { error } = await supabaseClient
-                .from("personas")
-                .update({ Activo: nuevoEstado })
-                .eq("id", persona.id);
-
-            if (error) throw error;
-
-            mensaje.textContent =
-                `Persona ${nuevoEstado ? "activada" : "desactivada"} correctamente.`;
-
-            await cargarPersonas();
-
-        } catch (error) {
-            mostrarError(mensaje, "No se pudo cambiar el estado de la persona", error);
-        }
-    }
-
-    // CONECTAR EVENTOS
-    document
-        .getElementById("actualizarEstablecimientosButton")
-        .addEventListener("click", cargarEstablecimientos);
-
-    document
-        .getElementById("formularioEstablecimiento")
-        .addEventListener("submit", guardarEstablecimiento);
-
-    document
-        .getElementById("actualizarSectoresButton")
-        .addEventListener("click", cargarSectores);
-
-    document
-        .getElementById("formularioSector")
-        .addEventListener("submit", guardarSector);
-
-    document
-        .getElementById("actualizarPuestosButton")
-        .addEventListener("click", cargarPuestos);
-
-    document
-        .getElementById("actualizarPersonasButton")
-        .addEventListener("click", cargarPersonas);
-
-    document
-        .getElementById("formularioPersona")
-        .addEventListener("submit", guardarPersona);
-
-    // INICIAR
-    comprobarSesion();
+    if(!puestosCache.length)vacia(tb,7,"No hay puestos registrados.");
+    mensaje("puestosMensaje",`Se encontraron ${puestosCache.length} puesto(s).`);
+    await cargarSelectores();actualizarContadores();
+  }catch(e){errorEn("puestosMensaje","Error al consultar puestos",e);}
+  finally{$("actualizarPuestosButton").disabled=false;}
+}
+async function guardarPuesto(ev) {
+  ev.preventDefault();mensaje("mensajeFormularioPuesto","");
+  const sector_id=$("puestoSector").value,nombre=$("puestoNombre").value.trim();
+  if(!sector_id||!nombre){mensaje("mensajeFormularioPuesto","Seleccione un sector e ingrese el nombre.");return;}
+  if(!sectoresCache.some(s=>s.id===sector_id&&s.activo)){mensaje("mensajeFormularioPuesto","Seleccione un sector activo.");return;}
+  const payload={sector_id,Nombre:nombre,Codigo:$("puestoCodigo").value.trim()||null,Descripcion:$("puestoDescripcion").value.trim()||null};
+  const b=$("guardarPuestoButton");b.disabled=true;
+  try{
+    const r=editandoPuesto
+      ?await supabaseClient.from("puestos").update(payload).eq("id",editandoPuesto.id)
+      :await supabaseClient.from("puestos").insert({...payload,Activo:true});
+    if(r.error)throw r.error;
+    mensaje("mensajeFormularioPuesto",editandoPuesto?"Cambios guardados.":"Puesto creado.");
+    limpiarEdicion("puesto");await cargarPuestos();await cargarPersonas();
+  }catch(e){errorEn("mensajeFormularioPuesto","No se pudo guardar el puesto",e);}
+  finally{b.disabled=false;}
+}
+async function cambiarEstadoPuesto(p) {
+  if(!confirmarEstado(p.Nombre,p.Activo))return;
+  try{
+    const {error}=await supabaseClient.from("puestos").update({Activo:!p.Activo}).eq("id",p.id);
+    if(error)throw error;await cargarPuestos();await cargarPersonas();
+  }catch(e){errorEn("puestosMensaje","No se pudo cambiar el estado",e);}
+}
+function prepararEdicionPersona(p) {
+  editandoPersona=p;$("personaLegajo").value=p.Legajo||"";$("personaNombre").value=p.Nombre||"";
+  $("personaApellido").value=p.Apellido||"";$("personaDocumento").value=p.Documneto||"";
+  $("personaCargo").value=p.Cargo||"";$("personaFechaIngreso").value=p["Fecha de Ingreso"]||"";
+  $("tituloPersona").textContent="Editar persona";$("avisoEdicionPersona").hidden=false;
+  $("guardarPersonaButton").textContent="Guardar cambios";$("cancelarEdicionPersona").hidden=false;
+  actualizarSelectorPersona().then(()=>{$("personaPuesto").value=p.puesto_id||"";});
+  irA("personasSection");
+}
+async function cargarPersonas() {
+  mensaje("personasMensaje","Consultando personas...");$("actualizarPersonasButton").disabled=true;
+  try{
+    const orgs=await obtenerOrganizacionesUsuario(),tb=$("personasTabla");tb.replaceChildren();
+    if(!orgs.length){personasCache=[];vacia(tb,10,"No hay organización activa asociada.");mensaje("personasMensaje","Sin organización activa.");actualizarContadores();return;}
+    const {data,error}=await supabaseClient.from("personas")
+      .select('id, organizacion_id, Legajo, Nombre, Apellido, Documneto, Cargo, "Fecha de Ingreso", Activo, puesto_id')
+      .in("organizacion_id",orgs).order("Apellido");
+    if(error)throw error;personasCache=data||[];
+    const [es,ss]=await Promise.all([obtenerEstablecimientosUsuario(),obtenerSectoresUsuario()]);
+    const {data:ps,error:ep}=await supabaseClient.from("puestos")
+      .select('id, sector_id, "Nombre"');
+    if(ep)throw ep;
+    const mapP=new Map((ps||[]).map(p=>[p.id,p])),mapS=new Map(ss.map(s=>[s.id,s])),mapE=new Map(es.map(e=>[e.id,e]));
+    personasCache.forEach(p=>{
+      const pu=mapP.get(p.puesto_id),s=pu?mapS.get(pu.sector_id):null,e=s?mapE.get(s.establecimiento_id):null,tr=document.createElement("tr");
+      celda(tr,p.Legajo);celda(tr,`${p.Apellido||""}, ${p.Nombre||""}`.replace(/^, |, $/g,""));
+      celda(tr,p.Documneto);celda(tr,p.Cargo);celda(tr,fechaLegible(p["Fecha de Ingreso"]));
+      celda(tr,e?.Nombre);celda(tr,s?.nombre);celda(tr,pu?.Nombre);celda(tr,p.Activo?"Activo":"Inactivo");
+      const td=document.createElement("td");
+      td.append(botonAccion("Editar","secondary-button",()=>prepararEdicionPersona(p)),
+        botonAccion(p.Activo?"Desactivar":"Activar","secondary-button",()=>cambiarEstadoPersona(p)));
+      tr.appendChild(td);tb.appendChild(tr);
+    });
+    if(!personasCache.length)vacia(tb,10,"No hay personas registradas.");
+    mensaje("personasMensaje",`Se encontraron ${personasCache.length} persona(s).`);
+    await actualizarSelectorPersona();actualizarContadores();
+  }catch(e){errorEn("personasMensaje","Error al consultar personas",e);}
+  finally{$("actualizarPersonasButton").disabled=false;}
+}
+async function guardarPersona(ev) {
+  ev.preventDefault();mensaje("mensajeFormularioPersona","");
+  const nombre=$("personaNombre").value.trim(),apellido=$("personaApellido").value.trim(),puesto_id=$("personaPuesto").value;
+  if(!nombre||!apellido||!puesto_id){mensaje("mensajeFormularioPersona","Complete nombre, apellido y puesto.");return;}
+  const b=$("guardarPersonaButton");b.disabled=true;
+  try{
+    const orgs=await obtenerOrganizacionesUsuario();
+    if(orgs.length!==1)throw new Error("Se requiere exactamente una organización activa.");
+    const {data:puestos,error:ep}=await supabaseClient.from("puestos")
+      .select('id, sector_id, "Activo"').eq("Activo",true);
+    if(ep)throw ep;
+    const ps=(puestos||[]).find(p=>p.id===puesto_id);
+    if(!ps)throw new Error("El puesto no está activo o no está disponible.");
+    const sectores=await obtenerSectoresUsuario(),s=sectores.find(x=>x.id===ps.sector_id&&x.activo);
+    if(!s)throw new Error("El sector del puesto no está activo.");
+    const es=await obtenerEstablecimientosUsuario(),e=es.find(x=>x.id===s.establecimiento_id&&x.Activo&&x.organizacion_id===orgs[0]);
+    if(!e)throw new Error("El puesto no pertenece a un establecimiento activo de su organización.");
+    const payload={
+      Legajo:$("personaLegajo").value.trim()||null,Nombre:nombre,Apellido:apellido,
+      Documneto:$("personaDocumento").value.trim()||null,Cargo:$("personaCargo").value.trim()||null,
+      "Fecha de Ingreso":$("personaFechaIngreso").value||null,puesto_id
+    };
+    const r=editandoPersona
+      ?await supabaseClient.from("personas").update(payload).eq("id",editandoPersona.id)
+      :await supabaseClient.from("personas").insert({...payload,organizacion_id:orgs[0],Activo:true});
+    if(r.error)throw r.error;
+    mensaje("mensajeFormularioPersona",editandoPersona?"Cambios guardados.":"Persona creada.");
+    limpiarEdicion("persona");await cargarPersonas();
+  }catch(e){errorEn("mensajeFormularioPersona","No se pudo guardar la persona",e);}
+  finally{b.disabled=false;}
+}
+async function cambiarEstadoPersona(p) {
+  const nombre=`${p.Apellido||""}, ${p.Nombre||""}`;
+  if(!confirmarEstado(nombre,p.Activo))return;
+  try{
+    const {error}=await supabaseClient.from("personas").update({Activo:!p.Activo}).eq("id",p.id);
+    if(error)throw error;await cargarPersonas();
+  }catch(e){errorEn("personasMensaje","No se pudo cambiar el estado",e);}
+}
+async function iniciarAplicacion() {
+  mostrarAplicacion();
+  try {
+    await cargarEstablecimientos();
+    await cargarSectores();
+    await cargarPuestos();
+    await cargarPersonas();
+  } catch(e) { console.error("Error al iniciar",e); }
+}
+$("loginButton").addEventListener("click",async()=>{
+  mensaje("loginMessage","");
+  const email=$("email").value.trim(),password=$("password").value;
+  if(!email||!password){mensaje("loginMessage","Ingrese correo y contraseña.");return;}
+  $("loginButton").disabled=true;$("loginButton").textContent="Ingresando...";
+  try{
+    const {error}=await supabaseClient.auth.signInWithPassword({email,password});
+    if(error)throw error;
+    await iniciarAplicacion();
+  }catch(e){mensaje("loginMessage","No se pudo iniciar sesión: "+e.message);}
+  finally{$("loginButton").disabled=false;$("loginButton").textContent="Ingresar";}
+});
+$("password").addEventListener("keydown",e=>{if(e.key==="Enter")$("loginButton").click();});
+$("logoutButton").addEventListener("click",async()=>{
+  try{
+    const {error}=await supabaseClient.auth.signOut();if(error)throw error;
+    mostrarLogin();$("password").value="";mensaje("loginMessage","");
+  }catch(e){alert("No se pudo cerrar sesión: "+e.message);}
+});
+$("formularioEstablecimiento").addEventListener("submit",guardarEstablecimiento);
+$("formularioSector").addEventListener("submit",guardarSector);
+$("formularioPuesto").addEventListener("submit",guardarPuesto);
+$("formularioPersona").addEventListener("submit",guardarPersona);
+$("actualizarEstablecimientosButton").addEventListener("click",cargarEstablecimientos);
+$("actualizarSectoresButton").addEventListener("click",cargarSectores);
+$("actualizarPuestosButton").addEventListener("click",cargarPuestos);
+$("actualizarPersonasButton").addEventListener("click",cargarPersonas);
+$("cancelarEdicionEstablecimiento").addEventListener("click",()=>limpiarEdicion("establecimiento"));
+$("cancelarEdicionSector").addEventListener("click",()=>limpiarEdicion("sector"));
+$("cancelarEdicionPuesto").addEventListener("click",()=>limpiarEdicion("puesto"));
+$("cancelarEdicionPersona").addEventListener("click",()=>limpiarEdicion("persona"));
+supabaseClient.auth.getSession().then(({data,error})=>{
+  if(error){console.error(error);mostrarLogin();return;}
+  if(data.session)iniciarAplicacion();else mostrarLogin();
+});
+supabaseClient.auth.onAuthStateChange((event,session)=>{
+  if(event==="SIGNED_OUT")mostrarLogin();
+});
 </script>
-
 </body>
 </html>
