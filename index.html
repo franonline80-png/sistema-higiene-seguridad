@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -717,7 +716,6 @@
         boton.disabled = true;
 
         try {
-            // Obtener establecimientos visibles para este usuario.
             const establecimientos = await obtenerEstablecimientosUsuario();
             const ids = establecimientos.map(e => e.id);
             const nombresPorId = new Map(
@@ -740,9 +738,9 @@
 
             const { data: sectores, error } = await supabaseClient
                 .from("sectores")
-                .select("id, establecimiento_id, nombre, codigo, descipcion, activo")
+                .select('id, establecimiento_id, "Nombre", "Codigo", "Descripcion", "Activo"')
                 .in("establecimiento_id", ids)
-                .order("nombre", { ascending: true });
+                .order("Nombre", { ascending: true });
 
             if (error) throw error;
 
@@ -753,7 +751,8 @@
                 celda.textContent = "No hay sectores registrados.";
                 fila.appendChild(celda);
                 tabla.appendChild(fila);
-                mensaje.textContent = "Consulta completada. No hay sectores registrados.";
+                mensaje.textContent =
+                    "Consulta completada. No hay sectores registrados.";
                 return;
             }
 
@@ -762,10 +761,10 @@
 
                 const valores = [
                     nombresPorId.get(sector.establecimiento_id) || "—",
-                    sector.nombre || "—",
-                    sector.codigo || "—",
-                    sector.descipcion || "—",
-                    sector.activo ? "Activo" : "Inactivo"
+                    sector.Nombre || "—",
+                    sector.Codigo || "—",
+                    sector.Descripcion || "—",
+                    sector.Activo ? "Activo" : "Inactivo"
                 ];
 
                 valores.forEach(valor => {
@@ -776,17 +775,24 @@
 
                 const celdaAccion = document.createElement("td");
                 const botonEstado = document.createElement("button");
+
                 botonEstado.type = "button";
-                botonEstado.className = "primary-button small-button secondary-button";
-                botonEstado.textContent = sector.activo ? "Desactivar" : "Activar";
-                botonEstado.addEventListener("click", () => cambiarEstadoSector(sector));
+                botonEstado.className =
+                    "primary-button small-button secondary-button";
+                botonEstado.textContent =
+                    sector.Activo ? "Desactivar" : "Activar";
+
+                botonEstado.addEventListener("click", () =>
+                    cambiarEstadoSector(sector)
+                );
+
                 celdaAccion.appendChild(botonEstado);
                 fila.appendChild(celdaAccion);
-
                 tabla.appendChild(fila);
             });
 
-            mensaje.textContent = `Se encontraron ${sectores.length} sector(es).`;
+            mensaje.textContent =
+                `Se encontraron ${sectores.length} sector(es).`;
 
         } catch (error) {
             console.error("Error al cargar sectores:", error);
@@ -796,10 +802,12 @@
             const celda = document.createElement("td");
             celda.colSpan = 6;
             celda.textContent = "No se pudieron cargar los sectores.";
+
             fila.appendChild(celda);
             tabla.appendChild(fila);
 
-            mensaje.textContent = "Error al consultar sectores: " + error.message;
+            mensaje.textContent =
+                "Error al consultar sectores: " + error.message;
         } finally {
             boton.disabled = false;
         }
@@ -817,8 +825,10 @@
 
         const establecimientoId =
             document.getElementById("sectorEstablecimiento").value;
-        const nombre = document.getElementById("sectorNombre").value.trim();
-        const codigo = document.getElementById("sectorCodigo").value.trim();
+        const nombre =
+            document.getElementById("sectorNombre").value.trim();
+        const codigo =
+            document.getElementById("sectorCodigo").value.trim();
         const descripcion =
             document.getElementById("sectorDescripcion").value.trim();
 
@@ -828,8 +838,6 @@
             return;
         }
 
-        // Comprobar que el establecimiento seleccionado está en la lista
-        // visible para el usuario autenticado.
         const establecimientoValido = establecimientosCache.some(
             est => est.id === establecimientoId
         );
@@ -846,10 +854,10 @@
         try {
             const nuevoSector = {
                 establecimiento_id: establecimientoId,
-                nombre: nombre,
-                codigo: codigo || null,
-                descipcion: descripcion || null,
-                activo: true
+                Nombre: nombre,
+                Codigo: codigo || null,
+                Descripcion: descripcion || null,
+                Activo: true
             };
 
             const { error } = await supabaseClient
@@ -877,17 +885,20 @@
     // ACTIVAR / DESACTIVAR SECTOR
     async function cambiarEstadoSector(sector) {
         const mensaje = document.getElementById("sectoresMensaje");
-        const nuevoEstado = !sector.activo;
+        const nuevoEstado = !sector.Activo;
         const accion = nuevoEstado ? "activar" : "desactivar";
+        const nombreSector = sector.Nombre || "sin nombre";
 
-        if (!confirm(`¿Confirma que desea ${accion} el sector "${sector.nombre}"?`)) {
+        if (!confirm(
+            `¿Confirma que desea ${accion} el sector "${nombreSector}"?`
+        )) {
             return;
         }
 
         try {
             const { error } = await supabaseClient
                 .from("sectores")
-                .update({ activo: nuevoEstado })
+                .update({ Activo: nuevoEstado })
                 .eq("id", sector.id);
 
             if (error) throw error;
@@ -905,6 +916,7 @@
     }
 
     // CONECTAR EVENTOS
+
     document
         .getElementById("actualizarEstablecimientosButton")
         .addEventListener("click", cargarEstablecimientos);
