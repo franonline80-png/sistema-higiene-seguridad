@@ -5,15 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tablero de Higiene y Seguridad</title>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: Arial, sans-serif;
@@ -35,34 +30,32 @@
             background: white;
             padding: 35px;
             border-radius: 12px;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+            box-shadow: 0 4px 18px rgba(0,0,0,.12);
         }
 
-        .login-box h1 {
-            margin-bottom: 10px;
-            font-size: 24px;
-        }
+        .login-box h1 { margin-bottom: 10px; font-size: 24px; }
+        .login-box p { color: #64748b; margin-bottom: 25px; }
 
-        .login-box p {
-            color: #64748b;
-            margin-bottom: 25px;
-        }
-
-        .login-box label {
+        .login-box label, .field label {
             display: block;
             margin-bottom: 6px;
             font-weight: bold;
             font-size: 14px;
         }
 
-        .login-box input {
+        .login-box input, .field input, .field select,
+        .field textarea {
             width: 100%;
-            padding: 12px;
-            margin-bottom: 18px;
+            max-width: 600px;
+            padding: 11px;
+            margin-bottom: 15px;
             border: 1px solid #cbd5e1;
             border-radius: 7px;
             font-size: 15px;
+            background: white;
         }
+
+        .login-box input { margin-bottom: 18px; }
 
         .login-box button {
             width: 100%;
@@ -75,15 +68,8 @@
             font-size: 15px;
         }
 
-        #loginMessage {
-            margin-top: 15px;
-            color: #dc2626;
-            font-size: 14px;
-        }
-
-        #app {
-            display: none;
-        }
+        #loginMessage { margin-top: 15px; color: #dc2626; font-size: 14px; }
+        #app { display: none; }
 
         header {
             background: #17202a;
@@ -95,17 +81,10 @@
             gap: 15px;
         }
 
-        header h1 {
-            font-size: 26px;
-            margin-bottom: 6px;
-        }
-
-        header p {
-            color: #cbd5e1;
-        }
+        header h1 { font-size: 26px; margin-bottom: 6px; }
+        header p { color: #cbd5e1; }
 
         #logoutButton {
-            width: auto;
             padding: 10px 16px;
             background: #dc2626;
             color: white;
@@ -114,11 +93,7 @@
             cursor: pointer;
         }
 
-        .container {
-            padding: 30px;
-            max-width: 1400px;
-            margin: auto;
-        }
+        .container { padding: 30px; max-width: 1400px; margin: auto; }
 
         .cards {
             display: grid;
@@ -131,20 +106,11 @@
             background: white;
             border-radius: 10px;
             padding: 22px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
         }
 
-        .card h3 {
-            font-size: 14px;
-            color: #64748b;
-            margin-bottom: 12px;
-        }
-
-        .number {
-            font-size: 30px;
-            font-weight: bold;
-        }
-
+        .card h3 { font-size: 14px; color: #64748b; margin-bottom: 12px; }
+        .number { font-size: 30px; font-weight: bold; }
         .green { border-left: 5px solid #16a34a; }
         .yellow { border-left: 5px solid #eab308; }
         .red { border-left: 5px solid #dc2626; }
@@ -155,18 +121,11 @@
             border-radius: 10px;
             padding: 24px;
             margin-bottom: 25px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
         }
 
-        .section h2 {
-            margin-bottom: 18px;
-            font-size: 20px;
-        }
-
-        .section h3 {
-            margin: 20px 0 15px;
-            font-size: 17px;
-        }
+        .section h2 { margin-bottom: 18px; font-size: 20px; }
+        .section h3 { margin: 20px 0 15px; font-size: 17px; }
 
         .menu {
             display: grid;
@@ -183,29 +142,7 @@
             font-size: 15px;
         }
 
-        .menu button:hover {
-            background: #d8e2ed;
-        }
-
-        .field {
-            margin-bottom: 14px;
-        }
-
-        .field label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .field input {
-            width: 100%;
-            max-width: 600px;
-            padding: 11px;
-            border: 1px solid #cbd5e1;
-            border-radius: 7px;
-            font-size: 15px;
-        }
+        .menu button:hover { background: #d8e2ed; }
 
         .primary-button {
             padding: 11px 16px;
@@ -215,40 +152,27 @@
             color: white;
             cursor: pointer;
             font-size: 14px;
+            margin-top: 5px;
         }
 
-        .save-button {
-            background: #166534;
-        }
+        .save-button { background: #166534; }
+        .secondary-button { background: #475569; }
+        .small-button { padding: 7px 10px; font-size: 12px; }
 
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
+        button:disabled { opacity: .6; cursor: not-allowed; }
 
-        .status-message {
-            margin-top: 12px;
+        .status-message { margin-top: 12px; line-height: 1.5; }
+        .table-wrapper { overflow-x: auto; margin-top: 18px; }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 11px; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f8fafc; }
+
+        .section-note {
+            color: #64748b;
+            font-size: 14px;
             line-height: 1.5;
-        }
-
-        .table-wrapper {
-            overflow-x: auto;
-            margin-top: 18px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th, td {
-            padding: 11px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        th {
-            background: #f8fafc;
+            margin-bottom: 12px;
         }
 
         footer {
@@ -259,29 +183,15 @@
         }
 
         @media (max-width: 600px) {
-            header {
-                padding: 18px;
-                flex-wrap: wrap;
-            }
-
-            header h1 {
-                font-size: 21px;
-            }
-
-            .container {
-                padding: 15px;
-            }
-
-            .section {
-                padding: 18px;
-            }
+            header { padding: 18px; flex-wrap: wrap; }
+            header h1 { font-size: 21px; }
+            .container { padding: 15px; }
+            .section { padding: 18px; }
         }
     </style>
 </head>
 
 <body>
-
-<!-- INICIO DE SESIÓN -->
 
 <div id="loginScreen">
     <div class="login-box">
@@ -289,20 +199,19 @@
         <p>Ingrese sus credenciales para acceder al sistema.</p>
 
         <label for="email">Correo electrónico</label>
-        <input type="email" id="email" placeholder="correo@ejemplo.com" autocomplete="username">
+        <input type="email" id="email" placeholder="correo@ejemplo.com"
+               autocomplete="username">
 
         <label for="password">Contraseña</label>
-        <input type="password" id="password" placeholder="Contraseña" autocomplete="current-password">
+        <input type="password" id="password" placeholder="Contraseña"
+               autocomplete="current-password">
 
         <button id="loginButton" type="button">Ingresar</button>
         <div id="loginMessage" role="status" aria-live="polite"></div>
     </div>
 </div>
 
-<!-- APLICACIÓN -->
-
 <div id="app">
-
     <header>
         <div>
             <h1>Tablero de Control — Higiene y Seguridad</h1>
@@ -312,32 +221,30 @@
     </header>
 
     <main class="container">
-
         <div class="cards">
             <div class="card green">
                 <h3>Nivel general de riesgo</h3>
-                <div class="number">Bajo</div>
+                <div class="number">—</div>
             </div>
-
             <div class="card red">
                 <h3>Acciones vencidas</h3>
-                <div class="number">0</div>
+                <div class="number">—</div>
             </div>
-
             <div class="card yellow">
                 <h3>Inspecciones pendientes</h3>
-                <div class="number">0</div>
+                <div class="number">—</div>
             </div>
-
             <div class="card blue">
                 <h3>Capacitaciones</h3>
-                <div class="number">0%</div>
+                <div class="number">—</div>
             </div>
         </div>
 
         <div class="section">
             <h2>Módulos del sistema</h2>
             <div class="menu">
+                <button type="button" onclick="irA('sectoresSection')">Sectores</button>
+                <button type="button" onclick="irA('establecimientosSection')">Establecimientos</button>
                 <button type="button">Gestión de Riesgos</button>
                 <button type="button">Inspecciones</button>
                 <button type="button">Accidentes e Incidentes</button>
@@ -351,16 +258,13 @@
             </div>
         </div>
 
-        <!-- MÓDULO DE ESTABLECIMIENTOS -->
+        <!-- ESTABLECIMIENTOS -->
 
         <div class="section" id="establecimientosSection">
-
             <h2>Establecimientos</h2>
-
             <h3>Registrar nuevo establecimiento</h3>
 
             <form id="formularioEstablecimiento">
-
                 <div class="field">
                     <label for="nuevoNombre">Nombre del establecimiento *</label>
                     <input type="text" id="nuevoNombre" maxlength="150"
@@ -395,39 +299,107 @@
 
                 <p id="mensajeFormularioEstablecimiento"
                    class="status-message" role="status" aria-live="polite"></p>
-
             </form>
 
-            <hr style="margin: 25px 0; border: 0; border-top: 1px solid #e2e8f0;">
+            <hr style="margin:25px 0;border:0;border-top:1px solid #e2e8f0;">
 
             <h3>Establecimientos registrados</h3>
-
             <p id="establecimientosMensaje" class="status-message">
-                Presione «Actualizar listado» para consultar los establecimientos registrados.
+                Presione «Actualizar listado» para consultar los establecimientos.
             </p>
 
             <button id="actualizarEstablecimientosButton"
-                    type="button" class="primary-button" style="margin-top: 12px;">
+                    type="button" class="primary-button">
                 Actualizar listado
             </button>
 
             <div class="table-wrapper">
                 <table>
                     <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Código</th>
-                            <th>Estado</th>
-                        </tr>
+                        <tr><th>Nombre</th><th>Código</th><th>Estado</th></tr>
                     </thead>
                     <tbody id="establecimientosTabla">
-                        <tr>
-                            <td colspan="3">Todavía no se consultaron datos.</td>
-                        </tr>
+                        <tr><td colspan="3">Todavía no se consultaron datos.</td></tr>
                     </tbody>
                 </table>
             </div>
+        </div>
 
+        <!-- SECTORES -->
+
+        <div class="section" id="sectoresSection">
+            <h2>Gestión de Sectores</h2>
+            <p class="section-note">
+                Cada sector debe estar vinculado a un establecimiento de su organización.
+            </p>
+
+            <h3>Registrar nuevo sector</h3>
+
+            <form id="formularioSector">
+                <div class="field">
+                    <label for="sectorEstablecimiento">Establecimiento *</label>
+                    <select id="sectorEstablecimiento" required>
+                        <option value="">Primero cargue los establecimientos</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="sectorNombre">Nombre del sector *</label>
+                    <input type="text" id="sectorNombre" maxlength="150"
+                           placeholder="Ej.: Taller de mantenimiento" required>
+                </div>
+
+                <div class="field">
+                    <label for="sectorCodigo">Código del sector</label>
+                    <input type="text" id="sectorCodigo" maxlength="50"
+                           placeholder="Ej.: SEC-001">
+                </div>
+
+                <div class="field">
+                    <label for="sectorDescripcion">Descripción</label>
+                    <textarea id="sectorDescripcion" maxlength="1000"
+                              rows="3" placeholder="Descripción de las actividades del sector"
+                              style="width:100%;max-width:600px;padding:11px;border:1px solid #cbd5e1;border-radius:7px;font:15px Arial;"></textarea>
+                </div>
+
+                <button type="submit" id="guardarSectorButton"
+                        class="primary-button save-button">
+                    Guardar sector
+                </button>
+
+                <p id="mensajeFormularioSector" class="status-message"
+                   role="status" aria-live="polite"></p>
+            </form>
+
+            <hr style="margin:25px 0;border:0;border-top:1px solid #e2e8f0;">
+
+            <h3>Sectores registrados</h3>
+            <p id="sectoresMensaje" class="status-message">
+                Presione «Actualizar sectores» para consultar los datos.
+            </p>
+
+            <button id="actualizarSectoresButton"
+                    type="button" class="primary-button">
+                Actualizar sectores
+            </button>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Establecimiento</th>
+                            <th>Sector</th>
+                            <th>Código</th>
+                            <th>Descripción</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sectoresTabla">
+                        <tr><td colspan="6">Todavía no se consultaron datos.</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div class="section">
@@ -438,20 +410,15 @@
                 accidentes, capacitaciones, mediciones y acciones correctivas.
             </p>
         </div>
-
     </main>
 
     <footer>
         Sistema de Gestión de Higiene y Seguridad — Versión inicial
     </footer>
-
 </div>
 
 <script>
-    // =====================================================
     // CONFIGURACIÓN SUPABASE
-    // =====================================================
-
     const SUPABASE_URL = "https://dpssgowiftbtclzsaprc.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_NIV3CQpZcbvnOBfY7-_a7g_PtYfNIsG";
 
@@ -460,19 +427,20 @@
         SUPABASE_ANON_KEY
     );
 
-    // =====================================================
-    // ELEMENTOS DE LA PÁGINA
-    // =====================================================
-
     const loginScreen = document.getElementById("loginScreen");
     const app = document.getElementById("app");
     const loginButton = document.getElementById("loginButton");
     const logoutButton = document.getElementById("logoutButton");
     const loginMessage = document.getElementById("loginMessage");
 
-    // =====================================================
-    // MOSTRAR / OCULTAR APLICACIÓN
-    // =====================================================
+    let establecimientosCache = [];
+
+    function irA(id) {
+        document.getElementById(id).scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
 
     function mostrarAplicacion() {
         loginScreen.style.display = "none";
@@ -484,10 +452,7 @@
         app.style.display = "none";
     }
 
-    // =====================================================
-    // INICIAR SESIÓN
-    // =====================================================
-
+    // INICIO DE SESIÓN
     loginButton.addEventListener("click", async function () {
         loginMessage.textContent = "";
 
@@ -505,42 +470,39 @@
 
         try {
             const { error } = await supabaseClient.auth.signInWithPassword({
-                email: email,
-                password: password
+                email,
+                password
             });
 
             if (error) throw error;
 
             mostrarAplicacion();
+            await cargarEstablecimientos();
+            await cargarSectores();
 
         } catch (error) {
             loginMessage.textContent =
-                "No se pudo iniciar sesión: " +
-                (error.message || "Error desconocido");
+                "No se pudo iniciar sesión: " + error.message;
         } finally {
             loginButton.disabled = false;
             loginButton.textContent = "Ingresar";
         }
     });
 
-    // Permitir iniciar sesión presionando Enter en el campo de contraseña.
     document.getElementById("password").addEventListener("keydown", function (evento) {
-        if (evento.key === "Enter") {
-            loginButton.click();
-        }
+        if (evento.key === "Enter") loginButton.click();
     });
 
-    // =====================================================
     // CERRAR SESIÓN
-    // =====================================================
-
     logoutButton.addEventListener("click", async function () {
         logoutButton.disabled = true;
 
         try {
             const { error } = await supabaseClient.auth.signOut();
             if (error) throw error;
+
             mostrarLogin();
+            establecimientosCache = [];
         } catch (error) {
             alert("No se pudo cerrar la sesión: " + error.message);
         } finally {
@@ -548,36 +510,31 @@
         }
     });
 
-    // =====================================================
-    // COMPROBAR SESIÓN EXISTENTE
-    // =====================================================
-
+    // SESIÓN EXISTENTE
     async function comprobarSesion() {
         const { data, error } = await supabaseClient.auth.getSession();
 
         if (error) {
-            console.error("Error al comprobar sesión:", error);
+            console.error(error);
             mostrarLogin();
             return;
         }
 
         if (data.session) {
             mostrarAplicacion();
+            await cargarEstablecimientos();
+            await cargarSectores();
         } else {
             mostrarLogin();
         }
     }
 
-    // =====================================================
-    // OBTENER ORGANIZACIONES DEL USUARIO AUTENTICADO
-    // =====================================================
-
+    // ORGANIZACIONES DEL USUARIO
     async function obtenerOrganizacionesUsuario() {
         const { data: usuarioData, error: errorUsuario } =
             await supabaseClient.auth.getUser();
 
         if (errorUsuario) throw errorUsuario;
-
         if (!usuarioData.user) {
             throw new Error("Debe iniciar sesión para continuar.");
         }
@@ -590,98 +547,103 @@
 
         if (error) throw error;
 
-        return [
-            ...new Set(
-                (membresias || [])
-                    .map(m => m.organizacion_id)
-                    .filter(Boolean)
-            )
-        ];
+        return [...new Set(
+            (membresias || [])
+                .map(m => m.organizacion_id)
+                .filter(Boolean)
+        )];
     }
 
-    // =====================================================
-    // CARGAR ESTABLECIMIENTOS
-    // =====================================================
+    // OBTENER ESTABLECIMIENTOS DE LAS ORGANIZACIONES DEL USUARIO
+    async function obtenerEstablecimientosUsuario() {
+        const organizaciones = await obtenerOrganizacionesUsuario();
 
+        if (organizaciones.length === 0) return [];
+
+        const { data, error } = await supabaseClient
+            .from("establecimientos")
+            .select("id, Nombre, Codigo, Activo")
+            .in("organizacion_id", organizaciones)
+            .order("Nombre", { ascending: true });
+
+        if (error) throw error;
+        return data || [];
+    }
+
+    // CARGAR ESTABLECIMIENTOS Y ACTUALIZAR SELECTOR
     async function cargarEstablecimientos() {
         const mensaje = document.getElementById("establecimientosMensaje");
         const tabla = document.getElementById("establecimientosTabla");
         const boton = document.getElementById("actualizarEstablecimientosButton");
+        const selector = document.getElementById("sectorEstablecimiento");
 
         mensaje.textContent = "Consultando establecimientos...";
         boton.disabled = true;
 
         try {
-            const organizaciones = await obtenerOrganizacionesUsuario();
+            establecimientosCache = await obtenerEstablecimientosUsuario();
+            tabla.replaceChildren();
+            selector.replaceChildren();
 
-            if (organizaciones.length === 0) {
-                tabla.innerHTML = `
-                    <tr><td colspan="3">
-                        No hay organizaciones activas asociadas a su usuario.
-                    </td></tr>`;
+            const opcionInicial = document.createElement("option");
+            opcionInicial.value = "";
+            opcionInicial.textContent = establecimientosCache.length
+                ? "Seleccione un establecimiento"
+                : "No hay establecimientos disponibles";
+            selector.appendChild(opcionInicial);
 
-                mensaje.textContent = "No se encontraron organizaciones asociadas.";
-                return;
-            }
+            establecimientosCache.forEach(est => {
+                const opcion = document.createElement("option");
+                opcion.value = est.id;
+                opcion.textContent = est.Nombre;
+                selector.appendChild(opcion);
 
-            const { data: establecimientos, error } = await supabaseClient
-                .from("establecimientos")
-                .select("id, Nombre, Codigo, Activo")
-                .in("organizacion_id", organizaciones)
-                .order("Nombre", { ascending: true });
-
-            if (error) throw error;
-
-            tabla.innerHTML = "";
-
-            if (!establecimientos || establecimientos.length === 0) {
-                tabla.innerHTML = `
-                    <tr><td colspan="3">No hay establecimientos registrados.</td></tr>`;
-
-                mensaje.textContent =
-                    "Consulta completada. No hay establecimientos registrados.";
-                return;
-            }
-
-            establecimientos.forEach(establecimiento => {
                 const fila = document.createElement("tr");
-
-                const valores = [
-                    establecimiento.Nombre || "—",
-                    establecimiento.Codigo || "—",
-                    establecimiento.Activo ? "Activo" : "Inactivo"
-                ];
-
-                valores.forEach(valor => {
+                [
+                    est.Nombre || "—",
+                    est.Codigo || "—",
+                    est.Activo ? "Activo" : "Inactivo"
+                ].forEach(valor => {
                     const celda = document.createElement("td");
                     celda.textContent = valor;
                     fila.appendChild(celda);
                 });
-
                 tabla.appendChild(fila);
             });
 
-            mensaje.textContent =
-                `Se encontraron ${establecimientos.length} establecimiento(s).`;
+            if (establecimientosCache.length === 0) {
+                const fila = document.createElement("tr");
+                const celda = document.createElement("td");
+                celda.colSpan = 3;
+                celda.textContent = "No hay establecimientos registrados.";
+                fila.appendChild(celda);
+                tabla.appendChild(fila);
+                mensaje.textContent =
+                    "No hay establecimientos disponibles para su usuario.";
+            } else {
+                mensaje.textContent =
+                    `Se encontraron ${establecimientosCache.length} establecimiento(s).`;
+            }
 
         } catch (error) {
             console.error("Error al cargar establecimientos:", error);
-
-            tabla.innerHTML = `
-                <tr><td colspan="3">No se pudieron cargar los datos.</td></tr>`;
-
             mensaje.textContent =
-                "Error al consultar Supabase: " +
-                (error.message || "Error desconocido");
+                "Error al consultar establecimientos: " + error.message;
+            tabla.replaceChildren();
+            selector.replaceChildren();
+
+            const fila = document.createElement("tr");
+            const celda = document.createElement("td");
+            celda.colSpan = 3;
+            celda.textContent = "No se pudieron cargar los establecimientos.";
+            fila.appendChild(celda);
+            tabla.appendChild(fila);
         } finally {
             boton.disabled = false;
         }
     }
 
-    // =====================================================
-    // GUARDAR NUEVO ESTABLECIMIENTO
-    // =====================================================
-
+    // GUARDAR ESTABLECIMIENTO
     async function guardarEstablecimiento(evento) {
         evento.preventDefault();
 
@@ -710,7 +672,7 @@
 
             if (organizaciones.length !== 1) {
                 throw new Error(
-                    "El usuario debe tener exactamente una organización activa asociada para dar de alta el establecimiento."
+                    "Para dar de alta un establecimiento, el usuario debe tener exactamente una organización activa asociada."
                 );
             }
 
@@ -734,23 +696,215 @@
             mensaje.textContent = "Establecimiento guardado correctamente.";
 
             await cargarEstablecimientos();
+            await cargarSectores();
 
         } catch (error) {
             console.error("Error al guardar establecimiento:", error);
-
-            mensaje.textContent =
-                "No se pudo guardar: " +
-                (error.message || "Error desconocido");
+            mensaje.textContent = "No se pudo guardar: " + error.message;
         } finally {
             boton.disabled = false;
             boton.textContent = "Guardar establecimiento";
         }
     }
 
-    // =====================================================
-    // CONECTAR EVENTOS
-    // =====================================================
+    // CARGAR SECTORES
+    async function cargarSectores() {
+        const mensaje = document.getElementById("sectoresMensaje");
+        const tabla = document.getElementById("sectoresTabla");
+        const boton = document.getElementById("actualizarSectoresButton");
 
+        mensaje.textContent = "Consultando sectores...";
+        boton.disabled = true;
+
+        try {
+            // Obtener establecimientos visibles para este usuario.
+            const establecimientos = await obtenerEstablecimientosUsuario();
+            const ids = establecimientos.map(e => e.id);
+            const nombresPorId = new Map(
+                establecimientos.map(e => [e.id, e.Nombre])
+            );
+
+            tabla.replaceChildren();
+
+            if (ids.length === 0) {
+                const fila = document.createElement("tr");
+                const celda = document.createElement("td");
+                celda.colSpan = 6;
+                celda.textContent =
+                    "Primero debe registrar un establecimiento en su organización.";
+                fila.appendChild(celda);
+                tabla.appendChild(fila);
+                mensaje.textContent = "No hay establecimientos disponibles.";
+                return;
+            }
+
+            const { data: sectores, error } = await supabaseClient
+                .from("sectores")
+                .select("id, establecimiento_id, nombre, codigo, descipcion, activo")
+                .in("establecimiento_id", ids)
+                .order("nombre", { ascending: true });
+
+            if (error) throw error;
+
+            if (!sectores || sectores.length === 0) {
+                const fila = document.createElement("tr");
+                const celda = document.createElement("td");
+                celda.colSpan = 6;
+                celda.textContent = "No hay sectores registrados.";
+                fila.appendChild(celda);
+                tabla.appendChild(fila);
+                mensaje.textContent = "Consulta completada. No hay sectores registrados.";
+                return;
+            }
+
+            sectores.forEach(sector => {
+                const fila = document.createElement("tr");
+
+                const valores = [
+                    nombresPorId.get(sector.establecimiento_id) || "—",
+                    sector.nombre || "—",
+                    sector.codigo || "—",
+                    sector.descipcion || "—",
+                    sector.activo ? "Activo" : "Inactivo"
+                ];
+
+                valores.forEach(valor => {
+                    const celda = document.createElement("td");
+                    celda.textContent = valor;
+                    fila.appendChild(celda);
+                });
+
+                const celdaAccion = document.createElement("td");
+                const botonEstado = document.createElement("button");
+                botonEstado.type = "button";
+                botonEstado.className = "primary-button small-button secondary-button";
+                botonEstado.textContent = sector.activo ? "Desactivar" : "Activar";
+                botonEstado.addEventListener("click", () => cambiarEstadoSector(sector));
+                celdaAccion.appendChild(botonEstado);
+                fila.appendChild(celdaAccion);
+
+                tabla.appendChild(fila);
+            });
+
+            mensaje.textContent = `Se encontraron ${sectores.length} sector(es).`;
+
+        } catch (error) {
+            console.error("Error al cargar sectores:", error);
+            tabla.replaceChildren();
+
+            const fila = document.createElement("tr");
+            const celda = document.createElement("td");
+            celda.colSpan = 6;
+            celda.textContent = "No se pudieron cargar los sectores.";
+            fila.appendChild(celda);
+            tabla.appendChild(fila);
+
+            mensaje.textContent = "Error al consultar sectores: " + error.message;
+        } finally {
+            boton.disabled = false;
+        }
+    }
+
+    // GUARDAR SECTOR
+    async function guardarSector(evento) {
+        evento.preventDefault();
+
+        const formulario = document.getElementById("formularioSector");
+        const mensaje = document.getElementById("mensajeFormularioSector");
+        const boton = document.getElementById("guardarSectorButton");
+
+        mensaje.textContent = "";
+
+        const establecimientoId =
+            document.getElementById("sectorEstablecimiento").value;
+        const nombre = document.getElementById("sectorNombre").value.trim();
+        const codigo = document.getElementById("sectorCodigo").value.trim();
+        const descripcion =
+            document.getElementById("sectorDescripcion").value.trim();
+
+        if (!establecimientoId || !nombre) {
+            mensaje.textContent =
+                "Seleccione un establecimiento e ingrese el nombre del sector.";
+            return;
+        }
+
+        // Comprobar que el establecimiento seleccionado está en la lista
+        // visible para el usuario autenticado.
+        const establecimientoValido = establecimientosCache.some(
+            est => est.id === establecimientoId
+        );
+
+        if (!establecimientoValido) {
+            mensaje.textContent =
+                "El establecimiento seleccionado no está disponible para su usuario.";
+            return;
+        }
+
+        boton.disabled = true;
+        boton.textContent = "Guardando...";
+
+        try {
+            const nuevoSector = {
+                establecimiento_id: establecimientoId,
+                nombre: nombre,
+                codigo: codigo || null,
+                descipcion: descripcion || null,
+                activo: true
+            };
+
+            const { error } = await supabaseClient
+                .from("sectores")
+                .insert(nuevoSector);
+
+            if (error) throw error;
+
+            formulario.reset();
+            mensaje.textContent = "Sector guardado correctamente.";
+
+            await cargarEstablecimientos();
+            await cargarSectores();
+
+        } catch (error) {
+            console.error("Error al guardar sector:", error);
+            mensaje.textContent =
+                "No se pudo guardar el sector: " + error.message;
+        } finally {
+            boton.disabled = false;
+            boton.textContent = "Guardar sector";
+        }
+    }
+
+    // ACTIVAR / DESACTIVAR SECTOR
+    async function cambiarEstadoSector(sector) {
+        const mensaje = document.getElementById("sectoresMensaje");
+        const nuevoEstado = !sector.activo;
+        const accion = nuevoEstado ? "activar" : "desactivar";
+
+        if (!confirm(`¿Confirma que desea ${accion} el sector "${sector.nombre}"?`)) {
+            return;
+        }
+
+        try {
+            const { error } = await supabaseClient
+                .from("sectores")
+                .update({ activo: nuevoEstado })
+                .eq("id", sector.id);
+
+            if (error) throw error;
+
+            mensaje.textContent =
+                `Sector ${nuevoEstado ? "activado" : "desactivado"} correctamente.`;
+
+            await cargarSectores();
+
+        } catch (error) {
+            console.error("Error al cambiar estado del sector:", error);
+            mensaje.textContent =
+                "No se pudo cambiar el estado: " + error.message;
+        }
+    }
+
+    // CONECTAR EVENTOS
     document
         .getElementById("actualizarEstablecimientosButton")
         .addEventListener("click", cargarEstablecimientos);
@@ -759,13 +913,17 @@
         .getElementById("formularioEstablecimiento")
         .addEventListener("submit", guardarEstablecimiento);
 
-    // =====================================================
-    // INICIAR
-    // =====================================================
+    document
+        .getElementById("actualizarSectoresButton")
+        .addEventListener("click", cargarSectores);
 
+    document
+        .getElementById("formularioSector")
+        .addEventListener("submit", guardarSector);
+
+    // INICIAR
     comprobarSesion();
 </script>
 
 </body>
 </html>
-
