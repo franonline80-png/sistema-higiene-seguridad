@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -121,6 +122,7 @@
             padding: 24px;
             margin-bottom: 25px;
             box-shadow: 0 2px 8px rgba(0,0,0,.08);
+            scroll-margin-top: 20px;
         }
 
         .section h2 { margin-bottom: 18px; font-size: 20px; }
@@ -242,8 +244,10 @@
         <div class="section">
             <h2>Módulos del sistema</h2>
             <div class="menu">
-                <button type="button" onclick="irA('sectoresSection')">Sectores</button>
                 <button type="button" onclick="irA('establecimientosSection')">Establecimientos</button>
+                <button type="button" onclick="irA('sectoresSection')">Sectores</button>
+                <button type="button" onclick="irA('puestosSection')">Puestos</button>
+                <button type="button" onclick="irA('personasSection')">Personas</button>
                 <button type="button">Gestión de Riesgos</button>
                 <button type="button">Inspecciones</button>
                 <button type="button">Accidentes e Incidentes</button>
@@ -401,6 +405,145 @@
             </div>
         </div>
 
+        <!-- PUESTOS -->
+
+        <div class="section" id="puestosSection">
+            <h2>Gestión de Puestos</h2>
+            <p class="section-note">
+                Los puestos se vinculan con un sector. En esta etapa el sistema
+                permite consultarlos y seleccionarlos para asignarlos a una persona.
+                La creación y modificación de puestos se administrará desde Supabase
+                hasta que incorporemos el formulario correspondiente.
+            </p>
+
+            <button id="actualizarPuestosButton" type="button"
+                    class="primary-button">
+                Actualizar puestos
+            </button>
+
+            <p id="puestosMensaje" class="status-message" role="status" aria-live="polite">
+                Presione «Actualizar puestos» para consultar los puestos registrados.
+            </p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Establecimiento</th>
+                            <th>Sector</th>
+                            <th>Puesto</th>
+                            <th>Código</th>
+                            <th>Descripción</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="puestosTabla">
+                        <tr><td colspan="6">Todavía no se consultaron datos.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- PERSONAS -->
+
+        <div class="section" id="personasSection">
+            <h2>Gestión de Personas</h2>
+            <p class="section-note">
+                Registre a cada persona y asóciela con un puesto existente.
+                La organización se obtiene de la membresía del usuario conectado.
+                Solo se mostrarán puestos activos pertenecientes a su organización.
+            </p>
+
+            <h3>Registrar nueva persona</h3>
+
+            <form id="formularioPersona">
+                <div class="field">
+                    <label for="personaLegajo">Legajo</label>
+                    <input type="text" id="personaLegajo" maxlength="100"
+                           placeholder="Número o código de legajo">
+                </div>
+
+                <div class="field">
+                    <label for="personaNombre">Nombre *</label>
+                    <input type="text" id="personaNombre" maxlength="150"
+                           autocomplete="given-name" required>
+                </div>
+
+                <div class="field">
+                    <label for="personaApellido">Apellido *</label>
+                    <input type="text" id="personaApellido" maxlength="150"
+                           autocomplete="family-name" required>
+                </div>
+
+                <div class="field">
+                    <label for="personaDocumento">Documento</label>
+                    <input type="text" id="personaDocumento" maxlength="50"
+                           placeholder="Tipo y número de documento">
+                </div>
+
+                <div class="field">
+                    <label for="personaCargo">Cargo</label>
+                    <input type="text" id="personaCargo" maxlength="150"
+                           placeholder="Cargo o función">
+                </div>
+
+                <div class="field">
+                    <label for="personaFechaIngreso">Fecha de ingreso</label>
+                    <input type="date" id="personaFechaIngreso">
+                </div>
+
+                <div class="field">
+                    <label for="personaPuesto">Puesto asignado *</label>
+                    <select id="personaPuesto" required>
+                        <option value="">Primero actualice los puestos</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="guardarPersonaButton"
+                        class="primary-button save-button">
+                    Guardar persona
+                </button>
+
+                <p id="mensajeFormularioPersona" class="status-message"
+                   role="status" aria-live="polite"></p>
+            </form>
+
+            <hr style="margin:25px 0;border:0;border-top:1px solid #e2e8f0;">
+
+            <h3>Personas registradas</h3>
+
+            <button id="actualizarPersonasButton" type="button"
+                    class="primary-button">
+                Actualizar personas
+            </button>
+
+            <p id="personasMensaje" class="status-message" role="status" aria-live="polite">
+                Presione «Actualizar personas» para consultar los registros.
+            </p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Legajo</th>
+                            <th>Apellido y nombre</th>
+                            <th>Documento</th>
+                            <th>Cargo</th>
+                            <th>Fecha de ingreso</th>
+                            <th>Establecimiento</th>
+                            <th>Sector</th>
+                            <th>Puesto</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="personasTabla">
+                        <tr><td colspan="10">Todavía no se consultaron datos.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <div class="section">
             <h2>Estado de la gestión</h2>
             <p>
@@ -433,6 +576,9 @@
     const loginMessage = document.getElementById("loginMessage");
 
     let establecimientosCache = [];
+    let sectoresCache = [];
+    let puestosCache = [];
+    let personasCache = [];
 
     function irA(id) {
         document.getElementById(id).scrollIntoView({
@@ -449,6 +595,38 @@
     function mostrarLogin() {
         loginScreen.style.display = "flex";
         app.style.display = "none";
+    }
+
+    function mostrarFilaVacia(tabla, columnas, mensaje) {
+        tabla.replaceChildren();
+        const fila = document.createElement("tr");
+        const celda = document.createElement("td");
+        celda.colSpan = columnas;
+        celda.textContent = mensaje;
+        fila.appendChild(celda);
+        tabla.appendChild(fila);
+    }
+
+    function agregarCelda(fila, valor) {
+        const celda = document.createElement("td");
+        celda.textContent = valor === null || valor === undefined || valor === ""
+            ? "—"
+            : String(valor);
+        fila.appendChild(celda);
+        return celda;
+    }
+
+    function fechaLegible(fecha) {
+        if (!fecha) return "—";
+        const partes = String(fecha).split("-");
+        if (partes.length !== 3) return fecha;
+        return `${partes[2]}/${partes[1]}/${partes[0]}`;
+    }
+
+    function mostrarError(mensajeElemento, prefijo, error) {
+        console.error(prefijo, error);
+        mensajeElemento.textContent =
+            `${prefijo}: ${error?.message || "Error desconocido."}`;
     }
 
     // INICIO DE SESIÓN
@@ -478,6 +656,8 @@
             mostrarAplicacion();
             await cargarEstablecimientos();
             await cargarSectores();
+            await cargarPuestos();
+            await cargarPersonas();
 
         } catch (error) {
             loginMessage.textContent =
@@ -502,6 +682,9 @@
 
             mostrarLogin();
             establecimientosCache = [];
+            sectoresCache = [];
+            puestosCache = [];
+            personasCache = [];
         } catch (error) {
             alert("No se pudo cerrar la sesión: " + error.message);
         } finally {
@@ -523,6 +706,8 @@
             mostrarAplicacion();
             await cargarEstablecimientos();
             await cargarSectores();
+            await cargarPuestos();
+            await cargarPersonas();
         } else {
             mostrarLogin();
         }
@@ -553,7 +738,7 @@
         )];
     }
 
-    // OBTENER ESTABLECIMIENTOS DE LAS ORGANIZACIONES DEL USUARIO
+    // ESTABLECIMIENTOS DE LAS ORGANIZACIONES DEL USUARIO
     async function obtenerEstablecimientosUsuario() {
         const organizaciones = await obtenerOrganizacionesUsuario();
 
@@ -561,7 +746,7 @@
 
         const { data, error } = await supabaseClient
             .from("establecimientos")
-            .select("id, Nombre, Codigo, Activo")
+            .select("id, organizacion_id, Nombre, Codigo, Activo")
             .in("organizacion_id", organizaciones)
             .order("Nombre", { ascending: true });
 
@@ -569,7 +754,7 @@
         return data || [];
     }
 
-    // CARGAR ESTABLECIMIENTOS Y ACTUALIZAR SELECTOR
+    // CARGAR ESTABLECIMIENTOS
     async function cargarEstablecimientos() {
         const mensaje = document.getElementById("establecimientosMensaje");
         const tabla = document.getElementById("establecimientosTabla");
@@ -598,25 +783,14 @@
                 selector.appendChild(opcion);
 
                 const fila = document.createElement("tr");
-                [
-                    est.Nombre || "—",
-                    est.Codigo || "—",
-                    est.Activo ? "Activo" : "Inactivo"
-                ].forEach(valor => {
-                    const celda = document.createElement("td");
-                    celda.textContent = valor;
-                    fila.appendChild(celda);
-                });
+                agregarCelda(fila, est.Nombre);
+                agregarCelda(fila, est.Codigo);
+                agregarCelda(fila, est.Activo ? "Activo" : "Inactivo");
                 tabla.appendChild(fila);
             });
 
             if (establecimientosCache.length === 0) {
-                const fila = document.createElement("tr");
-                const celda = document.createElement("td");
-                celda.colSpan = 3;
-                celda.textContent = "No hay establecimientos registrados.";
-                fila.appendChild(celda);
-                tabla.appendChild(fila);
+                mostrarFilaVacia(tabla, 3, "No hay establecimientos registrados.");
                 mensaje.textContent =
                     "No hay establecimientos disponibles para su usuario.";
             } else {
@@ -625,18 +799,13 @@
             }
 
         } catch (error) {
-            console.error("Error al cargar establecimientos:", error);
-            mensaje.textContent =
-                "Error al consultar establecimientos: " + error.message;
-            tabla.replaceChildren();
+            mostrarError(mensaje, "Error al consultar establecimientos", error);
+            mostrarFilaVacia(tabla, 3, "No se pudieron cargar los establecimientos.");
             selector.replaceChildren();
-
-            const fila = document.createElement("tr");
-            const celda = document.createElement("td");
-            celda.colSpan = 3;
-            celda.textContent = "No se pudieron cargar los establecimientos.";
-            fila.appendChild(celda);
-            tabla.appendChild(fila);
+            const opcion = document.createElement("option");
+            opcion.value = "";
+            opcion.textContent = "No se pudieron cargar";
+            selector.appendChild(opcion);
         } finally {
             boton.disabled = false;
         }
@@ -696,10 +865,11 @@
 
             await cargarEstablecimientos();
             await cargarSectores();
+            await cargarPuestos();
+            await cargarPersonas();
 
         } catch (error) {
-            console.error("Error al guardar establecimiento:", error);
-            mensaje.textContent = "No se pudo guardar: " + error.message;
+            mostrarError(mensaje, "No se pudo guardar el establecimiento", error);
         } finally {
             boton.disabled = false;
             boton.textContent = "Guardar establecimiento";
@@ -725,14 +895,12 @@
             tabla.replaceChildren();
 
             if (ids.length === 0) {
-                const fila = document.createElement("tr");
-                const celda = document.createElement("td");
-                celda.colSpan = 6;
-                celda.textContent =
-                    "Primero debe registrar un establecimiento en su organización.";
-                fila.appendChild(celda);
-                tabla.appendChild(fila);
+                mostrarFilaVacia(
+                    tabla, 6,
+                    "Primero debe registrar un establecimiento en su organización."
+                );
                 mensaje.textContent = "No hay establecimientos disponibles.";
+                sectoresCache = [];
                 return;
             }
 
@@ -744,34 +912,23 @@
 
             if (error) throw error;
 
-            if (!sectores || sectores.length === 0) {
-                const fila = document.createElement("tr");
-                const celda = document.createElement("td");
-                celda.colSpan = 6;
-                celda.textContent = "No hay sectores registrados.";
-                fila.appendChild(celda);
-                tabla.appendChild(fila);
-                mensaje.textContent =
-                    "Consulta completada. No hay sectores registrados.";
+            sectoresCache = sectores || [];
+
+            if (sectoresCache.length === 0) {
+                mostrarFilaVacia(tabla, 6, "No hay sectores registrados.");
+                mensaje.textContent = "Consulta completada. No hay sectores registrados.";
+                await actualizarSelectoresPuestos();
                 return;
             }
 
-            sectores.forEach(sector => {
+            sectoresCache.forEach(sector => {
                 const fila = document.createElement("tr");
 
-                const valores = [
-                    nombresPorId.get(sector.establecimiento_id) || "—",
-                    sector.nombre || "—",
-                    sector.codigo || "—",
-                    sector.descripcion || "—",
-                    sector.activo ? "Activo" : "Inactivo"
-                ];
-
-                valores.forEach(valor => {
-                    const celda = document.createElement("td");
-                    celda.textContent = valor;
-                    fila.appendChild(celda);
-                });
+                agregarCelda(fila, nombresPorId.get(sector.establecimiento_id) || "—");
+                agregarCelda(fila, sector.nombre);
+                agregarCelda(fila, sector.codigo);
+                agregarCelda(fila, sector.descripcion);
+                agregarCelda(fila, sector.activo ? "Activo" : "Inactivo");
 
                 const celdaAccion = document.createElement("td");
                 const botonEstado = document.createElement("button");
@@ -779,35 +936,20 @@
                 botonEstado.type = "button";
                 botonEstado.className =
                     "primary-button small-button secondary-button";
-                botonEstado.textContent =
-                    sector.activo ? "Desactivar" : "Activar";
-
-                botonEstado.addEventListener("click", () =>
-                    cambiarEstadoSector(sector)
-                );
+                botonEstado.textContent = sector.activo ? "Desactivar" : "Activar";
+                botonEstado.addEventListener("click", () => cambiarEstadoSector(sector));
 
                 celdaAccion.appendChild(botonEstado);
                 fila.appendChild(celdaAccion);
                 tabla.appendChild(fila);
             });
 
-            mensaje.textContent =
-                `Se encontraron ${sectores.length} sector(es).`;
+            mensaje.textContent = `Se encontraron ${sectoresCache.length} sector(es).`;
+            await actualizarSelectoresPuestos();
 
         } catch (error) {
-            console.error("Error al cargar sectores:", error);
-            tabla.replaceChildren();
-
-            const fila = document.createElement("tr");
-            const celda = document.createElement("td");
-            celda.colSpan = 6;
-            celda.textContent = "No se pudieron cargar los sectores.";
-
-            fila.appendChild(celda);
-            tabla.appendChild(fila);
-
-            mensaje.textContent =
-                "Error al consultar sectores: " + error.message;
+            mostrarError(mensaje, "Error al consultar sectores", error);
+            mostrarFilaVacia(tabla, 6, "No se pudieron cargar los sectores.");
         } finally {
             boton.disabled = false;
         }
@@ -825,12 +967,9 @@
 
         const establecimientoId =
             document.getElementById("sectorEstablecimiento").value;
-        const nombre =
-            document.getElementById("sectorNombre").value.trim();
-        const codigo =
-            document.getElementById("sectorCodigo").value.trim();
-        const descripcion =
-            document.getElementById("sectorDescripcion").value.trim();
+        const nombre = document.getElementById("sectorNombre").value.trim();
+        const codigo = document.getElementById("sectorCodigo").value.trim();
+        const descripcion = document.getElementById("sectorDescripcion").value.trim();
 
         if (!establecimientoId || !nombre) {
             mensaje.textContent =
@@ -838,11 +977,7 @@
             return;
         }
 
-        const establecimientoValido = establecimientosCache.some(
-            est => est.id === establecimientoId
-        );
-
-        if (!establecimientoValido) {
+        if (!establecimientosCache.some(est => est.id === establecimientoId)) {
             mensaje.textContent =
                 "El establecimiento seleccionado no está disponible para su usuario.";
             return;
@@ -852,17 +987,15 @@
         boton.textContent = "Guardando...";
 
         try {
-            const nuevoSector = {
-                establecimiento_id: establecimientoId,
-                nombre: nombre,
-                codigo: codigo || null,
-                descripcion: descripcion || null,
-                activo: true
-            };
-
             const { error } = await supabaseClient
                 .from("sectores")
-                .insert(nuevoSector);
+                .insert({
+                    establecimiento_id: establecimientoId,
+                    nombre,
+                    codigo: codigo || null,
+                    descripcion: descripcion || null,
+                    activo: true
+                });
 
             if (error) throw error;
 
@@ -871,11 +1004,11 @@
 
             await cargarEstablecimientos();
             await cargarSectores();
+            await cargarPuestos();
+            await cargarPersonas();
 
         } catch (error) {
-            console.error("Error al guardar sector:", error);
-            mensaje.textContent =
-                "No se pudo guardar el sector: " + error.message;
+            mostrarError(mensaje, "No se pudo guardar el sector", error);
         } finally {
             boton.disabled = false;
             boton.textContent = "Guardar sector";
@@ -887,11 +1020,8 @@
         const mensaje = document.getElementById("sectoresMensaje");
         const nuevoEstado = !sector.activo;
         const accion = nuevoEstado ? "activar" : "desactivar";
-        const nombreSector = sector.nombre || "sin nombre";
 
-        if (!confirm(
-            `¿Confirma que desea ${accion} el sector "${nombreSector}"?`
-        )) {
+        if (!confirm(`¿Confirma que desea ${accion} el sector "${sector.nombre}"?`)) {
             return;
         }
 
@@ -907,16 +1037,409 @@
                 `Sector ${nuevoEstado ? "activado" : "desactivado"} correctamente.`;
 
             await cargarSectores();
+            await cargarPuestos();
+            await cargarPersonas();
 
         } catch (error) {
-            console.error("Error al cambiar estado del sector:", error);
+            mostrarError(mensaje, "No se pudo cambiar el estado del sector", error);
+        }
+    }
+
+    // CARGAR PUESTOS DE LOS SECTORES VISIBLES PARA EL USUARIO
+    async function cargarPuestos() {
+        const mensaje = document.getElementById("puestosMensaje");
+        const tabla = document.getElementById("puestosTabla");
+        const boton = document.getElementById("actualizarPuestosButton");
+
+        mensaje.textContent = "Consultando puestos...";
+        boton.disabled = true;
+
+        try {
+            const sectores = await obtenerSectoresUsuario();
+            const sectorIds = sectores.map(s => s.id);
+            const sectoresPorId = new Map(sectores.map(s => [s.id, s]));
+
+            const establecimientos = await obtenerEstablecimientosUsuario();
+            const establecimientosPorId = new Map(
+                establecimientos.map(e => [e.id, e])
+            );
+
+            tabla.replaceChildren();
+
+            if (sectorIds.length === 0) {
+                puestosCache = [];
+                mostrarFilaVacia(tabla, 6, "No hay sectores disponibles.");
+                mensaje.textContent = "No se pueden consultar puestos sin sectores.";
+                await actualizarSelectoresPuestos();
+                return;
+            }
+
+            const { data, error } = await supabaseClient
+                .from("puestos")
+                .select("id, sector_id, Nombre, Codigo, Descripcion, Activo")
+                .in("sector_id", sectorIds)
+                .order("Nombre", { ascending: true });
+
+            if (error) throw error;
+
+            puestosCache = data || [];
+
+            if (puestosCache.length === 0) {
+                mostrarFilaVacia(tabla, 6, "No hay puestos registrados.");
+                mensaje.textContent =
+                    "No hay puestos registrados en los sectores disponibles.";
+                await actualizarSelectoresPuestos();
+                return;
+            }
+
+            puestosCache.forEach(puesto => {
+                const sector = sectoresPorId.get(puesto.sector_id);
+                const establecimiento = sector
+                    ? establecimientosPorId.get(sector.establecimiento_id)
+                    : null;
+
+                const fila = document.createElement("tr");
+                agregarCelda(fila, establecimiento?.Nombre || "—");
+                agregarCelda(fila, sector?.nombre || "—");
+                agregarCelda(fila, puesto.Nombre);
+                agregarCelda(fila, puesto.Codigo);
+                agregarCelda(fila, puesto.Descripcion);
+                agregarCelda(fila, puesto.Activo ? "Activo" : "Inactivo");
+                tabla.appendChild(fila);
+            });
+
+            mensaje.textContent = `Se encontraron ${puestosCache.length} puesto(s).`;
+            await actualizarSelectoresPuestos();
+
+        } catch (error) {
+            mostrarError(mensaje, "Error al consultar puestos", error);
+            mostrarFilaVacia(tabla, 6, "No se pudieron cargar los puestos.");
+        } finally {
+            boton.disabled = false;
+        }
+    }
+
+    async function obtenerSectoresUsuario() {
+        const establecimientos = await obtenerEstablecimientosUsuario();
+        const ids = establecimientos.map(e => e.id);
+
+        if (ids.length === 0) return [];
+
+        const { data, error } = await supabaseClient
+            .from("sectores")
+            .select("id, establecimiento_id, nombre, codigo, descripcion, activo")
+            .in("establecimiento_id", ids)
+            .order("nombre", { ascending: true });
+
+        if (error) throw error;
+        return data || [];
+    }
+
+    // ACTUALIZAR EL SELECTOR DE PUESTOS DE PERSONAS
+    async function actualizarSelectoresPuestos() {
+        const selector = document.getElementById("personaPuesto");
+        const seleccionAnterior = selector.value;
+
+        selector.replaceChildren();
+
+        const inicial = document.createElement("option");
+        inicial.value = "";
+        inicial.textContent = "Seleccione un puesto activo";
+        selector.appendChild(inicial);
+
+        try {
+            const establecimientos = await obtenerEstablecimientosUsuario();
+            const establecimientosActivos = new Map(
+                establecimientos
+                    .filter(e => e.Activo)
+                    .map(e => [e.id, e])
+            );
+
+            const sectores = await obtenerSectoresUsuario();
+            const sectoresActivos = new Map(
+                sectores
+                    .filter(s => s.activo && establecimientosActivos.has(s.establecimiento_id))
+                    .map(s => [s.id, s])
+            );
+
+            const { data: puestos, error } = await supabaseClient
+                .from("puestos")
+                .select("id, sector_id, Nombre, Codigo, Activo")
+                .eq("Activo", true)
+                .order("Nombre", { ascending: true });
+
+            if (error) throw error;
+
+            const disponibles = (puestos || []).filter(
+                p => p.Activo && sectoresActivos.has(p.sector_id)
+            );
+
+            disponibles.forEach(puesto => {
+                const sector = sectoresActivos.get(puesto.sector_id);
+                const establecimiento = establecimientosActivos.get(
+                    sector.establecimiento_id
+                );
+
+                const opcion = document.createElement("option");
+                opcion.value = puesto.id;
+                opcion.textContent =
+                    `${establecimiento.Nombre} — ${sector.nombre} — ${puesto.Nombre}`;
+                selector.appendChild(opcion);
+            });
+
+            if (disponibles.some(p => p.id === seleccionAnterior)) {
+                selector.value = seleccionAnterior;
+            }
+
+            if (disponibles.length === 0) {
+                inicial.textContent =
+                    "No hay puestos activos disponibles; verifique los puestos en Supabase.";
+            }
+
+        } catch (error) {
+            console.error("Error al actualizar puestos disponibles:", error);
+            inicial.textContent = "Error al consultar puestos.";
+        }
+    }
+
+    // GUARDAR PERSONA
+    async function guardarPersona(evento) {
+        evento.preventDefault();
+
+        const formulario = document.getElementById("formularioPersona");
+        const mensaje = document.getElementById("mensajeFormularioPersona");
+        const boton = document.getElementById("guardarPersonaButton");
+
+        mensaje.textContent = "";
+
+        const legajo = document.getElementById("personaLegajo").value.trim();
+        const nombre = document.getElementById("personaNombre").value.trim();
+        const apellido = document.getElementById("personaApellido").value.trim();
+        const documento = document.getElementById("personaDocumento").value.trim();
+        const cargo = document.getElementById("personaCargo").value.trim();
+        const fechaIngreso = document.getElementById("personaFechaIngreso").value;
+        const puestoId = document.getElementById("personaPuesto").value;
+
+        if (!nombre || !apellido || !puestoId) {
             mensaje.textContent =
-                "No se pudo cambiar el estado: " + error.message;
+                "Complete nombre, apellido y puesto asignado.";
+            return;
+        }
+
+        boton.disabled = true;
+        boton.textContent = "Guardando...";
+
+        try {
+            const organizaciones = await obtenerOrganizacionesUsuario();
+
+            if (organizaciones.length !== 1) {
+                throw new Error(
+                    "Para registrar una persona, el usuario debe tener exactamente una organización activa asociada."
+                );
+            }
+
+            // Comprobar que el puesto elegido pertenece a un sector visible
+            // y activo de la organización del usuario.
+            const puestosDisponibles = await obtenerPuestosActivosUsuario();
+            const puestoValido = puestosDisponibles.some(p => p.id === puestoId);
+
+            if (!puestoValido) {
+                throw new Error(
+                    "El puesto seleccionado no está activo o no pertenece a su organización. Actualice los puestos y vuelva a intentarlo."
+                );
+            }
+
+            const nuevaPersona = {
+                organizacion_id: organizaciones[0],
+                Legajo: legajo || null,
+                Nombre: nombre,
+                Apellido: apellido,
+                Documneto: documento || null,
+                Cargo: cargo || null,
+                "Fecha de Ingreso": fechaIngreso || null,
+                Activo: true,
+                puesto_id: puestoId
+            };
+
+            const { error } = await supabaseClient
+                .from("personas")
+                .insert(nuevaPersona);
+
+            if (error) throw error;
+
+            formulario.reset();
+            mensaje.textContent = "Persona guardada correctamente.";
+
+            await cargarPersonas();
+
+        } catch (error) {
+            mostrarError(mensaje, "No se pudo guardar la persona", error);
+        } finally {
+            boton.disabled = false;
+            boton.textContent = "Guardar persona";
+        }
+    }
+
+    async function obtenerPuestosActivosUsuario() {
+        const establecimientos = await obtenerEstablecimientosUsuario();
+        const establecimientosActivos = new Map(
+            establecimientos.filter(e => e.Activo).map(e => [e.id, e])
+        );
+
+        if (establecimientosActivos.size === 0) return [];
+
+        const { data: sectores, error: errorSectores } = await supabaseClient
+            .from("sectores")
+            .select("id, establecimiento_id, activo")
+            .in("establecimiento_id", [...establecimientosActivos.keys()])
+            .eq("activo", true);
+
+        if (errorSectores) throw errorSectores;
+
+        const sectoresActivos = sectores || [];
+        if (sectoresActivos.length === 0) return [];
+
+        const sectorIds = sectoresActivos.map(s => s.id);
+
+        const { data: puestos, error: errorPuestos } = await supabaseClient
+            .from("puestos")
+            .select("id, sector_id, Activo")
+            .in("sector_id", sectorIds)
+            .eq("Activo", true);
+
+        if (errorPuestos) throw errorPuestos;
+
+        return puestos || [];
+    }
+
+    // LISTAR PERSONAS DE LA ORGANIZACIÓN DEL USUARIO
+    async function cargarPersonas() {
+        const mensaje = document.getElementById("personasMensaje");
+        const tabla = document.getElementById("personasTabla");
+        const boton = document.getElementById("actualizarPersonasButton");
+
+        mensaje.textContent = "Consultando personas...";
+        boton.disabled = true;
+
+        try {
+            const organizaciones = await obtenerOrganizacionesUsuario();
+            tabla.replaceChildren();
+
+            if (organizaciones.length === 0) {
+                personasCache = [];
+                mostrarFilaVacia(tabla, 10, "El usuario no tiene una organización activa asociada.");
+                mensaje.textContent = "No hay una organización activa disponible.";
+                return;
+            }
+
+            const { data: personas, error } = await supabaseClient
+                .from("personas")
+                .select('id, organizacion_id, Legajo, Nombre, Apellido, Documneto, Cargo, "Fecha de Ingreso", Activo, puesto_id')
+                .in("organizacion_id", organizaciones)
+                .order("Apellido", { ascending: true });
+
+            if (error) throw error;
+
+            personasCache = personas || [];
+
+            if (personasCache.length === 0) {
+                mostrarFilaVacia(tabla, 10, "No hay personas registradas.");
+                mensaje.textContent = "Consulta completada. No hay personas registradas.";
+                return;
+            }
+
+            const establecimientos = await obtenerEstablecimientosUsuario();
+            const establecimientosPorId = new Map(
+                establecimientos.map(e => [e.id, e])
+            );
+
+            const sectores = await obtenerSectoresUsuario();
+            const sectoresPorId = new Map(sectores.map(s => [s.id, s]));
+
+            const { data: todosPuestos, error: errorPuestos } = await supabaseClient
+                .from("puestos")
+                .select("id, sector_id, Nombre");
+
+            if (errorPuestos) throw errorPuestos;
+
+            const puestosPorId = new Map((todosPuestos || []).map(p => [p.id, p]));
+
+            personasCache.forEach(persona => {
+                const puesto = puestosPorId.get(persona.puesto_id);
+                const sector = puesto ? sectoresPorId.get(puesto.sector_id) : null;
+                const establecimiento = sector
+                    ? establecimientosPorId.get(sector.establecimiento_id)
+                    : null;
+
+                const fila = document.createElement("tr");
+
+                agregarCelda(fila, persona.Legajo);
+                agregarCelda(
+                    fila,
+                    `${persona.Apellido || ""}, ${persona.Nombre || ""}`.trim().replace(/^, |, $/g, "")
+                );
+                agregarCelda(fila, persona.Documneto);
+                agregarCelda(fila, persona.Cargo);
+                agregarCelda(fila, fechaLegible(persona["Fecha de Ingreso"]));
+                agregarCelda(fila, establecimiento?.Nombre || "—");
+                agregarCelda(fila, sector?.nombre || "—");
+                agregarCelda(fila, puesto?.Nombre || "—");
+                agregarCelda(fila, persona.Activo ? "Activo" : "Inactivo");
+
+                const celdaAccion = document.createElement("td");
+                const botonEstado = document.createElement("button");
+                botonEstado.type = "button";
+                botonEstado.className =
+                    "primary-button small-button secondary-button";
+                botonEstado.textContent = persona.Activo ? "Desactivar" : "Activar";
+                botonEstado.addEventListener("click", () => cambiarEstadoPersona(persona));
+                celdaAccion.appendChild(botonEstado);
+                fila.appendChild(celdaAccion);
+
+                tabla.appendChild(fila);
+            });
+
+            mensaje.textContent = `Se encontraron ${personasCache.length} persona(s).`;
+
+        } catch (error) {
+            mostrarError(mensaje, "Error al consultar personas", error);
+            mostrarFilaVacia(tabla, 10, "No se pudieron cargar las personas.");
+        } finally {
+            boton.disabled = false;
+        }
+    }
+
+    // ACTIVAR / DESACTIVAR PERSONA
+    async function cambiarEstadoPersona(persona) {
+        const mensaje = document.getElementById("personasMensaje");
+        const nuevoEstado = !persona.Activo;
+        const accion = nuevoEstado ? "activar" : "desactivar";
+        const nombreCompleto =
+            `${persona.Apellido || ""}, ${persona.Nombre || ""}`.trim();
+
+        if (!confirm(`¿Confirma que desea ${accion} a "${nombreCompleto}"?`)) {
+            return;
+        }
+
+        try {
+            const { error } = await supabaseClient
+                .from("personas")
+                .update({ Activo: nuevoEstado })
+                .eq("id", persona.id);
+
+            if (error) throw error;
+
+            mensaje.textContent =
+                `Persona ${nuevoEstado ? "activada" : "desactivada"} correctamente.`;
+
+            await cargarPersonas();
+
+        } catch (error) {
+            mostrarError(mensaje, "No se pudo cambiar el estado de la persona", error);
         }
     }
 
     // CONECTAR EVENTOS
-
     document
         .getElementById("actualizarEstablecimientosButton")
         .addEventListener("click", cargarEstablecimientos);
@@ -932,6 +1455,18 @@
     document
         .getElementById("formularioSector")
         .addEventListener("submit", guardarSector);
+
+    document
+        .getElementById("actualizarPuestosButton")
+        .addEventListener("click", cargarPuestos);
+
+    document
+        .getElementById("actualizarPersonasButton")
+        .addEventListener("click", cargarPersonas);
+
+    document
+        .getElementById("formularioPersona")
+        .addEventListener("submit", guardarPersona);
 
     // INICIAR
     comprobarSesion();
