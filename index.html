@@ -738,9 +738,9 @@
 
             const { data: sectores, error } = await supabaseClient
                 .from("sectores")
-                .select('id, establecimiento_id, "Nombre", "Codigo", "Descripcion", "Activo"')
+                .select("id, establecimiento_id, nombre, codigo, descripcion, activo")
                 .in("establecimiento_id", ids)
-                .order("Nombre", { ascending: true });
+                .order("nombre", { ascending: true });
 
             if (error) throw error;
 
@@ -761,10 +761,10 @@
 
                 const valores = [
                     nombresPorId.get(sector.establecimiento_id) || "—",
-                    sector.Nombre || "—",
-                    sector.Codigo || "—",
-                    sector.Descripcion || "—",
-                    sector.Activo ? "Activo" : "Inactivo"
+                    sector.nombre || "—",
+                    sector.codigo || "—",
+                    sector.descripcion || "—",
+                    sector.activo ? "Activo" : "Inactivo"
                 ];
 
                 valores.forEach(valor => {
@@ -780,7 +780,7 @@
                 botonEstado.className =
                     "primary-button small-button secondary-button";
                 botonEstado.textContent =
-                    sector.Activo ? "Desactivar" : "Activar";
+                    sector.activo ? "Desactivar" : "Activar";
 
                 botonEstado.addEventListener("click", () =>
                     cambiarEstadoSector(sector)
@@ -854,10 +854,10 @@
         try {
             const nuevoSector = {
                 establecimiento_id: establecimientoId,
-                Nombre: nombre,
-                Codigo: codigo || null,
-                Descripcion: descripcion || null,
-                Activo: true
+                nombre: nombre,
+                codigo: codigo || null,
+                descripcion: descripcion || null,
+                activo: true
             };
 
             const { error } = await supabaseClient
@@ -885,9 +885,9 @@
     // ACTIVAR / DESACTIVAR SECTOR
     async function cambiarEstadoSector(sector) {
         const mensaje = document.getElementById("sectoresMensaje");
-        const nuevoEstado = !sector.Activo;
+        const nuevoEstado = !sector.activo;
         const accion = nuevoEstado ? "activar" : "desactivar";
-        const nombreSector = sector.Nombre || "sin nombre";
+        const nombreSector = sector.nombre || "sin nombre";
 
         if (!confirm(
             `¿Confirma que desea ${accion} el sector "${nombreSector}"?`
@@ -898,7 +898,7 @@
         try {
             const { error } = await supabaseClient
                 .from("sectores")
-                .update({ Activo: nuevoEstado })
+                .update({ activo: nuevoEstado })
                 .eq("id", sector.id);
 
             if (error) throw error;
