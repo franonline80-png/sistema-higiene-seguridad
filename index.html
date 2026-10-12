@@ -8,7 +8,7 @@
 <title>Sistema de Higiene y Seguridad</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--navy:#10243a;--navy2:#183b58;--blue:#2563eb;--bg:#f3f6fa;--white:#fff;--text:#172033;--muted:#64748b;--line:#e2e8f0;--green:#15803d;--red:#b91c1c;--amber:#a16207}
+:root{--navy:#10243a;--navy2:#1d4d70;--blue:#2563eb;--bg:#f3f6fa;--text:#172033;--muted:#64748b;--line:#e2e8f0;--green:#15803d;--red:#b91c1c;--amber:#a16207}
 *{box-sizing:border-box}
 body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text)}
 button,input,select,textarea{font:inherit}
@@ -18,12 +18,13 @@ button:disabled{opacity:.55;cursor:not-allowed}
 #loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(145deg,#10243a,#245477)}
 .login-box{width:100%;max-width:430px;background:#fff;padding:32px;border-radius:18px;box-shadow:0 20px 60px #0003}
 .brand-mark{width:54px;height:54px;border-radius:14px;background:#e6efff;color:#1d4ed8;display:grid;place-items:center;font-size:26px;margin-bottom:20px}
-.login-box h1{font-size:25px;margin:0 0 8px}.login-box p{color:var(--muted);line-height:1.5;margin:0 0 24px}
+.login-box h1{font-size:25px;margin:0 0 8px}
+.login-box p{color:var(--muted);line-height:1.5;margin:0 0 24px}
 label{display:block;font-size:13px;font-weight:700;margin:0 0 6px}
 input,select,textarea{width:100%;min-width:0;border:1px solid #cbd5e1;background:#fff;padding:10px 12px;border-radius:8px;margin-bottom:14px;color:var(--text)}
 input:focus,select:focus,textarea:focus{outline:2px solid #93c5fd;border-color:#3b82f6}
 .btn{border:0;border-radius:8px;padding:10px 14px;background:var(--navy);color:white;font-weight:600}
-.btn:hover{filter:brightness(1.12)}
+.btn:hover{filter:brightness(1.1)}
 .btn-blue{background:var(--blue)}.btn-green{background:var(--green)}.btn-red{background:var(--red)}.btn-light{background:#e8eef5;color:#203247}.btn-sm{padding:6px 9px;font-size:12px;margin:2px}
 #loginButton{width:100%;padding:13px}
 #loginMessage,.status{font-size:13px;line-height:1.5;margin-top:10px;overflow-wrap:anywhere}
@@ -64,10 +65,53 @@ tr:hover td{background:#fafcff}
 .legal-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .legal-link{padding:15px;border:1px solid var(--line);border-radius:10px;text-decoration:none;color:var(--text);background:#fff;display:block}
 .legal-link strong{display:block;margin-bottom:6px}.legal-link span{color:var(--muted);font-size:12px;line-height:1.5}
-footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 .empty{padding:22px;text-align:center;color:var(--muted)}
-@media(max-width:1000px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.module-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:600px){.topbar{padding:14px}.brand h1{font-size:16px}.top-actions{width:100%}.org-select{max-width:none;flex:1}.layout{padding:12px}.grid{gap:9px}.metric{padding:13px}.metric-value{font-size:24px}.metric-label{font-size:11px}.form-grid,.module-grid,.legal-links{grid-template-columns:1fr}.page-title h2{font-size:21px}.panel{padding:13px}.nav-tab{padding:9px 11px}.table-wrap{max-height:450px}th,td{padding:8px;font-size:12px}}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
+
+/* TABLERO PROFESIONAL */
+.dashboard-welcome{background:linear-gradient(120deg,#10243a 0%,#1d4d70 100%);color:white;border-radius:17px;padding:25px 27px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;gap:18px;box-shadow:0 8px 24px #10243a18}
+.dashboard-welcome h2{font-size:25px;margin:0 0 8px}
+.dashboard-welcome p{color:#dbeafe;margin:0;font-size:14px;line-height:1.6}
+.dashboard-date{font-size:12px;color:#dbeafe;margin-top:13px}
+.dashboard-section-title{font-size:17px;font-weight:800;margin:24px 0 13px}
+.dashboard-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}
+.dashboard-metric{background:#fff;border:1px solid #e5ebf2;border-radius:14px;padding:18px;min-width:0;box-shadow:0 3px 12px #0f172a06;position:relative;overflow:hidden}
+.dashboard-metric:after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#2563eb}
+.dashboard-metric:nth-child(2):after{background:#0891b2}
+.dashboard-metric:nth-child(3):after{background:#7c3aed}
+.dashboard-metric:nth-child(4):after{background:#16a34a}
+.dashboard-metric-top{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.dashboard-metric-label{font-size:12px;color:#64748b;font-weight:700}
+.dashboard-metric-icon{width:38px;height:38px;display:grid;place-items:center;background:#eff6ff;border-radius:11px;font-size:19px}
+.dashboard-metric-number{font-size:31px;font-weight:800;letter-spacing:-1px;margin-top:13px}
+.dashboard-metric-foot{font-size:11px;color:#64748b;margin-top:5px}
+.dashboard-two-columns{display:grid;grid-template-columns:1fr 1fr;gap:17px;align-items:start}
+.dashboard-card{background:#fff;border:1px solid #e5ebf2;border-radius:14px;padding:18px;min-width:0;box-shadow:0 3px 12px #0f172a06}
+.dashboard-card-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
+.dashboard-card-heading h3{font-size:15px;margin:0}
+.dashboard-count{background:#eff6ff;color:#1d4ed8;padding:5px 9px;border-radius:20px;font-size:11px;font-weight:800}
+.dashboard-alert-list{display:flex;flex-direction:column;gap:9px}
+.dashboard-alert{display:flex;gap:11px;align-items:flex-start;padding:12px;border:1px solid #edf1f5;border-radius:10px;background:#fff}
+.dashboard-alert-symbol{width:34px;height:34px;flex:0 0 34px;border-radius:10px;display:grid;place-items:center;background:#f1f5f9;font-size:16px}
+.dashboard-alert-symbol.red{background:#fee2e2}
+.dashboard-alert-symbol.amber{background:#fef3c7}
+.dashboard-alert-symbol.blue{background:#dbeafe}
+.dashboard-alert-content{flex:1;min-width:0}
+.dashboard-alert-title{font-size:13px;font-weight:700;overflow-wrap:anywhere}
+.dashboard-alert-detail{font-size:12px;color:#64748b;line-height:1.5;margin-top:4px;overflow-wrap:anywhere}
+.dashboard-alert-meta{font-size:11px;color:#64748b;margin-top:5px}
+.dashboard-empty{padding:20px 10px;text-align:center;color:#64748b;font-size:13px;line-height:1.6}
+.dashboard-shortcuts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.dashboard-shortcut{background:#fff;border:1px solid #e5ebf2;border-radius:12px;padding:15px;text-align:left;cursor:pointer;color:#172033;transition:transform .15s,border-color .15s;min-width:0}
+.dashboard-shortcut:hover{transform:translateY(-2px);border-color:#93c5fd}
+.dashboard-shortcut-icon{width:39px;height:39px;display:grid;place-items:center;border-radius:11px;background:#eff6ff;font-size:20px;margin-bottom:11px}
+.dashboard-shortcut strong{display:block;font-size:13px;margin-bottom:5px}
+.dashboard-shortcut span{font-size:11px;color:#64748b;line-height:1.5}
+.dashboard-refresh-note{font-size:11px;color:#64748b;margin-top:12px}
+.dashboard-loading{padding:22px;color:#64748b;font-size:13px}
+@media(max-width:1100px){.dashboard-shortcuts{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:1000px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.module-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.topbar{padding:14px}.brand h1{font-size:16px}.top-actions{width:100%}.org-select{max-width:none;flex:1}.layout{padding:12px}.grid{gap:9px}.metric{padding:13px}.metric-value{font-size:24px}.metric-label{font-size:11px}.form-grid,.module-grid,.legal-links{grid-template-columns:1fr}.page-title h2{font-size:21px}.panel{padding:13px}.nav-tab{padding:9px 11px}.table-wrap{max-height:450px}th,td{padding:8px;font-size:12px}.dashboard-welcome{padding:20px;align-items:flex-start}.dashboard-welcome h2{font-size:21px}.dashboard-two-columns{grid-template-columns:1fr}.dashboard-metric{padding:15px}.dashboard-metric-number{font-size:27px}.dashboard-card{padding:14px}.dashboard-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.dashboard-shortcut{padding:12px}}
 </style>
 </head>
 <body>
@@ -92,10 +136,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
   <header class="topbar">
     <div class="brand">
       <div class="brand-icon">✚</div>
-      <div>
-        <h1>Sistema de Higiene y Seguridad</h1>
-        <p>Gestión preventiva y cumplimiento</p>
-      </div>
+      <div><h1>Sistema de Higiene y Seguridad</h1><p>Gestión preventiva y cumplimiento</p></div>
     </div>
     <div class="top-actions">
       <select id="orgSelect" class="org-select" aria-label="Organización activa"></select>
@@ -103,7 +144,6 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
       <button id="logoutButton" class="btn btn-red" type="button">Cerrar sesión</button>
     </div>
   </header>
-
   <main class="layout">
     <nav id="navTabs" class="nav-tabs" aria-label="Módulos"></nav>
     <div id="view"></div>
@@ -114,334 +154,134 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 <script>
 "use strict";
 
-const SUPABASE_URL = "https://dpssgowiftbtclzsaprc.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_NIV3CQpZcbvnOBfY7-_a7g_PtYfNIsG";
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-const $ = id => document.getElementById(id);
+const SUPABASE_URL="https://dpssgowiftbtclzsaprc.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_NIV3CQpZcbvnOBfY7-_a7g_PtYfNIsG";
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const $=id=>document.getElementById(id);
 
-let user = null;
-let organizations = [];
-let activeOrg = "";
-let activeModule = "inicio";
-let editing = null;
-let moduleCache = {};
-let currentRows = [];
-let searchText = "";
+let user=null,organizations=[],activeOrg="",activeModule="inicio",editing=null,moduleCache={},searchText="";
 
-const modules = [
-  {id:"inicio",label:"Inicio",icon:"⌂"},
-  {id:"establecimientos",label:"Establecimientos",icon:"▦"},
-  {id:"sectores",label:"Sectores",icon:"▤"},
-  {id:"puestos",label:"Puestos",icon:"▣"},
-  {id:"personas",label:"Personas",icon:"♙"},
-  {id:"riesgos",label:"Riesgos",icon:"⚠"},
-  {id:"inspecciones",label:"Inspecciones",icon:"✓"},
-  {id:"accidentes_incidentes",label:"Accidentes",icon:"✚"},
-  {id:"mediciones_ambientales",label:"Mediciones",icon:"◉"},
-  {id:"epp",label:"EPP",icon:"⛑"},
-  {id:"capacitaciones",label:"Capacitaciones",icon:"▧"},
-  {id:"documentacion",label:"Documentación",icon:"▤"},
-  {id:"acciones_correctivas",label:"Planes de acción",icon:"☑"},
-  {id:"equipos_instalaciones",label:"Equipos",icon:"⚙"},
-  {id:"vencimientos",label:"Vencimientos",icon:"◷"},
-  {id:"legislacion",label:"Legislación",icon:"§"}
+const modules=[
+{id:"inicio",label:"Inicio",icon:"⌂"},
+{id:"establecimientos",label:"Establecimientos",icon:"▦"},
+{id:"sectores",label:"Sectores",icon:"▤"},
+{id:"puestos",label:"Puestos",icon:"▣"},
+{id:"personas",label:"Personas",icon:"♙"},
+{id:"riesgos",label:"Riesgos",icon:"⚠"},
+{id:"inspecciones",label:"Inspecciones",icon:"✓"},
+{id:"accidentes_incidentes",label:"Accidentes",icon:"✚"},
+{id:"mediciones_ambientales",label:"Mediciones",icon:"◉"},
+{id:"epp",label:"EPP",icon:"⛑"},
+{id:"capacitaciones",label:"Capacitaciones",icon:"▧"},
+{id:"documentacion",label:"Documentación",icon:"▤"},
+{id:"acciones_correctivas",label:"Planes de acción",icon:"☑"},
+{id:"equipos_instalaciones",label:"Equipos",icon:"⚙"},
+{id:"vencimientos",label:"Vencimientos",icon:"◷"},
+{id:"legislacion",label:"Legislación",icon:"§"}
 ];
 
-const configs = {
-  establecimientos:{
-    title:"Establecimientos",table:"establecimientos",org:true,pk:"id",
-    fields:[
-      ["Nombre","Nombre","text",true],["Codigo","Código","text",false],
-      ["Direccion","Dirección","text",false],["Localidad","Localidad","text",false],
-      ["Provincia","Provincia","text",false],["Activo","Estado activo","checkbox",false]
-    ],columns:["Nombre","Codigo","Direccion","Localidad","Provincia","Activo"],order:"Nombre"
-  },
-  sectores:{
-    title:"Sectores",table:"sectores",org:false,pk:"id",
-    fields:[
-      ["establecimiento_id","Establecimiento","ref:establecimientos",true],
-      ["nombre","Nombre","text",true],["codigo","Código","text",false],
-      ["descripcion","Descripción","textarea",false],["activo","Activo","checkbox",false]
-    ],columns:["establecimiento_id","nombre","codigo","descripcion","activo"],order:"nombre"
-  },
-  puestos:{
-    title:"Puestos",table:"puestos",org:false,pk:"id",
-    fields:[
-      ["sector_id","Sector","ref:sectores",true],["Nombre","Nombre","text",true],
-      ["Codigo","Código","text",false],["Descripcion","Descripción","textarea",false],
-      ["Activo","Activo","checkbox",false]
-    ],columns:["sector_id","Nombre","Codigo","Descripcion","Activo"],order:"Nombre"
-  },
-  personas:{
-    title:"Personas",table:"personas",org:true,pk:"id",
-    fields:[
-      ["Legajo","Legajo","text",false],["Nombre","Nombre","text",true],
-      ["Apellido","Apellido","text",true],["Documneto","Documento","text",false],
-      ["Cargo","Cargo","text",false],["Fecha de Ingreso","Fecha de ingreso","date",false],
-      ["puesto_id","Puesto","ref:puestos",true],["Activo","Activo","checkbox",false]
-    ],columns:["Legajo","Nombre","Apellido","Documneto","Cargo","Fecha de Ingreso","puesto_id","Activo"],order:"Apellido"
-  },
-  riesgos:{
-    title:"Gestión de riesgos",table:"riesgos",org:false,pk:"id",
-    fields:[
-      ["puesto_id","Puesto","ref:puestos",true],["peligro_id","Peligro","ref:peligros",true],
-      ["descripcion","Descripción del riesgo","textarea",true],
-      ["Probabilidad","Probabilidad (1–5)","number",false],
-      ["consecuencia","Consecuencia (1–5)","number",false],
-      ["nivel_riesgo","Nivel de riesgo","number",false],
-      ["medidas_existentes","Medidas existentes","textarea",false],
-      ["medidas_propuestas","Medidas propuestas","textarea",false],
-      ["responsable","Responsable","text",false],
-      ["fecha_evaluacion","Fecha de evaluación","date",false],
-      ["activo","Activo","checkbox",false]
-    ],columns:["puesto_id","peligro_id","descripcion","Probabilidad","consecuencia","nivel_riesgo","medidas_existentes","medidas_propuestas","responsable","fecha_evaluacion","activo"],order:"fecha_evaluacion"
-  },
-  inspecciones:{
-    title:"Inspecciones",table:"inspecciones",org:true,pk:"id",
-    fields:[
-      ["establecimiento_id","Establecimiento","ref:establecimientos",false],
-      ["sector_id","Sector","ref:sectores",false],["puesto_id","Puesto","ref:puestos",false],
-      ["tipo","Tipo de inspección","text",true],["fecha","Fecha","date",true],
-      ["inspector","Inspector","text",false],["estado","Estado","select:Programada,En curso,Cerrada",true],
-      ["observaciones","Observaciones","textarea",false]
-    ],columns:["establecimiento_id","sector_id","puesto_id","tipo","fecha","inspector","estado","observaciones"],order:"fecha"
-  },
-  accidentes_incidentes:{
-    title:"Accidentes e incidentes",table:"accidentes_incidentes",org:true,pk:"id",
-    fields:[
-      ["establecimiento_id","Establecimiento","ref:establecimientos",false],
-      ["sector_id","Sector","ref:sectores",false],["persona_id","Persona","ref:personas",false],
-      ["tipo","Tipo","select:Accidente,Incidente,Cuasi accidente",true],
-      ["fecha","Fecha","date",true],["hora","Hora","time",false],
-      ["lugar","Lugar","text",false],["descripcion","Descripción","textarea",true],
-      ["lesiones","Lesiones","textarea",false],["causas","Causas","textarea",false],
-      ["acciones_inmediatas","Acciones inmediatas","textarea",false],
-      ["dias_perdidos","Días perdidos","number",false],["estado","Estado","select:Abierto,En investigación,Cerrado",false],
-      ["observaciones","Observaciones","textarea",false]
-    ],columns:["tipo","fecha","hora","lugar","descripcion","lesiones","causas","acciones_inmediatas","dias_perdidos","estado","observaciones","establecimiento_id","sector_id","persona_id"],order:"fecha"
-  },
-  mediciones_ambientales:{
-    title:"Mediciones ambientales",table:"mediciones_ambientales",org:true,pk:"id",
-    fields:[
-      ["establecimiento_id","Establecimiento","ref:establecimientos",false],
-      ["sector_id","Sector","ref:sectores",false],["tipo","Tipo de medición","text",true],
-      ["fecha","Fecha","date",true],["punto_medicion","Punto de medición","text",false],
-      ["parametro","Parámetro","text",false],["valor","Valor medido","number",false],
-      ["unidad","Unidad","text",false],["limite_permitido","Límite permitido","number",false],
-      ["cumple","Cumple límite","checkbox",false],["laboratorio","Laboratorio","text",false],
-      ["observaciones","Observaciones","textarea",false]
-    ],columns:["tipo","fecha","punto_medicion","parametro","valor","unidad","limite_permitido","cumple","laboratorio","observaciones","establecimiento_id","sector_id"],order:"fecha"
-  },
-  epp:{
-    title:"Elementos de protección personal",table:"epp",org:true,pk:"id",
-    fields:[
-      ["nombre","Elemento","text",true],["tpto","Tipo","text",false],
-      ["marca","Marca","text",false],["modelo","Modelo","text",false],
-      ["talle","Talle","text",false],["cantidad","Cantidad disponible","text",false],
-      ["fecha_adquisicion","Fecha de adquisición","date",false],
-      ["vida_util_meses","Vida útil (meses)","number",false],
-      ["estado","Estado","select:Disponible,Entregado,En mantenimiento,Fuera de servicio",false],
-      ["observaciones","Observaciones","textarea",false],["Activo","Activo","checkbox",false]
-    ],columns:["nombre","tpto","marca","modelo","talle","cantidad","fecha_adquisicion","vida_util_meses","estado","observaciones","Activo"],order:"nombre"
-  },
-  capacitaciones:{
-    title:"Capacitaciones",table:"capacitaciones",org:true,pk:"id",
-    fields:[
-      ["titulo","Título","text",true],["tipo","Tipo","text",false],["fecha","Fecha","date",true],
-      ["duracion_horas","Duración (horas)","number",false],["instructor","Instructor","text",false],
-      ["contenido","Contenido","textarea",false],["observaciones","Observaciones","textarea",false]
-    ],columns:["titulo","tipo","fecha","duracion_horas","instructor","contenido","observaciones"],order:"fecha"
-  },
-  documentacion:{
-    title:"Documentación",table:"documentacion",org:true,pk:"id",
-    fields:[
-      ["establecimiento_id","Establecimiento","ref:establecimientos",false],
-      ["tipo","Tipo de documento","text",true],["titulo","Título","text",true],
-      ["descripcion","Descripción","textarea",false],["numero_documento","Número de documento","text",false],
-      ["fecha_emision","Fecha de emisión","date",false],["fecha_vencimiento","Fecha de vencimiento","date",false],
-      ["archivo_url","URL del archivo","url",false],
-      ["estado","Estado","select:Vigente,Por vencer,Vencido,En revisión,Obsoleto",true],
-      ["observaciones","Observaciones","textarea",false]
-    ],columns:["establecimiento_id","tipo","titulo","descripcion","numero_documento","fecha_emision","fecha_vencimiento","archivo_url","estado","observaciones"],order:"titulo"
-  },
-  equipos_instalaciones:{
-    title:"Equipos e instalaciones",table:"equipos_instalaciones",org:true,pk:"id",
-    fields:[
-      ["establecimiento_id","Establecimiento","ref:establecimientos",false],
-      ["sector_id","Sector","ref:sectores",false],["tipo","Tipo de equipo","text",true],
-      ["nombre","Nombre","text",true],["codigo_interno","Código interno","text",false],
-      ["marca","Marca","text",false],["modelo","Modelo","text",false],
-      ["numero_serie","Número de serie","text",false],["ubicacion","Ubicación","text",false],
-      ["estado","Estado","select:Operativo,En mantenimiento,Fuera de servicio",true],
-      ["fecha_adquisicion","Fecha de adquisición","date",false],
-      ["fecha_puesta_servicio","Puesta en servicio","date",false],
-      ["ultimo_mantenimiento","Último mantenimiento","date",false],
-      ["proximo_mantenimiento","Próximo mantenimiento","date",false],
-      ["responsable_id","Responsable","ref:personas",false],
-      ["observaciones","Observaciones","textarea",false],["activo","Activo","checkbox",false]
-    ],columns:["establecimiento_id","sector_id","tipo","nombre","codigo_interno","marca","modelo","numero_serie","ubicacion","estado","fecha_adquisicion","fecha_puesta_servicio","ultimo_mantenimiento","proximo_mantenimiento","responsable_id","observaciones","activo"],order:"nombre"
-  },
-  vencimientos:{
-    title:"Vencimientos",table:"vencimientos",org:true,pk:"id",
-    fields:[
-      ["establecimiento_id","Establecimiento","ref:establecimientos",false],
-      ["tipo","Tipo de vencimiento","text",true],["concepto","Concepto","text",true],
-      ["descripcion","Descripción","textarea",false],["fecha_vencimiento","Fecha de vencimiento","date",true],
-      ["responsable_id","Responsable","ref:personas",false],
-      ["estado","Estado","select:Pendiente,En curso,Cumplido,Vencido",true],
-      ["prioridad","Prioridad","select:Baja,Media,Alta,Crítica",false],
-      ["observaciones","Observaciones","textarea",false]
-    ],columns:["establecimiento_id","tipo","concepto","descripcion","fecha_vencimiento","responsable_id","estado","prioridad","observaciones"],order:"fecha_vencimiento"
-  }
+const configs={
+establecimientos:{title:"Establecimientos",table:"establecimientos",org:true,fields:[
+["Nombre","Nombre","text",true],["Codigo","Código","text",false],["Direccion","Dirección","text",false],["Localidad","Localidad","text",false],["Provincia","Provincia","text",false],["Activo","Activo","checkbox",false]],columns:["Nombre","Codigo","Direccion","Localidad","Provincia","Activo"],order:"Nombre"},
+sectores:{title:"Sectores",table:"sectores",org:false,fields:[
+["establecimiento_id","Establecimiento","ref:establecimientos",true],["nombre","Nombre","text",true],["codigo","Código","text",false],["descripcion","Descripción","textarea",false],["activo","Activo","checkbox",false]],columns:["establecimiento_id","nombre","codigo","descripcion","activo"],order:"nombre"},
+puestos:{title:"Puestos",table:"puestos",org:false,fields:[
+["sector_id","Sector","ref:sectores",true],["Nombre","Nombre","text",true],["Codigo","Código","text",false],["Descripcion","Descripción","textarea",false],["Activo","Activo","checkbox",false]],columns:["sector_id","Nombre","Codigo","Descripcion","Activo"],order:"Nombre"},
+personas:{title:"Personas",table:"personas",org:true,fields:[
+["Legajo","Legajo","text",false],["Nombre","Nombre","text",true],["Apellido","Apellido","text",true],["Documneto","Documento","text",false],["Cargo","Cargo","text",false],["Fecha de Ingreso","Fecha de ingreso","date",false],["puesto_id","Puesto","ref:puestos",true],["Activo","Activo","checkbox",false]],columns:["Legajo","Nombre","Apellido","Documneto","Cargo","Fecha de Ingreso","puesto_id","Activo"],order:"Apellido"},
+riesgos:{title:"Gestión de riesgos",table:"riesgos",org:false,fields:[
+["puesto_id","Puesto","ref:puestos",true],["peligro_id","Peligro","ref:peligros",true],["descripcion","Descripción del riesgo","textarea",true],["Probabilidad","Probabilidad (1–5)","number",false],["consecuencia","Consecuencia (1–5)","number",false],["nivel_riesgo","Nivel de riesgo","number",false],["medidas_existentes","Medidas existentes","textarea",false],["medidas_propuestas","Medidas propuestas","textarea",false],["responsable","Responsable","text",false],["fecha_evaluacion","Fecha de evaluación","date",false],["activo","Activo","checkbox",false]],columns:["puesto_id","peligro_id","descripcion","Probabilidad","consecuencia","nivel_riesgo","medidas_existentes","medidas_propuestas","responsable","fecha_evaluacion","activo"],order:"fecha_evaluacion"},
+inspecciones:{title:"Inspecciones",table:"inspecciones",org:true,fields:[
+["establecimiento_id","Establecimiento","ref:establecimientos",false],["sector_id","Sector","ref:sectores",false],["puesto_id","Puesto","ref:puestos",false],["tipo","Tipo de inspección","text",true],["fecha","Fecha","date",true],["inspector","Inspector","text",false],["estado","Estado","select:Programada,En curso,Cerrada",true],["observaciones","Observaciones","textarea",false]],columns:["establecimiento_id","sector_id","puesto_id","tipo","fecha","inspector","estado","observaciones"],order:"fecha"},
+accidentes_incidentes:{title:"Accidentes e incidentes",table:"accidentes_incidentes",org:true,fields:[
+["establecimiento_id","Establecimiento","ref:establecimientos",false],["sector_id","Sector","ref:sectores",false],["persona_id","Persona","ref:personas",false],["tipo","Tipo","select:Accidente,Incidente,Cuasi accidente",true],["fecha","Fecha","date",true],["hora","Hora","time",false],["lugar","Lugar","text",false],["descripcion","Descripción","textarea",true],["lesiones","Lesiones","textarea",false],["causas","Causas","textarea",false],["acciones_inmediatas","Acciones inmediatas","textarea",false],["dias_perdidos","Días perdidos","number",false],["estado","Estado","select:Abierto,En investigación,Cerrado",false],["observaciones","Observaciones","textarea",false]],columns:["tipo","fecha","hora","lugar","descripcion","lesiones","causas","acciones_inmediatas","dias_perdidos","estado","observaciones","establecimiento_id","sector_id","persona_id"],order:"fecha"},
+mediciones_ambientales:{title:"Mediciones ambientales",table:"mediciones_ambientales",org:true,fields:[
+["establecimiento_id","Establecimiento","ref:establecimientos",false],["sector_id","Sector","ref:sectores",false],["tipo","Tipo de medición","text",true],["fecha","Fecha","date",true],["punto_medicion","Punto de medición","text",false],["parametro","Parámetro","text",false],["valor","Valor medido","number",false],["unidad","Unidad","text",false],["limite_permitido","Límite permitido","number",false],["cumple","Cumple límite","checkbox",false],["laboratorio","Laboratorio","text",false],["observaciones","Observaciones","textarea",false]],columns:["tipo","fecha","punto_medicion","parametro","valor","unidad","limite_permitido","cumple","laboratorio","observaciones","establecimiento_id","sector_id"],order:"fecha"},
+epp:{title:"Elementos de protección personal",table:"epp",org:true,fields:[
+["nombre","Elemento","text",true],["tpto","Tipo","text",false],["marca","Marca","text",false],["modelo","Modelo","text",false],["talle","Talle","text",false],["cantidad","Cantidad disponible","text",false],["fecha_adquisicion","Fecha de adquisición","date",false],["vida_util_meses","Vida útil (meses)","number",false],["estado","Estado","select:Disponible,Entregado,En mantenimiento,Fuera de servicio",false],["observaciones","Observaciones","textarea",false],["Activo","Activo","checkbox",false]],columns:["nombre","tpto","marca","modelo","talle","cantidad","fecha_adquisicion","vida_util_meses","estado","observaciones","Activo"],order:"nombre"},
+capacitaciones:{title:"Capacitaciones",table:"capacitaciones",org:true,fields:[
+["titulo","Título","text",true],["tipo","Tipo","text",false],["fecha","Fecha","date",true],["duracion_horas","Duración (horas)","number",false],["instructor","Instructor","text",false],["contenido","Contenido","textarea",false],["observaciones","Observaciones","textarea",false]],columns:["titulo","tipo","fecha","duracion_horas","instructor","contenido","observaciones"],order:"fecha"},
+documentacion:{title:"Documentación",table:"documentacion",org:true,fields:[
+["establecimiento_id","Establecimiento","ref:establecimientos",false],["tipo","Tipo de documento","text",true],["titulo","Título","text",true],["descripcion","Descripción","textarea",false],["numero_documento","Número de documento","text",false],["fecha_emision","Fecha de emisión","date",false],["fecha_vencimiento","Fecha de vencimiento","date",false],["archivo_url","URL del archivo","url",false],["estado","Estado","select:Vigente,Por vencer,Vencido,En revisión,Obsoleto",true],["observaciones","Observaciones","textarea",false]],columns:["establecimiento_id","tipo","titulo","descripcion","numero_documento","fecha_emision","fecha_vencimiento","archivo_url","estado","observaciones"],order:"titulo"},
+acciones_correctivas:{title:"Planes de acción",table:"acciones_correctivas",org:false,fields:[
+["hallazgo_id","Hallazgo","ref:hallazgos",true],["responsable_id","Responsable","ref:personas",false],["descripcion","Descripción de la acción","textarea",true],["prioridad","Prioridad","select:Baja,Media,Alta,Crítica",false],["fecha_inicio","Fecha de inicio","date",false],["fecha_vencimiento","Fecha de vencimiento","date",false],["fecha_cierre","Fecha de cierre","date",false],["estado","Estado","select:Pendiente,En curso,Cerrada,Vencida",false],["estadoobservaciones","Observaciones del estado","textarea",false]],columns:["hallazgo_id","responsable_id","descripcion","prioridad","fecha_inicio","fecha_vencimiento","fecha_cierre","estado","estadoobservaciones"],order:"fecha_vencimiento"},
+equipos_instalaciones:{title:"Equipos e instalaciones",table:"equipos_instalaciones",org:true,fields:[
+["establecimiento_id","Establecimiento","ref:establecimientos",false],["sector_id","Sector","ref:sectores",false],["tipo","Tipo de equipo","text",true],["nombre","Nombre","text",true],["codigo_interno","Código interno","text",false],["marca","Marca","text",false],["modelo","Modelo","text",false],["numero_serie","Número de serie","text",false],["ubicacion","Ubicación","text",false],["estado","Estado","select:Operativo,En mantenimiento,Fuera de servicio",true],["fecha_adquisicion","Fecha de adquisición","date",false],["fecha_puesta_servicio","Puesta en servicio","date",false],["ultimo_mantenimiento","Último mantenimiento","date",false],["proximo_mantenimiento","Próximo mantenimiento","date",false],["responsable_id","Responsable","ref:personas",false],["observaciones","Observaciones","textarea",false],["activo","Activo","checkbox",false]],columns:["establecimiento_id","sector_id","tipo","nombre","codigo_interno","marca","modelo","numero_serie","ubicacion","estado","fecha_adquisicion","fecha_puesta_servicio","ultimo_mantenimiento","proximo_mantenimiento","responsable_id","observaciones","activo"],order:"nombre"},
+vencimientos:{title:"Vencimientos",table:"vencimientos",org:true,fields:[
+["establecimiento_id","Establecimiento","ref:establecimientos",false],["tipo","Tipo de vencimiento","text",true],["concepto","Concepto","text",true],["descripcion","Descripción","textarea",false],["fecha_vencimiento","Fecha de vencimiento","date",true],["responsable_id","Responsable","ref:personas",false],["estado","Estado","select:Pendiente,En curso,Cumplido,Vencido",true],["prioridad","Prioridad","select:Baja,Media,Alta,Crítica",false],["observaciones","Observaciones","textarea",false]],columns:["establecimiento_id","tipo","concepto","descripcion","fecha_vencimiento","responsable_id","estado","prioridad","observaciones"],order:"fecha_vencimiento"}
 };
 
-function escapeHtml(value){
-  return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-}
-function showLogin(message=""){
-  $("app").style.display="none";$("loginScreen").style.display="flex";
-  $("loginMessage").textContent=message;
-}
-function showApp(){
-  $("loginScreen").style.display="none";$("app").style.display="block";
-}
-function setMessage(id,text,isError=false){
-  const el=$(id);if(!el)return;
-  el.textContent=text||"";el.className="status "+(isError?"error":"success");
-}
+function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function showLogin(message=""){$("app").style.display="none";$("loginScreen").style.display="flex";$("loginMessage").textContent=message}
+function showApp(){$("loginScreen").style.display="none";$("app").style.display="block"}
 function getOrgIds(){return organizations.map(o=>o.id)}
 function getOrgName(){return organizations.find(o=>o.id===activeOrg)?.nombre||"Organización"}
-function labelForField(field){return field[1]}
-function isCheckbox(field){return field[2]==="checkbox"}
-function isReference(field){return field[2].startsWith("ref:")}
-function referenceTable(field){return field[2].split(":")[1]}
-function moduleConfig(id){return configs[id]}
-function visibleModules(){
-  return modules.filter(m=>m.id==="inicio"||m.id==="legislacion"||configs[m.id]);
-}
+function visibleModules(){return modules.filter(m=>m.id==="inicio"||m.id==="legislacion"||configs[m.id])}
 function buildNav(){
   const nav=$("navTabs");nav.replaceChildren();
   visibleModules().forEach(m=>{
     const b=document.createElement("button");b.type="button";
     b.className="nav-tab"+(activeModule===m.id?" active":"");
-    b.textContent=m.icon+" "+m.label;
-    b.onclick=()=>openModule(m.id);nav.appendChild(b);
+    b.textContent=m.icon+" "+m.label;b.onclick=()=>openModule(m.id);nav.appendChild(b);
   });
 }
-function openModule(id){
-  activeModule=id;editing=null;searchText="";buildNav();
-  if(id==="inicio"){renderHome();return}
-  if(id==="legislacion"){renderLegislation();return}
-  if(configs[id])renderCrud(id);
-}
+function openModule(id){activeModule=id;editing=null;searchText="";buildNav();if(id==="inicio")return renderHome();if(id==="legislacion")return renderLegislation();if(configs[id])return renderCrud(id)}
+
 async function fetchRows(table,limit=500){
   let q=db.from(table).select("*").limit(limit);
   if(table==="organizaciones")q=q.in("id",getOrgIds());
-  else if(table==="establecimientos"||table==="personas"||table==="accidentes_incidentes"||
-          table==="inspecciones"||table==="mediciones_ambientales"||table==="epp"||
-          table==="capacitaciones"||table==="documentacion"||table==="equipos_instalaciones"||table==="vencimientos"){
-    q=q.in("organizacion_id",getOrgIds());
-  }else if(table==="sectores"){
-    const es=await fetchRows("establecimientos");const ids=es.map(x=>x.id);
-    if(!ids.length)return [];
-    q=q.in("establecimiento_id",ids);
+  else if(["establecimientos","personas","accidentes_incidentes","inspecciones","mediciones_ambientales","epp","capacitaciones","documentacion","equipos_instalaciones","vencimientos"].includes(table))q=q.in("organizacion_id",getOrgIds());
+  else if(table==="sectores"){
+    const es=await fetchRows("establecimientos");const ids=es.map(x=>x.id);if(!ids.length)return [];q=q.in("establecimiento_id",ids);
   }else if(table==="puestos"){
-    const ss=await fetchRows("sectores");const ids=ss.map(x=>x.id);
-    if(!ids.length)return [];
-    q=q.in("sector_id",ids);
+    const ss=await fetchRows("sectores");const ids=ss.map(x=>x.id);if(!ids.length)return [];q=q.in("sector_id",ids);
   }else if(table==="riesgos"){
-    const ps=await fetchRows("puestos");const ids=ps.map(x=>x.id);
-    if(!ids.length)return [];
-    q=q.in("puesto_id",ids);
+    const ps=await fetchRows("puestos");const ids=ps.map(x=>x.id);if(!ids.length)return [];q=q.in("puesto_id",ids);
   }
   const {data,error}=await q;if(error)throw error;return data||[];
 }
 async function fetchReferenceOptions(table){
   const labels={
-    establecimientos:r=>r.Nombre,
-    sectores:r=>r.nombre,
-    puestos:r=>r.Nombre,
+    establecimientos:r=>r.Nombre,sectores:r=>r.nombre,puestos:r=>r.Nombre,
     personas:r=>`${r.Apellido||""}, ${r.Nombre||""}`.replace(/^, |, $/g,""),
-    peligros:r=>r.nombre,
-    inspecciones:r=>`${r.tipo||"Inspección"} — ${r.fecha||""}`,
-    riesgos:r=>r.descripcion,
-    hallazgos:r=>r.descripcion
+    peligros:r=>r.nombre,inspecciones:r=>`${r.tipo||"Inspección"} — ${r.fecha||""}`,
+    riesgos:r=>r.descripcion,hallazgos:r=>r.descripcion
   };
   const rows=await fetchRows(table);
   return rows.map(r=>({id:r.id,label:labels[table]?.(r)||r.nombre||r.titulo||r.id}));
 }
 async function renderField(field,value){
-  const [key,label,type,required]=field;
-  const req=required?"required":"";
+  const [key,label,type,required]=field,req=required?"required":"";
   const id="f_"+key.replace(/[^a-zA-Z0-9_-]/g,"_");
   let control="";
-  if(type==="checkbox"){
-    control=`<input id="${escapeHtml(id)}" name="${escapeHtml(key)}" type="checkbox" style="width:auto;max-width:none;margin:4px 0 14px" ${value===false?"":"checked"}>`;
-  }else if(type.startsWith("ref:")){
-    const opts=await fetchReferenceOptions(referenceTable(field));
-    control=`<select id="${escapeHtml(id)}" name="${escapeHtml(key)}" ${req}><option value="">Seleccione...</option>${opts.map(o=>`<option value="${escapeHtml(o.id)}" ${o.id===value?"selected":""}>${escapeHtml(o.label)}</option>`).join("")}</select>`;
+  if(type==="checkbox")control=`<input id="${id}" name="${escapeHtml(key)}" type="checkbox" style="width:auto;margin:4px 0 14px" ${value===false?"":"checked"}>`;
+  else if(type.startsWith("ref:")){
+    const opts=await fetchReferenceOptions(type.split(":")[1]);
+    control=`<select id="${id}" name="${escapeHtml(key)}" ${req}><option value="">Seleccione...</option>${opts.map(o=>`<option value="${escapeHtml(o.id)}" ${o.id===value?"selected":""}>${escapeHtml(o.label)}</option>`).join("")}</select>`;
   }else if(type.startsWith("select:")){
-    const opts=type.slice(7).split(",");
-    control=`<select id="${escapeHtml(id)}" name="${escapeHtml(key)}" ${req}><option value="">Seleccione...</option>${opts.map(o=>`<option ${o===value?"selected":""}>${escapeHtml(o)}</option>`).join("")}</select>`;
-  }else if(type==="textarea"){
-    control=`<textarea id="${escapeHtml(id)}" name="${escapeHtml(key)}" rows="3" ${req}>${escapeHtml(value||"")}</textarea>`;
-  }else{
-    const htmlType=type==="ref"?"text":type;
-    control=`<input id="${escapeHtml(id)}" name="${escapeHtml(key)}" type="${escapeHtml(htmlType)}" value="${escapeHtml(value??"")}" ${req} ${type==="number"?'step="any"':""}>`;
-  }
-  return `<div class="${type==="textarea"?"field-full":""}"><label for="${escapeHtml(id)}">${escapeHtml(label)}${required?" *":""}</label>${control}</div>`;
-}
-function displayValue(key,value,row){
-  if(value===null||value===undefined||value==="")return "—";
-  if(typeof value==="boolean")return value?"Sí":"No";
-  if(key==="archivo_url"&&String(value).startsWith("http")){
-    return `<a href="${escapeHtml(value)}" target="_blank" rel="noopener noreferrer">Abrir archivo</a>`;
-  }
-  return escapeHtml(value);
-}
-function filterRows(rows,config){
-  if(!searchText)return rows;
-  const needle=searchText.toLocaleLowerCase("es");
-  return rows.filter(r=>config.columns.some(k=>String(r[k]??"").toLocaleLowerCase("es").includes(needle)));
+    control=`<select id="${id}" name="${escapeHtml(key)}" ${req}><option value="">Seleccione...</option>${type.slice(7).split(",").map(o=>`<option value="${escapeHtml(o)}" ${o===value?"selected":""}>${escapeHtml(o)}</option>`).join("")}</select>`;
+  }else if(type==="textarea")control=`<textarea id="${id}" name="${escapeHtml(key)}" rows="3" ${req}>${escapeHtml(value||"")}</textarea>`;
+  else control=`<input id="${id}" name="${escapeHtml(key)}" type="${escapeHtml(type)}" value="${escapeHtml(value??"")}" ${req} ${type==="number"?'step="any"':""}>`;
+  return `<div class="${type==="textarea"?"field-full":""}"><label for="${id}">${escapeHtml(label)}${required?" *":""}</label>${control}</div>`;
 }
 async function renderCrud(id){
-  const cfg=configs[id];if(!cfg)return;
-  editing=null;
-  $("view").innerHTML=`
-    <div class="page-title"><div><h2>${escapeHtml(cfg.title)}</h2><p>Registros de ${escapeHtml(getOrgName())}. Los permisos se aplican mediante Supabase.</p></div><button class="btn btn-blue" id="reloadModule">↻ Actualizar listado</button></div>
-    <div class="panel"><h3 id="formTitle">Registrar ${escapeHtml(cfg.title.toLocaleLowerCase("es"))}</h3>
-      <form id="recordForm"><div id="formFields" class="form-grid"></div>
-      <div class="actions"><button class="btn btn-green" type="submit" id="saveRecord">Guardar registro</button><button class="btn btn-light hidden" id="cancelEdit" type="button">Cancelar edición</button></div>
-      <div id="formStatus" class="status" role="status"></div></form>
-    </div>
-    <div class="panel"><h3>Listado</h3><div class="toolbar"><input id="tableSearch" placeholder="Buscar en los registros..." aria-label="Buscar"><span id="rowCount" class="muted"></span></div>
-      <div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"><tr><td class="empty">Cargando...</td></tr></tbody></table></div>
-      <div id="tableStatus" class="status" role="status"></div>
-    </div>`;
-  const fields=$("formFields");
-  for(const f of cfg.fields)fields.insertAdjacentHTML("beforeend",await renderField(f,f[2]==="checkbox"?true:""));
+  const cfg=configs[id];editing=null;
+  $("view").innerHTML=`<div class="page-title"><div><h2>${escapeHtml(cfg.title)}</h2><p>Registros de ${escapeHtml(getOrgName())}. Los permisos se aplican mediante Supabase.</p></div><button class="btn btn-blue" id="reloadModule" type="button">↻ Actualizar listado</button></div>
+  <div class="panel"><h3 id="formTitle">Registrar ${escapeHtml(cfg.title.toLowerCase())}</h3><form id="recordForm"><div id="formFields" class="form-grid"></div><div class="actions"><button class="btn btn-green" type="submit" id="saveRecord">Guardar registro</button><button class="btn btn-light hidden" id="cancelEdit" type="button">Cancelar edición</button></div><div id="formStatus" class="status" role="status"></div></form></div>
+  <div class="panel"><h3>Listado</h3><div class="toolbar"><input id="tableSearch" placeholder="Buscar en los registros..." aria-label="Buscar"><span id="rowCount" class="muted"></span></div><div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"><tr><td class="empty">Cargando...</td></tr></tbody></table></div><div id="tableStatus" class="status" role="status"></div></div>`;
+  for(const f of cfg.fields)$("formFields").insertAdjacentHTML("beforeend",await renderField(f,f[2]==="checkbox"?true:""));
   $("recordForm").onsubmit=e=>saveRecord(e,id);
   $("reloadModule").onclick=()=>loadModuleRows(id);
-  $("cancelEdit").onclick=()=>{editing=null;renderCrud(id)};
+  $("cancelEdit").onclick=()=>renderCrud(id);
   $("tableSearch").oninput=e=>{searchText=e.target.value;renderTable(id)};
   await loadModuleRows(id);
 }
 async function loadModuleRows(id){
-  const cfg=configs[id];if(!cfg)return;
-  $("tableStatus").textContent="Consultando datos...";
-  try{
-    const rows=await fetchRows(cfg.table);
-    moduleCache[id]=rows;currentRows=rows;
-    $("tableStatus").textContent=`Se encontraron ${rows.length} registro(s).`;
-    renderTable(id);
-  }catch(e){
-    console.error(e);$("tableStatus").textContent="No se pudo consultar: "+(e.message||"Error desconocido");
-    $("tableBody").innerHTML=`<tr><td colspan="20" class="empty">No se pudieron cargar los datos. Verificá la conexión y las políticas RLS.</td></tr>`;
-  }
+  try{const rows=await fetchRows(configs[id].table);moduleCache[id]=rows;$("tableStatus").textContent=`Se encontraron ${rows.length} registro(s).`;renderTable(id)}
+  catch(e){console.error(e);$("tableStatus").textContent="No se pudo consultar: "+e.message;$("tableBody").innerHTML='<tr><td class="empty">No se pudieron cargar los datos. Verificá la conexión y RLS.</td></tr>'}
 }
 function renderTable(id){
-  const cfg=configs[id];if(!cfg)return;
-  const rows=filterRows(moduleCache[id]||[],cfg);
+  const cfg=configs[id],rows=(moduleCache[id]||[]).filter(r=>!searchText||cfg.columns.some(k=>String(r[k]??"").toLowerCase().includes(searchText.toLowerCase())));
   $("rowCount").textContent=`${rows.length} registro(s)`;
   $("tableHead").innerHTML=`<tr>${cfg.columns.map(k=>`<th>${escapeHtml(cfg.fields.find(f=>f[0]===k)?.[1]||k)}</th>`).join("")}<th>Acciones</th></tr>`;
   const tb=$("tableBody");tb.replaceChildren();
@@ -449,199 +289,199 @@ function renderTable(id){
   rows.forEach(row=>{
     const tr=document.createElement("tr");
     cfg.columns.forEach(k=>{
-      const td=document.createElement("td");
-      const f=cfg.fields.find(x=>x[0]===k);
-      const value=row[k];
-      if(f?.[2]==="checkbox"||typeof value==="boolean"){
-        td.innerHTML=`<span class="badge ${value?"ok":"off"}">${value?"Sí":"No"}</span>`;
-      }else if(k==="archivo_url"&&value&&String(value).startsWith("http")){
-        td.innerHTML=`<a href="${escapeHtml(value)}" target="_blank" rel="noopener noreferrer">Abrir</a>`;
-      }else td.textContent=value===null||value===undefined||value===""?"—":String(value);
+      const td=document.createElement("td"),v=row[k];
+      if(typeof v==="boolean")td.innerHTML=`<span class="badge ${v?"ok":"off"}">${v?"Sí":"No"}</span>`;
+      else if(k==="archivo_url"&&v&&String(v).startsWith("http"))td.innerHTML=`<a href="${escapeHtml(v)}" target="_blank" rel="noopener noreferrer">Abrir</a>`;
+      else td.textContent=v===null||v===undefined||v===""?"—":String(v);
       tr.appendChild(td);
     });
-    const td=document.createElement("td");
-    td.append(
-      makeButton("Editar","btn btn-light btn-sm",()=>startEdit(id,row)),
-      makeButton("Eliminar","btn btn-red btn-sm",()=>deleteRecord(id,row))
-    );
-    tr.appendChild(td);tb.appendChild(tr);
+    const td=document.createElement("td");td.append(makeButton("Editar","btn btn-light btn-sm",()=>startEdit(id,row)),makeButton("Eliminar","btn btn-red btn-sm",()=>deleteRecord(id,row)));tr.appendChild(td);tb.appendChild(tr);
   });
 }
-function makeButton(text,cls,fn){
-  const b=document.createElement("button");b.type="button";b.className=cls;b.textContent=text;b.onclick=fn;return b;
-}
+function makeButton(text,cls,fn){const b=document.createElement("button");b.type="button";b.className=cls;b.textContent=text;b.onclick=fn;return b}
 async function startEdit(id,row){
-  editing=row;
-  await renderCrud(id);
-  editing=row;
-  $("formTitle").textContent="Editar registro";
-  $("saveRecord").textContent="Guardar cambios";
-  $("cancelEdit").classList.remove("hidden");
-  for(const f of configs[id].fields){
-    const el=$("f_"+f[0].replace(/[^a-zA-Z0-9_-]/g,"_"));
-    if(!el)continue;
-    if(f[2]==="checkbox")el.checked=row[f[0]]!==false;
-    else el.value=row[f[0]]??"";
-  }
-  $("recordForm").onsubmit=e=>saveRecord(e,id);
-  $("formTitle").scrollIntoView({behavior:"smooth",block:"start"});
+  await renderCrud(id);editing=row;$("formTitle").textContent="Editar registro";$("saveRecord").textContent="Guardar cambios";$("cancelEdit").classList.remove("hidden");
+  for(const f of configs[id].fields){const el=$("f_"+f[0].replace(/[^a-zA-Z0-9_-]/g,"_"));if(!el)continue;if(f[2]==="checkbox")el.checked=row[f[0]]!==false;else el.value=row[f[0]]??""}
 }
 async function saveRecord(ev,id){
-  ev.preventDefault();
-  const cfg=configs[id],form=$("recordForm"),b=$("saveRecord");
-  b.disabled=true;$("formStatus").textContent="Guardando...";
+  ev.preventDefault();const cfg=configs[id],b=$("saveRecord");b.disabled=true;$("formStatus").textContent="Guardando...";
   try{
     const payload={};
     for(const f of cfg.fields){
-      const key=f[0],el=$("f_"+key.replace(/[^a-zA-Z0-9_-]/g,"_"));
-      if(!el)continue;
-      if(f[2]==="checkbox")payload[key]=el.checked;
-      else{
-        const val=el.value.trim();
-        payload[key]=val===""?null:(f[2]==="number"?Number(val):val);
-      }
+      const el=$("f_"+f[0].replace(/[^a-zA-Z0-9_-]/g,"_"));if(!el)continue;
+      if(f[2]==="checkbox")payload[f[0]]=el.checked;
+      else{const v=el.value.trim();payload[f[0]]=v===""?null:(f[2]==="number"?Number(v):v)}
     }
-    if(cfg.org){
-      if(!activeOrg)throw new Error("No hay organización seleccionada.");
-      if(!editing)payload.organizacion_id=activeOrg;
-    }else if(id==="sectores"||id==="puestos"){
-      // La pertenencia a la organización se verifica a través de las relaciones y las políticas RLS.
-    }
-    let result;
-    if(editing){
-      result=await db.from(cfg.table).update(payload).eq("id",editing.id).select("id");
-    }else{
-      result=await db.from(cfg.table).insert(payload).select("id");
-    }
+    if(cfg.org&&!editing)payload.organizacion_id=activeOrg;
+    const result=editing?await db.from(cfg.table).update(payload).eq("id",editing.id).select("id"):await db.from(cfg.table).insert(payload).select("id");
     if(result.error)throw result.error;
-    if(!result.data?.length)throw new Error("No se confirmó la operación. Verificá permisos RLS y organización activa.");
-    editing=null;
-    await renderCrud(id);
-    $("formStatus").textContent="Registro guardado correctamente.";
-  }catch(e){
-    console.error(e);$("formStatus").textContent="No se pudo guardar: "+(e.message||"Error desconocido");
-    $("formStatus").className="status error";
-  }finally{b.disabled=false}
+    if(!result.data?.length)throw new Error("No se confirmó la operación. Verificá los permisos RLS.");
+    editing=null;await renderCrud(id);
+  }catch(e){console.error(e);$("formStatus").textContent="No se pudo guardar: "+e.message;$("formStatus").className="status error"}
+  finally{b.disabled=false}
 }
 async function deleteRecord(id,row){
-  const cfg=configs[id];
-  const label=row.Nombre||row.nombre||row.titulo||row.concepto||row.descripcion||row.id;
-  if(!confirm(`¿Querés eliminar el registro "${label}"? Esta acción puede ser irreversible.`))return;
-  try{
-    const {error}=await db.from(cfg.table).delete().eq("id",row.id);
-    if(error)throw error;
-    await loadModuleRows(id);
-  }catch(e){
-    console.error(e);alert("No se pudo eliminar el registro: "+(e.message||"Error desconocido"));
-  }
+  const name=row.Nombre||row.nombre||row.titulo||row.concepto||row.descripcion||row.id;
+  if(!confirm(`¿Querés eliminar el registro "${name}"? Esta acción puede ser irreversible.`))return;
+  try{const {error}=await db.from(configs[id].table).delete().eq("id",row.id);if(error)throw error;await loadModuleRows(id)}
+  catch(e){alert("No se pudo eliminar: "+e.message)}
 }
+
+/* TABLERO DE CONTROL */
 async function renderHome(){
-  $("view").innerHTML=`
-    <div class="page-title"><div><h2>Tablero de control</h2><p>Resumen de la organización y accesos a los módulos de gestión preventiva.</p></div></div>
-    <div class="grid">
-      <div class="metric"><span class="metric-icon">▦</span><div class="metric-label">Establecimientos activos</div><div class="metric-value" id="mEst">—</div></div>
-      <div class="metric"><span class="metric-icon">▤</span><div class="metric-label">Sectores activos</div><div class="metric-value" id="mSec">—</div></div>
-      <div class="metric"><span class="metric-icon">▣</span><div class="metric-label">Puestos activos</div><div class="metric-value" id="mPue">—</div></div>
-      <div class="metric"><span class="metric-icon">♙</span><div class="metric-label">Personas activas</div><div class="metric-value" id="mPer">—</div></div>
-    </div>
-    <div class="panel"><h3>Acceso rápido</h3><div id="quickModules" class="module-grid"></div></div>
-    <div class="panel"><h3>Estado del sistema</h3><p id="homeStatus" class="muted">Consultando datos...</p></div>`;
-  const quick=$("quickModules");
-  modules.filter(m=>m.id!=="inicio").forEach(m=>{
-    const b=document.createElement("button");b.className="module-card";b.type="button";
-    b.innerHTML=`<div class="ico">${escapeHtml(m.icon)}</div><strong>${escapeHtml(m.label)}</strong><span>Acceder al módulo</span>`;
-    b.onclick=()=>openModule(m.id);quick.appendChild(b);
+  const view=$("view");
+  const fechaLocal=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  const hoy=fechaLocal(new Date()),limite=new Date();limite.setDate(limite.getDate()+30);
+  const fechaLimite=fechaLocal(limite);
+  const fechaLegible=v=>{if(!v)return "Sin fecha";const p=String(v).slice(0,10).split("-");return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:String(v)};
+  const diasHasta=v=>{if(!v)return null;const a=new Date(hoy+"T12:00:00"),b=new Date(String(v).slice(0,10)+"T12:00:00");return Number.isNaN(b.getTime())?null:Math.round((b-a)/86400000)};
+  const estadoTexto=v=>String(v||"").trim().toLowerCase();
+  const esCerrado=v=>["cerrado","cerrada","resuelto","resuelta","finalizado","finalizada","completado","completada","cumplido"].includes(estadoTexto(v));
+  const alertaHTML=(icono,color,titulo,detalle,meta="")=>`<div class="dashboard-alert"><div class="dashboard-alert-symbol ${color}">${icono}</div><div class="dashboard-alert-content"><div class="dashboard-alert-title">${escapeHtml(titulo)}</div><div class="dashboard-alert-detail">${escapeHtml(detalle||"Sin descripción")}</div>${meta?`<div class="dashboard-alert-meta">${escapeHtml(meta)}</div>`:""}</div></div>`;
+  const listaHTML=(items,vacio)=>items.length?items.join(""):`<div class="dashboard-empty">✓ ${escapeHtml(vacio)}</div>`;
+
+  view.innerHTML=`
+  <section class="dashboard-welcome"><div><h2>Tablero de control</h2><p>Gestión preventiva de Higiene y Seguridad.<br>Consultá indicadores, prioridades y actividades de la organización.</p><div class="dashboard-date">📅 ${escapeHtml(new Date().toLocaleDateString("es-AR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"}))}</div></div><button id="dashboardRefresh" class="btn btn-light" type="button">↻ Actualizar</button></section>
+  <div class="dashboard-section-title">Resumen de la organización</div>
+  <section class="dashboard-metrics">
+    <div class="dashboard-metric"><div class="dashboard-metric-top"><span class="dashboard-metric-label">Establecimientos activos</span><span class="dashboard-metric-icon">▦</span></div><div class="dashboard-metric-number" id="dashEst">—</div><div class="dashboard-metric-foot">Instalaciones activas</div></div>
+    <div class="dashboard-metric"><div class="dashboard-metric-top"><span class="dashboard-metric-label">Sectores activos</span><span class="dashboard-metric-icon">▤</span></div><div class="dashboard-metric-number" id="dashSec">—</div><div class="dashboard-metric-foot">Sectores de trabajo</div></div>
+    <div class="dashboard-metric"><div class="dashboard-metric-top"><span class="dashboard-metric-label">Puestos activos</span><span class="dashboard-metric-icon">▣</span></div><div class="dashboard-metric-number" id="dashPue">—</div><div class="dashboard-metric-foot">Puestos registrados</div></div>
+    <div class="dashboard-metric"><div class="dashboard-metric-top"><span class="dashboard-metric-label">Personas activas</span><span class="dashboard-metric-icon">♙</span></div><div class="dashboard-metric-number" id="dashPer">—</div><div class="dashboard-metric-foot">Personal registrado</div></div>
+  </section>
+  <div class="dashboard-section-title">Seguimiento preventivo</div>
+  <section class="dashboard-two-columns">
+    <div class="dashboard-card"><div class="dashboard-card-heading"><h3>⏰ Vencimientos y prioridades</h3><span class="dashboard-count" id="dashVencCount">—</span></div><div id="dashVencList" class="dashboard-alert-list"><div class="dashboard-loading">Consultando vencimientos...</div></div><div class="actions"><button class="btn btn-light btn-sm" data-goto="vencimientos">Ver vencimientos →</button></div></div>
+    <div class="dashboard-card"><div class="dashboard-card-heading"><h3>⚠ Accidentes e incidentes abiertos</h3><span class="dashboard-count" id="dashAccCount">—</span></div><div id="dashAccList" class="dashboard-alert-list"><div class="dashboard-loading">Consultando accidentes...</div></div><div class="actions"><button class="btn btn-light btn-sm" data-goto="accidentes_incidentes">Ver registros →</button></div></div>
+    <div class="dashboard-card"><div class="dashboard-card-heading"><h3>🎓 Capacitaciones próximas</h3><span class="dashboard-count" id="dashCapCount">—</span></div><div id="dashCapList" class="dashboard-alert-list"><div class="dashboard-loading">Consultando capacitaciones...</div></div><div class="actions"><button class="btn btn-light btn-sm" data-goto="capacitaciones">Ver capacitaciones →</button></div></div>
+    <div class="dashboard-card"><div class="dashboard-card-heading"><h3>🔎 Inspecciones pendientes</h3><span class="dashboard-count" id="dashInspCount">—</span></div><div id="dashInspList" class="dashboard-alert-list"><div class="dashboard-loading">Consultando inspecciones...</div></div><div class="actions"><button class="btn btn-light btn-sm" data-goto="inspecciones">Ver inspecciones →</button></div></div>
+  </section>
+  <div class="dashboard-section-title">Accesos rápidos</div><section class="dashboard-shortcuts" id="dashShortcuts"></section>
+  <div id="dashStatus" class="dashboard-refresh-note" role="status">Consultando datos de Supabase...</div>`;
+
+  $("dashboardRefresh").onclick=()=>{moduleCache={};renderHome()};
+  view.querySelectorAll("[data-goto]").forEach(b=>b.onclick=()=>openModule(b.dataset.goto));
+  const shortcuts=[
+    ["establecimientos","▦","Establecimientos","Administrar instalaciones"],
+    ["personas","♙","Personas","Registrar y consultar personal"],
+    ["riesgos","⚠","Evaluación de riesgos","Peligros y medidas preventivas"],
+    ["inspecciones","✓","Inspecciones","Registrar recorridas"],
+    ["accidentes_incidentes","✚","Accidentes e incidentes","Investigar y hacer seguimiento"],
+    ["capacitaciones","▧","Capacitaciones","Planificar actividades"],
+    ["epp","⛑","Elementos de protección","Controlar EPP"],
+    ["documentacion","▤","Documentación","Consultar documentación"],
+    ["vencimientos","◷","Vencimientos","Controlar fechas límite"],
+    ["legislacion","§","Legislación","Consultar fuentes oficiales"]
+  ];
+  shortcuts.forEach(([id,icon,title,desc])=>{
+    const b=document.createElement("button");b.type="button";b.className="dashboard-shortcut";
+    b.innerHTML=`<div class="dashboard-shortcut-icon">${escapeHtml(icon)}</div><strong>${escapeHtml(title)}</strong><span>${escapeHtml(desc)}</span>`;
+    b.onclick=()=>openModule(id);$("dashShortcuts").appendChild(b);
   });
+
   try{
-    const [es,ss,ps,per]=await Promise.all([
-      fetchRows("establecimientos"),fetchRows("sectores"),fetchRows("puestos"),fetchRows("personas")
+    const [estAll,secAll,puestoAll,personasAll,vencAll,accAll,capAll,inspAll]=await Promise.all([
+      fetchRows("establecimientos"),fetchRows("sectores"),fetchRows("puestos"),fetchRows("personas"),
+      fetchRows("vencimientos"),fetchRows("accidentes_incidentes"),fetchRows("capacitaciones"),fetchRows("inspecciones")
     ]);
-    $("mEst").textContent=es.filter(x=>x.Activo).length;
-    $("mSec").textContent=ss.filter(x=>x.activo).length;
-    $("mPue").textContent=ps.filter(x=>x.Activo).length;
-    $("mPer").textContent=per.filter(x=>x.Activo).length;
-    $("homeStatus").textContent=`Organización activa: ${getOrgName()}. Se cargaron los indicadores básicos.`;
+    if(activeModule!=="inicio")return;
+
+    const est=estAll.filter(r=>r.organizacion_id===activeOrg);
+    const estIds=new Set(est.map(r=>r.id));
+    const sec=secAll.filter(r=>estIds.has(r.establecimiento_id));
+    const secIds=new Set(sec.map(r=>r.id));
+    const puestos=puestoAll.filter(r=>secIds.has(r.sector_id));
+    const personas=personasAll.filter(r=>r.organizacion_id===activeOrg);
+
+    $("dashEst").textContent=est.filter(r=>r.Activo===true).length;
+    $("dashSec").textContent=sec.filter(r=>r.activo===true).length;
+    $("dashPue").textContent=puestos.filter(r=>r.Activo===true).length;
+    $("dashPer").textContent=personas.filter(r=>r.Activo===true).length;
+
+    const venc=vencAll.filter(r=>r.organizacion_id===activeOrg)
+      .filter(r=>!["cumplido","cerrado"].includes(estadoTexto(r.estado))&&r.fecha_vencimiento&&r.fecha_vencimiento<=fechaLimite)
+      .sort((a,b)=>String(a.fecha_vencimiento).localeCompare(String(b.fecha_vencimiento)));
+    $("dashVencCount").textContent=venc.length;
+    $("dashVencList").innerHTML=listaHTML(venc.slice(0,5).map(r=>{
+      const d=diasHasta(r.fecha_vencimiento),color=d<0?"red":d<=7?"amber":"blue";
+      const plazo=d<0?`Vencido hace ${Math.abs(d)} día(s)`:d===0?"Vence hoy":d===1?"Vence mañana":`En ${d} días`;
+      return alertaHTML(d<0?"!":"◷",color,r.concepto||r.tipo||"Vencimiento",r.descripcion||r.tipo||"Sin descripción",`${fechaLegible(r.fecha_vencimiento)} · ${plazo} · ${r.prioridad||"Prioridad no indicada"}`);
+    }),"No hay vencimientos próximos registrados.");
+
+    const accidentes=accAll.filter(r=>r.organizacion_id===activeOrg&&!esCerrado(r.estado)).sort((a,b)=>String(b.fecha||"").localeCompare(String(a.fecha||"")));
+    $("dashAccCount").textContent=accidentes.length;
+    $("dashAccList").innerHTML=listaHTML(accidentes.slice(0,5).map(r=>alertaHTML("⚠","red",`${r.tipo||"Accidente/incidente"} · ${fechaLegible(r.fecha)}`,r.descripcion||r.lugar||"Sin descripción registrada",`Estado: ${r.estado||"Sin estado"}`)),"No hay accidentes o incidentes abiertos registrados.");
+
+    const caps=capAll.filter(r=>r.organizacion_id===activeOrg&&r.fecha&&r.fecha>=hoy&&r.fecha<=fechaLimite).sort((a,b)=>String(a.fecha).localeCompare(String(b.fecha)));
+    $("dashCapCount").textContent=caps.length;
+    $("dashCapList").innerHTML=listaHTML(caps.slice(0,5).map(r=>alertaHTML("🎓","blue",r.titulo||"Capacitación",`${r.tipo||"Tipo no especificado"}${r.duracion_horas?" · "+r.duracion_horas+" horas":""}`,`${fechaLegible(r.fecha)}${r.instructor?" · "+r.instructor:""}`)),"No hay capacitaciones programadas para los próximos 30 días.");
+
+    const inspecciones=inspAll.filter(r=>r.organizacion_id===activeOrg&&!esCerrado(r.estado)).sort((a,b)=>String(a.fecha||"").localeCompare(String(b.fecha||"")));
+    $("dashInspCount").textContent=inspecciones.length;
+    $("dashInspList").innerHTML=listaHTML(inspecciones.slice(0,5).map(r=>alertaHTML("🔎","amber",r.tipo||"Inspección",`${fechaLegible(r.fecha)}${r.inspector?" · "+r.inspector:""}`,`Estado: ${r.estado||"Sin estado"}`)),"No hay inspecciones pendientes registradas.");
+
+    $("dashStatus").textContent=`Datos consultados en Supabase · Organización: ${getOrgName()} · Actualizado: ${new Date().toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"})}.`;
   }catch(e){
-    console.error(e);$("homeStatus").textContent="No se pudieron cargar todos los indicadores: "+(e.message||"Error");
+    console.error("Error al cargar tablero:",e);
+    $("dashStatus").textContent="No se pudieron cargar todos los indicadores. Revisá conexión, columnas y políticas RLS.";
+    ["dashVencList","dashAccList","dashCapList","dashInspList"].forEach(id=>{
+      if($(id))$(id).innerHTML='<div class="dashboard-empty">No se pudieron consultar estos datos.</div>';
+    });
   }
 }
+
 function renderLegislation(){
   $("view").innerHTML=`
-    <div class="page-title"><div><h2>Legislación y cumplimiento legal</h2><p>Biblioteca inicial de fuentes oficiales para consultar normativa de Higiene y Seguridad en el Trabajo.</p></div></div>
-    <div class="notice"><strong>Importante:</strong> los enlaces permiten consultar fuentes oficiales. Esta pantalla todavía no constituye una matriz legal persistente ni determina automáticamente vigencia, aplicabilidad o cumplimiento. Verificá cada norma y sus modificaciones en la fuente oficial.</div>
-    <div class="panel"><h3>Fuentes oficiales</h3><div class="legal-links">
-      <a class="legal-link" href="https://www.argentina.gob.ar/normativa" target="_blank" rel="noopener noreferrer"><strong>§ Normativa nacional</strong><span>Buscador oficial de legislación nacional.</span></a>
-      <a class="legal-link" href="https://www.argentina.gob.ar/srt" target="_blank" rel="noopener noreferrer"><strong>⚖ Superintendencia de Riesgos del Trabajo</strong><span>Resoluciones, disposiciones y material institucional.</span></a>
-    </div></div>
-    <div class="panel"><h3>Marco general</h3><div class="legal-links">
-      <a class="legal-link" href="https://www.argentina.gob.ar/normativa" target="_blank" rel="noopener noreferrer"><strong>Ley 19.587</strong><span>Higiene y Seguridad en el Trabajo. Buscar texto y modificatorias.</span></a>
-      <a class="legal-link" href="https://www.argentina.gob.ar/normativa" target="_blank" rel="noopener noreferrer"><strong>Ley 24.557</strong><span>Riesgos del Trabajo. Verificar texto actualizado.</span></a>
-      <a class="legal-link" href="https://www.argentina.gob.ar/normativa" target="_blank" rel="noopener noreferrer"><strong>Decreto 351/79</strong><span>Reglamentación general de la Ley 19.587.</span></a>
-      <a class="legal-link" href="https://www.argentina.gob.ar/normativa" target="_blank" rel="noopener noreferrer"><strong>Decreto 1338/96</strong><span>Servicios de Medicina del Trabajo y de Higiene y Seguridad.</span></a>
-    </div></div>
-    <div class="panel"><h3>Normativa por actividad</h3><div class="legal-links">
-      <a class="legal-link" href="https://www.argentina.gob.ar/normativa" target="_blank" rel="noopener noreferrer"><strong>Construcción — Decreto 911/96</strong><span>Reglamentación de Higiene y Seguridad para la actividad.</span></a>
-      <a class="legal-link" href="https://www.argentina.gob.ar/normativa" target="_blank" rel="noopener noreferrer"><strong>Actividad agraria — Decreto 617/97</strong><span>Consultar alcance y modificaciones.</span></a>
-      <a class="legal-link" href="https://www.argentina.gob.ar/normativa" target="_blank" rel="noopener noreferrer"><strong>Actividad minera — Decreto 249/07</strong><span>Reglamento de Higiene y Seguridad para la actividad minera.</span></a>
-      <a class="legal-link" href="https://www.argentina.gob.ar/srt" target="_blank" rel="noopener noreferrer"><strong>Resoluciones SRT</strong><span>Buscar, entre otras, las resoluciones 51/97, 35/98 y 319/99.</span></a>
-    </div></div>
-    <div class="panel"><h3>Próxima etapa: matriz legal</h3><p class="muted">Para registrar requisitos, determinar aplicabilidad, asociar evidencias, documentar aprobaciones y conservar el historial de evaluaciones se deben crear tablas específicas y sus políticas RLS. Esas operaciones no se simulan en esta versión.</p></div>`;
+  <div class="page-title"><div><h2>Legislación y cumplimiento legal</h2><p>Biblioteca inicial de fuentes oficiales.</p></div></div>
+  <div class="notice"><strong>Importante:</strong> los enlaces permiten consultar fuentes oficiales. Esta biblioteca no constituye todavía una matriz legal persistente ni determina automáticamente la vigencia o aplicabilidad de una norma.</div>
+  <div class="panel"><h3>Fuentes oficiales</h3><div class="legal-links">
+  <a class="legal-link" href="https://www.argentina.gob.ar/normativa" target="_blank" rel="noopener noreferrer"><strong>§ Normativa nacional</strong><span>Buscador oficial de legislación.</span></a>
+  <a class="legal-link" href="https://www.argentina.gob.ar/srt" target="_blank" rel="noopener noreferrer"><strong>⚖ Superintendencia de Riesgos del Trabajo</strong><span>Resoluciones y material institucional.</span></a></div></div>
+  <div class="panel"><h3>Marco general</h3><div class="legal-links">
+  <a class="legal-link" href="https://www.argentina.gob.ar/normativa" target="_blank" rel="noopener noreferrer"><strong>Ley 19.587</strong><span>Higiene y Seguridad en el Trabajo.</span></a>
+  <a class="legal-link" href="https://www.argentina.gob.ar/normativa" target="_blank" rel="noopener noreferrer"><strong>Ley 24.557</strong><span>Riesgos del Trabajo.</span></a>
+  <a class="legal-link" href="https://www.argentina.gob.ar/normativa" target="_blank" rel="noopener noreferrer"><strong>Decreto 351/79</strong><span>Reglamentación general de la Ley 19.587.</span></a>
+  <a class="legal-link" href="https://www.argentina.gob.ar/normativa" target="_blank" rel="noopener noreferrer"><strong>Decreto 1338/96</strong><span>Servicios de Medicina del Trabajo y de Higiene y Seguridad.</span></a></div></div>
+  <div class="panel"><h3>Normativa por actividad</h3><div class="legal-links">
+  <a class="legal-link" href="https://www.argentina.gob.ar/normativa" target="_blank" rel="noopener noreferrer"><strong>Construcción — Decreto 911/96</strong><span>Reglamentación de Higiene y Seguridad en construcción.</span></a>
+  <a class="legal-link" href="https://www.argentina.gob.ar/normativa" target="_blank" rel="noopener noreferrer"><strong>Actividad agraria — Decreto 617/97</strong><span>Consultar alcance y modificaciones.</span></a>
+  <a class="legal-link" href="https://www.argentina.gob.ar/normativa" target="_blank" rel="noopener noreferrer"><strong>Actividad minera — Decreto 249/07</strong><span>Reglamento de Higiene y Seguridad para la actividad minera.</span></a>
+  <a class="legal-link" href="https://www.argentina.gob.ar/srt" target="_blank" rel="noopener noreferrer"><strong>Resoluciones SRT</strong><span>Consultar resoluciones 51/97, 35/98 y 319/99.</span></a></div></div>
+  <div class="panel"><h3>Próxima etapa: matriz legal</h3><p class="muted">El registro de requisitos, la evaluación de aplicabilidad, las evidencias, las aprobaciones y el historial requieren tablas específicas y políticas RLS en Supabase.</p></div>`;
 }
 
 async function initialize(){
-  const {data,error}=await db.auth.getUser();
-  if(error)throw error;
-  user=data.user;
-  if(!user)throw new Error("No hay una sesión activa.");
-  const {data:members,error:me}=await db.from("usuarios_organizaciones")
-    .select("organizacion_id, rol").eq("usuario_id",user.id).eq("activo",true);
+  const {data,error}=await db.auth.getUser();if(error)throw error;
+  user=data.user;if(!user)throw new Error("No hay una sesión activa.");
+  const {data:members,error:me}=await db.from("usuarios_organizaciones").select("organizacion_id,rol").eq("usuario_id",user.id).eq("activo",true);
   if(me)throw me;
   const ids=[...new Set((members||[]).map(x=>x.organizacion_id).filter(Boolean))];
   if(!ids.length)throw new Error("Tu usuario no tiene una organización activa asignada.");
-  const {data:orgs,error:oe}=await db.from("organizaciones").select("id,nombre").in("id",ids);
-  if(oe)throw oe;
-  organizations=orgs||[];
-  if(!organizations.length)throw new Error("No se encontraron organizaciones autorizadas.");
+  const {data:orgs,error:oe}=await db.from("organizaciones").select("id,nombre").in("id",ids);if(oe)throw oe;
+  organizations=orgs||[];if(!organizations.length)throw new Error("No se encontraron organizaciones autorizadas.");
   activeOrg=organizations[0].id;
   const select=$("orgSelect");select.replaceChildren();
-  organizations.forEach(o=>{
-    const op=document.createElement("option");op.value=o.id;op.textContent=o.nombre||"Organización";
-    select.appendChild(op);
-  });
+  organizations.forEach(o=>{const op=document.createElement("option");op.value=o.id;op.textContent=o.nombre||"Organización";select.appendChild(op)});
   select.value=activeOrg;
   select.onchange=()=>{activeOrg=select.value;moduleCache={};openModule(activeModule)};
   showApp();buildNav();await renderHome();
 }
 $("loginForm").addEventListener("submit",async e=>{
-  e.preventDefault();const b=$("loginButton");b.disabled=true;b.textContent="Ingresando...";
-  $("loginMessage").textContent="";
-  try{
-    const {error}=await db.auth.signInWithPassword({
-      email:$("email").value.trim(),password:$("password").value
-    });
-    if(error)throw error;
-    await initialize();
-  }catch(e){
-    console.error(e);showLogin("No se pudo iniciar sesión: "+(e.message||"Error desconocido"));
-  }finally{b.disabled=false;b.textContent="Ingresar"}
+  e.preventDefault();const b=$("loginButton");b.disabled=true;b.textContent="Ingresando...";$("loginMessage").textContent="";
+  try{const {error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)throw error;await initialize()}
+  catch(e){console.error(e);showLogin("No se pudo iniciar sesión: "+e.message)}
+  finally{b.disabled=false;b.textContent="Ingresar"}
 });
 $("logoutButton").addEventListener("click",async()=>{
-  const {error}=await db.auth.signOut();
-  if(error){alert("No se pudo cerrar sesión: "+error.message);return}
+  const {error}=await db.auth.signOut();if(error){alert("No se pudo cerrar sesión: "+error.message);return}
   user=null;organizations=[];activeOrg="";moduleCache={};showLogin();
 });
-$("refreshAll").addEventListener("click",()=>{
-  moduleCache={};openModule(activeModule);
-});
+$("refreshAll").addEventListener("click",()=>{moduleCache={};openModule(activeModule)});
 db.auth.getSession().then(async({data,error})=>{
   if(error){showLogin("No se pudo verificar la sesión.");return}
-  if(data.session){
-    try{await initialize()}catch(e){console.error(e);showLogin("No se pudo iniciar la aplicación: "+e.message)}
-  }else showLogin();
+  if(data.session){try{await initialize()}catch(e){console.error(e);showLogin("No se pudo iniciar la aplicación: "+e.message)}}else showLogin();
 });
-db.auth.onAuthStateChange((event,session)=>{
-  if(event==="SIGNED_OUT")showLogin();
-});
+db.auth.onAuthStateChange(event=>{if(event==="SIGNED_OUT")showLogin()});
 </script>
 </body>
 </html>
