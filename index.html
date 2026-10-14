@@ -467,18 +467,34 @@ async function loadModuleRows(id){
   try{
     const rows=await fetchRows(configs[id].table);
     moduleCache[id]=rows;
-    if(id==="personas")moduleCache.puestos=await fetchRows("puestos");
+    const refTables=[...new Set(configs[id].fields.filter(f=>String(f[2]).startsWith("ref:")).map(f=>f[2].slice(4)))];
+    await Promise.all(refTables.map(async table=>{moduleCache[table]=await fetchRows(table)}));
     $("tableStatus").textContent=`Se encontraron ${rows.length} registro(s).`;
     renderTable(id)
   }catch(e){console.error(e);$("tableStatus").textContent="No se pudo consultar: "+e.message;$("tableBody").innerHTML='<tr><td class="empty">No se pudieron cargar los datos. Verificá la conexión y RLS.</td></tr>'}
 }
 function displayCellValue(moduleId,row,key){
   const value=row[key];
-  if(moduleId==="personas"&&key==="puesto_id"&&value){
-    const puesto=(moduleCache.puestos||[]).find(p=>String(p.id)===String(value));
-    return puesto?.Nombre||"Puesto no encontrado";
+  if(value===null||value===undefined||value==="")return "—";
+  const field=configs[moduleId]?.fields.find(f=>f[0]===key);
+  if(field&&String(field[2]).startsWith("ref:")){
+    const table=field[2].slice(4),related=(moduleCache[table]||[]).find(item=>String(item.id)===String(value));
+    if(related){
+      const labels={
+        establecimientos:r=>r.Nombre,
+        sectores:r=>r.nombre,
+        puestos:r=>r.Nombre,
+        personas:r=>`${r.Apellido||""}, ${r.Nombre||""}`.replace(/^, |, $/g,""),
+        peligros:r=>r.nombre,
+        inspecciones:r=>`${r.tipo||"Inspección"} — ${r.fecha||""}`,
+        riesgos:r=>r.descripcion,
+        hallazgos:r=>r.descripcion
+      };
+      return String(labels[table]?.(related)||related.nombre||related.Nombre||related.titulo||related.descripcion||value);
+    }
+    return "Referencia no encontrada";
   }
-  return value===null||value===undefined||value===""?"—":String(value);
+  return String(value);
 }
 function renderTable(id){
   const cfg=configs[id],allRows=moduleCache[id]||[];
