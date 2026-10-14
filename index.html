@@ -464,22 +464,36 @@ async function renderCrud(id){
   await loadModuleRows(id);
 }
 async function loadModuleRows(id){
-  try{const rows=await fetchRows(configs[id].table);moduleCache[id]=rows;$("tableStatus").textContent=`Se encontraron ${rows.length} registro(s).`;renderTable(id)}
-  catch(e){console.error(e);$("tableStatus").textContent="No se pudo consultar: "+e.message;$("tableBody").innerHTML='<tr><td class="empty">No se pudieron cargar los datos. Verificá la conexión y RLS.</td></tr>'}
+  try{
+    const rows=await fetchRows(configs[id].table);
+    moduleCache[id]=rows;
+    if(id==="personas")moduleCache.puestos=await fetchRows("puestos");
+    $("tableStatus").textContent=`Se encontraron ${rows.length} registro(s).`;
+    renderTable(id)
+  }catch(e){console.error(e);$("tableStatus").textContent="No se pudo consultar: "+e.message;$("tableBody").innerHTML='<tr><td class="empty">No se pudieron cargar los datos. Verificá la conexión y RLS.</td></tr>'}
+}
+function displayCellValue(moduleId,row,key){
+  const value=row[key];
+  if(moduleId==="personas"&&key==="puesto_id"&&value){
+    const puesto=(moduleCache.puestos||[]).find(p=>String(p.id)===String(value));
+    return puesto?.Nombre||"Puesto no encontrado";
+  }
+  return value===null||value===undefined||value===""?"—":String(value);
 }
 function renderTable(id){
-  const cfg=configs[id],rows=(moduleCache[id]||[]).filter(r=>!searchText||cfg.columns.some(k=>String(r[k]??"").toLowerCase().includes(searchText.toLowerCase())));
+  const cfg=configs[id],allRows=moduleCache[id]||[];
+  const rows=allRows.filter(r=>!searchText||cfg.columns.some(k=>displayCellValue(id,r,k).toLowerCase().includes(searchText.toLowerCase())));
   $("rowCount").textContent=`${rows.length} registro(s)`;
   $("tableHead").innerHTML=`<tr>${cfg.columns.map(k=>`<th>${escapeHtml(cfg.fields.find(f=>f[0]===k)?.[1]||k)}</th>`).join("")}<th>Acciones</th></tr>`;
   const tb=$("tableBody");tb.replaceChildren();
-  if(!rows.length){tb.innerHTML=`<tr><td colspan="${cfg.columns.length+1}" class="empty">No hay registros para mostrar.</td></tr>`;return}
+  if(!rows.length){tb.innerHTML=`<tr><td colspan=`${cfg.columns.length+1}` class="empty">No hay registros para mostrar.</td></tr>`;return}
   rows.forEach(row=>{
     const tr=document.createElement("tr");
     cfg.columns.forEach(k=>{
       const td=document.createElement("td"),v=row[k];
       if(typeof v==="boolean")td.innerHTML=`<span class="badge ${v?"ok":"off"}">${v?"Sí":"No"}</span>`;
       else if(k==="archivo_url"&&v&&String(v).startsWith("http"))td.innerHTML=`<a href="${escapeHtml(v)}" target="_blank" rel="noopener noreferrer">Abrir</a>`;
-      else td.textContent=v===null||v===undefined||v===""?"—":String(v);
+      else td.textContent=displayCellValue(id,row,k);
       tr.appendChild(td);
     });
     const td=document.createElement("td");td.append(makeButton("Editar","btn btn-light btn-sm",()=>startEdit(id,row)),makeButton("Eliminar","btn btn-red btn-sm",()=>deleteRecord(id,row)));tr.appendChild(td);tb.appendChild(tr);
