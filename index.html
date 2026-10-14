@@ -486,7 +486,7 @@ function renderTable(id){
   $("rowCount").textContent=`${rows.length} registro(s)`;
   $("tableHead").innerHTML=`<tr>${cfg.columns.map(k=>`<th>${escapeHtml(cfg.fields.find(f=>f[0]===k)?.[1]||k)}</th>`).join("")}<th>Acciones</th></tr>`;
   const tb=$("tableBody");tb.replaceChildren();
-  if(!rows.length){tb.innerHTML=`<tr><td colspan=`${cfg.columns.length+1}` class="empty">No hay registros para mostrar.</td></tr>`;return}
+  if(!rows.length){tb.innerHTML=`<tr><td colspan="${cfg.columns.length+1}" class="empty">No hay registros para mostrar.</td></tr>`;return}
   rows.forEach(row=>{
     const tr=document.createElement("tr");
     cfg.columns.forEach(k=>{
