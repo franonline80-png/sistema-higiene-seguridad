@@ -23,6 +23,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
 label{display:block;font-size:13px;font-weight:700;margin:0 0 6px}
 input,select,textarea{width:100%;min-width:0;border:1px solid #cbd5e1;background:#fff;padding:10px 12px;border-radius:8px;margin-bottom:14px;color:var(--text)}
 input:focus,select:focus,textarea:focus{outline:2px solid #93c5fd;border-color:#3b82f6}
+input[readonly],input.readonly-field{background:#f1f5f9;color:#334155;font-weight:700;cursor:not-allowed;border-style:dashed}
 .btn{border:0;border-radius:8px;padding:10px 14px;background:var(--navy);color:white;font-weight:600}
 .btn:hover{filter:brightness(1.1)}
 .btn-blue{background:var(--blue)}.btn-green{background:var(--green)}.btn-red{background:var(--red)}.btn-light{background:#e8eef5;color:#203247}.btn-sm{padding:6px 9px;font-size:12px;margin:2px}
@@ -112,6 +113,53 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 @media(max-width:1100px){.dashboard-shortcuts{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:1000px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.module-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){.topbar{padding:14px}.brand h1{font-size:16px}.top-actions{width:100%}.org-select{max-width:none;flex:1}.layout{padding:12px}.grid{gap:9px}.metric{padding:13px}.metric-value{font-size:24px}.metric-label{font-size:11px}.form-grid,.module-grid,.legal-links{grid-template-columns:1fr}.page-title h2{font-size:21px}.panel{padding:13px}.nav-tab{padding:9px 11px}.table-wrap{max-height:450px}th,td{padding:8px;font-size:12px}.dashboard-welcome{padding:20px;align-items:flex-start}.dashboard-welcome h2{font-size:21px}.dashboard-two-columns{grid-template-columns:1fr}.dashboard-metric{padding:15px}.dashboard-metric-number{font-size:27px}.dashboard-card{padding:14px}.dashboard-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.dashboard-shortcut{padding:12px}}
+
+/* REDISEÑO DE NAVEGACIÓN: portal profesional y menús agrupados */
+:root{--navy:#12283f;--navy2:#1c4967;--blue:#176b9b;--bg:#eef3f8;--gold:#d7b56d;--line:#dce5ee}
+.topbar{background:linear-gradient(112deg,#10263c 0%,#173e59 72%,#1d526c 100%);padding:16px 26px;border-bottom:3px solid var(--gold);box-shadow:0 4px 16px #10243a20}
+.brand-icon{background:linear-gradient(145deg,#d8b66b,#f1dfac);color:#17324b;border-radius:13px;box-shadow:inset 0 0 0 1px #ffffff80}
+.brand h1{letter-spacing:.1px}.brand p{color:#d6e3ef}
+.top-actions .btn{border-radius:9px}
+#navTabs.nav-tabs{display:flex;align-items:center;gap:7px;overflow:visible;flex-wrap:wrap;padding:8px 10px;margin:0 0 20px;background:#fff;border:1px solid #dce5ee;border-radius:13px;box-shadow:0 4px 15px #17324b0a;position:relative;z-index:20}
+.nav-group{position:relative;flex:0 0 auto}
+.nav-tab{border:1px solid transparent;border-radius:9px;padding:11px 13px;background:transparent;color:#334b60;font-size:13px;font-weight:750;transition:background .16s,color .16s,border-color .16s}
+.nav-tab:hover{background:#edf4f9;color:#12344d}
+.nav-tab.active{background:#173e59;color:#fff;border-color:#173e59;box-shadow:0 3px 9px #173e5920}
+.nav-trigger{display:flex;align-items:center;gap:7px;white-space:nowrap}
+.nav-trigger-icon{font-size:16px}
+.nav-chevron{font-size:11px;opacity:.75;transition:transform .16s}
+.nav-group.open .nav-chevron{transform:rotate(180deg)}
+.nav-menu{display:none;position:absolute;top:calc(100% + 8px);left:0;min-width:245px;max-width:min(320px,calc(100vw - 28px));padding:7px;background:#fff;border:1px solid #dce5ee;border-radius:12px;box-shadow:0 18px 42px #10243a25;z-index:50}
+.nav-group.open .nav-menu{display:block;animation:navDrop .14s ease-out}
+@keyframes navDrop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.nav-menu-item{display:flex;align-items:center;gap:11px;width:100%;border:0;border-radius:8px;background:transparent;color:#334b60;padding:11px 12px;text-align:left;font-size:13px;font-weight:650}
+.nav-menu-item:hover{background:#edf4f9;color:#12496b}
+.nav-menu-item.active{background:#e2edf5;color:#123e5c}
+.nav-menu-icon{display:grid;place-items:center;flex:0 0 29px;width:29px;height:29px;border-radius:8px;background:#eaf1f7;color:#1d587a;font-size:16px}
+.nav-menu-item.active .nav-menu-icon{background:#173e59;color:white}
+.layout{padding-top:18px}
+.page-title h2{letter-spacing:-.35px}
+.panel,.metric,.dashboard-card,.dashboard-metric,.module-card,.legal-link{box-shadow:0 4px 14px #17324b08}
+.btn{transition:filter .15s,transform .15s}
+.btn:active,.nav-tab:active,.module-card:active{transform:translateY(1px)}
+.dashboard-welcome{border:1px solid #274f6b;position:relative;overflow:hidden}
+.dashboard-welcome:after{content:"";position:absolute;right:-40px;top:-90px;width:240px;height:240px;border:1px solid #ffffff20;border-radius:50%;box-shadow:0 0 0 28px #ffffff08,0 0 0 56px #ffffff06;pointer-events:none}
+.dashboard-welcome>div,.dashboard-welcome>button{position:relative;z-index:1}
+.dashboard-metric{transition:transform .16s,box-shadow .16s}
+.dashboard-metric:hover{transform:translateY(-2px);box-shadow:0 8px 22px #17324b12}
+@media(max-width:760px){
+  .topbar{padding:13px;gap:13px}
+  .top-actions{gap:7px}
+  #navTabs.nav-tabs{gap:5px;padding:7px;margin-bottom:14px}
+  .nav-tab{padding:10px 11px;font-size:12px}
+  .nav-menu{position:fixed;left:12px;right:12px;top:auto;min-width:0;max-width:none;max-height:65vh;overflow:auto}
+  .nav-group.open .nav-menu{top:155px}
+  .layout{padding:12px}
+}
+@media(min-width:761px) and (max-width:1050px){
+  .nav-menu{min-width:225px}
+}
+
 </style>
 </head>
 <body>
@@ -219,11 +267,49 @@ function getOrgName(){return organizations.find(o=>o.id===activeOrg)?.nombre||"O
 function visibleModules(){return modules.filter(m=>m.id==="inicio"||m.id==="legislacion"||configs[m.id])}
 function buildNav(){
   const nav=$("navTabs");nav.replaceChildren();
-  visibleModules().forEach(m=>{
-    const b=document.createElement("button");b.type="button";
-    b.className="nav-tab"+(activeModule===m.id?" active":"");
-    b.textContent=m.icon+" "+m.label;b.onclick=()=>openModule(m.id);nav.appendChild(b);
+  const all=visibleModules();
+  const groups=[
+    {label:"Inicio",icon:"⌂",ids:["inicio"]},
+    {label:"Organización",icon:"▦",ids:["establecimientos","sectores","puestos","personas"]},
+    {label:"Gestión de HyS",icon:"⚠",ids:["riesgos","inspecciones","accidentes_incidentes","mediciones_ambientales","epp"]},
+    {label:"Seguimiento",icon:"✓",ids:["capacitaciones","documentacion","acciones_correctivas","equipos_instalaciones","vencimientos"]},
+    {label:"Legislación",icon:"§",ids:["legislacion"]}
+  ];
+  groups.forEach((g,index)=>{
+    const items=all.filter(m=>g.ids.includes(m.id));
+    if(!items.length)return;
+    if(items.length===1){
+      const b=document.createElement("button");b.type="button";
+      b.className="nav-tab nav-single"+(activeModule===items[0].id?" active":"");
+      b.textContent=g.icon+" "+g.label;b.onclick=()=>openModule(items[0].id);nav.appendChild(b);return;
+    }
+    const wrap=document.createElement("div");wrap.className="nav-group";
+    const active=items.some(m=>m.id===activeModule);
+    const trigger=document.createElement("button");trigger.type="button";
+    trigger.className="nav-tab nav-trigger"+(active?" active":"");
+    trigger.setAttribute("aria-expanded","false");
+    trigger.innerHTML='<span class="nav-trigger-icon">'+g.icon+'</span> '+g.label+' <span class="nav-chevron">▾</span>';
+    const menu=document.createElement("div");menu.className="nav-menu";
+    items.forEach(m=>{
+      const b=document.createElement("button");b.type="button";
+      b.className="nav-menu-item"+(activeModule===m.id?" active":"");
+      b.innerHTML='<span class="nav-menu-icon">'+m.icon+'</span><span>'+escapeHtml(m.label)+'</span>';
+      b.onclick=()=>{wrap.classList.remove("open");trigger.setAttribute("aria-expanded","false");openModule(m.id)};
+      menu.appendChild(b);
+    });
+    trigger.onclick=()=>{
+      const wasOpen=wrap.classList.contains("open");
+      nav.querySelectorAll(".nav-group.open").forEach(el=>{el.classList.remove("open");const t=el.querySelector(".nav-trigger");if(t)t.setAttribute("aria-expanded","false")});
+      if(!wasOpen){wrap.classList.add("open");trigger.setAttribute("aria-expanded","true")}
+    };
+    wrap.append(trigger,menu);nav.appendChild(wrap);
   });
+  if(!nav.dataset.outsideBound){
+    document.addEventListener("click",e=>{
+      if(!nav.contains(e.target))nav.querySelectorAll(".nav-group.open").forEach(el=>{el.classList.remove("open");const t=el.querySelector(".nav-trigger");if(t)t.setAttribute("aria-expanded","false")});
+    });
+    nav.dataset.outsideBound="1";
+  }
 }
 function openModule(id){activeModule=id;editing=null;searchText="";buildNav();if(id==="inicio")return renderHome();if(id==="legislacion")return renderLegislation();if(configs[id])return renderCrud(id)}
 
@@ -250,6 +336,23 @@ async function fetchReferenceOptions(table){
   const rows=await fetchRows(table);
   return rows.map(r=>({id:r.id,label:labels[table]?.(r)||r.nombre||r.titulo||r.id}));
 }
+function formatDateDMY(value){
+  if(value===null||value===undefined||value==="")return "—";
+  const raw=String(value).trim();
+  const m=raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(m)return m[3]+"/"+m[2]+"/"+m[1];
+  const d=new Date(raw);
+  if(Number.isNaN(d.getTime()))return raw;
+  return String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+d.getFullYear();
+}
+async function getNextLegajo(){
+  const {data,error}=await db.from("personas").select("Legajo").eq("organizacion_id",activeOrg).limit(5000);
+  if(error)throw error;
+  let max=0;
+  (data||[]).forEach(p=>{const n=Number(String(p.Legajo??"").trim());if(Number.isSafeInteger(n)&&n>max)max=n});
+  return max+1;
+}
+function formatLegajo(n){return String(n).padStart(2,"0")}
 async function renderField(field,value){
   const [key,label,type,required]=field,req=required?"required":"";
   const id="f_"+key.replace(/[^a-zA-Z0-9_-]/g,"_");
@@ -261,27 +364,253 @@ async function renderField(field,value){
   }else if(type.startsWith("select:")){
     control=`<select id="${id}" name="${escapeHtml(key)}" ${req}><option value="">Seleccione...</option>${type.slice(7).split(",").map(o=>`<option value="${escapeHtml(o)}" ${o===value?"selected":""}>${escapeHtml(o)}</option>`).join("")}</select>`;
   }else if(type==="textarea")control=`<textarea id="${id}" name="${escapeHtml(key)}" rows="3" ${req}>${escapeHtml(value||"")}</textarea>`;
+  else if(key==="Legajo")control=`<input id="${id}" name="${escapeHtml(key)}" type="text" value="${escapeHtml(value??"")}" readonly aria-readonly="true" class="readonly-field" placeholder="Se asigna automáticamente">`;
   else control=`<input id="${id}" name="${escapeHtml(key)}" type="${escapeHtml(type)}" value="${escapeHtml(value??"")}" ${req} ${type==="number"?'step="any"':""}>`;
   return `<div class="${type==="textarea"?"field-full":""}"><label for="${id}">${escapeHtml(label)}${required?" *":""}</label>${control}</div>`;
 }
+
+// ===== ALTA MASIVA DE PERSONAS DESDE EXCEL =====
+let bulkPeopleRows=[],bulkPeopleValid=[],bulkPeopleEstablishments=[];
+async function ensureXLSX(){
+  if(window.XLSX)return window.XLSX;
+  if(window.__xlsxLoading)return window.__xlsxLoading;
+  window.__xlsxLoading=new Promise((resolve,reject)=>{
+    const s=document.createElement("script");
+    s.src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
+    s.onload=()=>window.XLSX?resolve(window.XLSX):reject(new Error("No se pudo cargar la librería Excel."));
+    s.onerror=()=>reject(new Error("No se pudo cargar la librería Excel. Verificá la conexión a Internet."));
+    document.head.appendChild(s);
+  });
+  return window.__xlsxLoading;
+}
+function bulkNorm(v){return String(v??"").trim().toLocaleLowerCase("es-AR").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ")}
+function bulkCell(row,names){
+  const keys=Object.keys(row||{});
+  for(const n of names){const k=keys.find(x=>bulkNorm(x)===bulkNorm(n));if(k!==undefined)return row[k]}
+  return "";
+}
+function bulkDate(value,XLSX){
+  if(value===null||value===undefined||value==="")return null;
+  if(value instanceof Date&&!Number.isNaN(value.getTime()))return `${value.getFullYear()}-${String(value.getMonth()+1).padStart(2,"0")}-${String(value.getDate()).padStart(2,"0")}`;
+  if(typeof value==="number"&&Number.isFinite(value)){
+    const d=XLSX.SSF.parse_date_code(value);
+    if(d)return `${d.y}-${String(d.m).padStart(2,"0")}-${String(d.d).padStart(2,"0")}`;
+  }
+  const s=String(value).trim();
+  let m=s.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/);
+  if(m)return `${m[1]}-${String(m[2]).padStart(2,"0")}-${String(m[3]).padStart(2,"0")}`;
+  m=s.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/);
+  if(m)return `${m[3]}-${String(m[2]).padStart(2,"0")}-${String(m[1]).padStart(2,"0")}`;
+  return "__FECHA_INVALIDA__";
+}
+function bulkBool(value){
+  if(value===null||value===undefined||String(value).trim()==="")return true;
+  const v=bulkNorm(value);
+  if(["si","s","true","1","activo","verdadero","yes"].includes(v))return true;
+  if(["no","false","0","inactivo","falso"].includes(v))return false;
+  return null;
+}
+async function initPeopleBulkImport(){
+  const sel=$("bulkEstablishment");if(!sel)return;
+  $("bulkStatus").textContent="Cargando establecimientos...";
+  try{
+    const rows=await fetchRows("establecimientos");
+    bulkPeopleEstablishments=rows.filter(r=>r.organizacion_id===activeOrg&&r.Activo!==false);
+    sel.innerHTML='<option value="">Seleccione un establecimiento...</option>'+bulkPeopleEstablishments.map(r=>`<option value="${escapeHtml(r.id)}">${escapeHtml(r.Nombre||"Establecimiento sin nombre")}</option>`).join("");
+    $("bulkStatus").textContent=bulkPeopleEstablishments.length?"Elegí el establecimiento al que pertenecerán las personas.":"No hay establecimientos activos disponibles para esta organización.";
+    $("bulkTemplate").onclick=bulkDownloadTemplate;
+    $("bulkValidate").onclick=bulkValidateFile;
+    $("bulkConfirm").onclick=bulkConfirmImport;
+    sel.onchange=()=>{bulkPeopleRows=[];bulkPeopleValid=[];$("bulkConfirm").disabled=true;$("bulkSummary").innerHTML="";$("bulkPreview").innerHTML="";};
+    $("bulkFile").onchange=()=>{bulkPeopleRows=[];bulkPeopleValid=[];$("bulkConfirm").disabled=true;$("bulkSummary").innerHTML="";$("bulkPreview").innerHTML="";};
+  }catch(e){console.error(e);$("bulkStatus").textContent="No se pudieron cargar los establecimientos: "+e.message;}
+}
+async function bulkDownloadTemplate(){
+  try{
+    const X=await ensureXLSX();
+    const data=[["Legajo","Nombre","Apellido","Documento","Cargo","Fecha de Ingreso","Puesto","Activo"]];
+    const ws=X.utils.aoa_to_sheet(data);
+    ws["!cols"]=[{wch:18},{wch:22},{wch:22},{wch:18},{wch:24},{wch:20},{wch:32},{wch:14}];
+    ws["!autofilter"]={ref:"A1:H1"};
+    const ins=X.utils.aoa_to_sheet([
+      ["INSTRUCCIONES — ALTA MASIVA DE PERSONAS"],
+      ["Complete una fila por persona y no cambie los encabezados."],
+      ["Nombre y Apellido son obligatorios."],
+      ["Puesto debe coincidir con un puesto existente en el establecimiento seleccionado."],
+      ["Fecha de Ingreso: AAAA-MM-DD (ejemplo: 2026-01-15). Puede quedar vacía."],
+      ["El sistema asigna automáticamente el legajo correlativo (01, 02, 03...); el valor de la columna Legajo se ignora."],
+      ["Documento no debe repetirse en el archivo ni en la organización."],
+      ["Activo acepta Sí/No, Activo/Inactivo, Verdadero/Falso o 1/0. Vacío significa Sí."],
+      ["La validación se realiza antes de guardar; solo se importan las filas válidas."],
+      ["Esta plantilla no crea establecimientos, sectores ni puestos."]
+    ]);
+    ins["!cols"]=[{wch:105}];
+    const wb=X.utils.book_new();X.utils.book_append_sheet(wb,ws,"Personas");X.utils.book_append_sheet(wb,ins,"Instrucciones");
+    X.writeFile(wb,"Plantilla_Alta_Masiva_Personas.xlsx");
+    $("bulkStatus").textContent="Plantilla descargada. Completala y luego seleccioná el archivo.";
+  }catch(e){$("bulkStatus").textContent="No se pudo generar la plantilla: "+e.message;}
+}
+function bulkShowPreview(rows){
+  const summary=$("bulkSummary"),preview=$("bulkPreview");
+  const ok=rows.filter(r=>!r.errors.length).length,bad=rows.length-ok;
+  summary.innerHTML=`<div class="dashboard-metrics" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr));margin:12px 0">
+    <div class="dashboard-metric"><div class="dashboard-metric-label">Filas leídas</div><div class="dashboard-metric-number">${rows.length}</div></div>
+    <div class="dashboard-metric"><div class="dashboard-metric-label">Válidas</div><div class="dashboard-metric-number">${ok}</div></div>
+    <div class="dashboard-metric"><div class="dashboard-metric-label">Con errores</div><div class="dashboard-metric-number">${bad}</div></div>
+  </div>`;
+  preview.innerHTML=`<table><thead><tr><th>Fila Excel</th><th>Legajo</th><th>Nombre</th><th>Apellido</th><th>Documento</th><th>Puesto</th><th>Resultado</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.rowNo}</td><td>${escapeHtml(r.legajo||"—")}</td><td>${escapeHtml(r.nombre||"—")}</td><td>${escapeHtml(r.apellido||"—")}</td><td>${escapeHtml(r.documento||"—")}</td><td>${escapeHtml(r.puestoTexto||"—")}</td><td>${r.errors.length?`<span class="badge off">${escapeHtml(r.errors.join(" · "))}</span>`:'<span class="badge ok">Válida</span>'}</td></tr>`).join("")}</tbody></table>`;
+  $("bulkConfirm").disabled=ok===0;
+  $("bulkConfirm").textContent=ok?`Confirmar alta de ${ok} persona(s)`:"Confirmar alta masiva";
+}
+async function bulkValidateFile(){
+  const status=$("bulkStatus"),file=$("bulkFile").files?.[0],estId=$("bulkEstablishment").value;
+  $("bulkConfirm").disabled=true;bulkPeopleRows=[];bulkPeopleValid=[];
+  if(!estId){status.textContent="Seleccioná primero un establecimiento.";return}
+  if(!bulkPeopleEstablishments.some(e=>e.id===estId&&e.organizacion_id===activeOrg)){status.textContent="El establecimiento seleccionado no pertenece a la organización activa.";return}
+  if(!file){status.textContent="Seleccioná un archivo .xlsx.";return}
+  if(!/\.xlsx$/i.test(file.name)){status.textContent="El archivo debe tener formato .xlsx.";return}
+  status.textContent="Leyendo y validando el archivo...";
+  try{
+    const X=await ensureXLSX(),buf=await file.arrayBuffer(),wb=X.read(buf,{type:"array",cellDates:true});
+    const sheet=wb.Sheets[wb.SheetNames[0]];
+    if(!sheet)throw new Error("El archivo no contiene una hoja de datos.");
+    const raw=X.utils.sheet_to_json(sheet,{defval:"",raw:true});
+    if(!raw.length)throw new Error("La primera hoja no contiene filas de datos.");
+    const headers=Object.keys(raw[0]).map(bulkNorm);
+    const required=["nombre","apellido","puesto"];
+    const missing=required.filter(h=>!headers.includes(h));
+    if(missing.length)throw new Error("Faltan encabezados obligatorios: "+missing.join(", ")+". Usá la plantilla descargada desde el sistema.");
+    const [estRows,secRows,puestoRows,personaRows]=await Promise.all([fetchRows("establecimientos"),fetchRows("sectores"),fetchRows("puestos"),fetchRows("personas")]);
+    const est=estRows.find(e=>e.id===estId&&e.organizacion_id===activeOrg);
+    if(!est)throw new Error("No se pudo verificar el establecimiento en la organización activa.");
+    const sectorIds=new Set(secRows.filter(s=>s.establecimiento_id===estId).map(s=>s.id));
+    const posts=puestoRows.filter(p=>sectorIds.has(p.sector_id)&&p.Activo!==false&&p.activo!==false);
+    const people=personaRows.filter(p=>p.organizacion_id===activeOrg);
+    const seenDocs=new Set();
+    const existingDocs=new Set(people.map(p=>bulkNorm(p.Documneto)).filter(Boolean));
+    const output=[];
+    raw.forEach((r,i)=>{
+      if(Object.values(r).every(v=>String(v??"").trim()===""))return;
+      const errors=[],nombre=String(bulkCell(r,["Nombre"] )??"").trim(),apellido=String(bulkCell(r,["Apellido"])??"").trim();
+      const documento=String(bulkCell(r,["Documento","Documneto"])??"").trim();
+      const cargo=String(bulkCell(r,["Cargo"])??"").trim(),puestoTexto=String(bulkCell(r,["Puesto"])??"").trim();
+      const fecha=bulkDate(bulkCell(r,["Fecha de Ingreso","Fecha de ingreso"]),X),activo=bulkBool(bulkCell(r,["Activo"]));
+      if(!nombre)errors.push("Falta Nombre");
+      if(!apellido)errors.push("Falta Apellido");
+      if(!puestoTexto)errors.push("Falta Puesto");
+      if(fecha==="__FECHA_INVALIDA__")errors.push("Fecha inválida");
+      if(activo===null)errors.push("Activo debe ser Sí o No");
+      const matches=posts.filter(p=>bulkNorm(p.Nombre)===bulkNorm(puestoTexto));
+      if(puestoTexto&&matches.length===0)errors.push("Puesto no existe en el establecimiento");
+      if(matches.length>1)errors.push("Puesto ambiguo: hay varios con ese nombre");
+      if(documento){const k=bulkNorm(documento);if(existingDocs.has(k)||seenDocs.has(k))errors.push("Documento duplicado");seenDocs.add(k)}
+      const p=matches.length===1?matches[0]:null;
+      output.push({rowNo:i+2,legajo:"",nombre,apellido,documento,cargo,fecha:fecha==="__FECHA_INVALIDA__"?null:fecha,puestoTexto,puestoId:p?.id||null,activo:activo===null?true:activo,errors});
+    });
+    if(!output.length)throw new Error("No se encontraron filas con datos.");
+    let previewLegajo=await getNextLegajo();
+    output.forEach(r=>{r.legajo=r.errors.length?"—":formatLegajo(previewLegajo++)});
+    bulkPeopleRows=output;bulkPeopleValid=output.filter(r=>!r.errors.length);
+    bulkShowPreview(output);
+    status.textContent=bulkPeopleValid.length?"Validación terminada. Revisá los resultados; las filas con errores no se guardarán.":"La validación terminó, pero no hay filas válidas para importar.";
+  }catch(e){console.error(e);status.textContent="No se pudo validar: "+e.message;$("bulkSummary").innerHTML="";$("bulkPreview").innerHTML="";}
+}
+async function bulkConfirmImport(){
+  const rows=bulkPeopleValid.filter(r=>!r.errors.length),estId=$("bulkEstablishment").value;
+  if(!rows.length||!estId)return;
+  if(!confirm(`Se van a dar de alta ${rows.length} persona(s) en el establecimiento seleccionado. Solo se procesarán las filas válidas. ¿Confirmás la operación?`))return;
+  const button=$("bulkConfirm"),status=$("bulkStatus");button.disabled=true;status.textContent="Guardando registros...";
+  let inserted=0;
+  try{
+    let nextLegajo=await getNextLegajo();
+    for(let i=0;i<rows.length;i+=50){
+      const batch=rows.slice(i,i+50).map(r=>({
+        organizacion_id:activeOrg,Legajo:formatLegajo(nextLegajo++),Nombre:r.nombre,Apellido:r.apellido,
+        Documneto:r.documento||null,Cargo:r.cargo||null,"Fecha de Ingreso":r.fecha,
+        puesto_id:r.puestoId,Activo:r.activo
+      }));
+      const {error}=await db.from("personas").insert(batch);
+      if(error)throw new Error(`Se guardaron ${inserted} registro(s), pero falló el siguiente lote: ${error.message}`);
+      inserted+=batch.length;
+    }
+    status.textContent=`Importación finalizada: ${inserted} persona(s) dadas de alta.`;
+    bulkPeopleRows=[];bulkPeopleValid=[];$("bulkSummary").innerHTML="";$("bulkPreview").innerHTML="";$("bulkFile").value="";
+    await loadModuleRows("personas");
+  }catch(e){console.error(e);status.textContent="Resultado de la importación: "+e.message;}
+  finally{button.disabled=false}
+}
+
 async function renderCrud(id){
   const cfg=configs[id];editing=null;
   $("view").innerHTML=`<div class="page-title"><div><h2>${escapeHtml(cfg.title)}</h2><p>Registros de ${escapeHtml(getOrgName())}. Los permisos se aplican mediante Supabase.</p></div><button class="btn btn-blue" id="reloadModule" type="button">↻ Actualizar listado</button></div>
+  ${id==="personas"?`<div class="panel" id="bulkPeoplePanel">
+  <h3>Alta masiva desde Excel</h3>
+  <p class="muted">Importá varias personas a la vez. Primero descargá la plantilla, elegí el establecimiento, cargá el archivo y validá las filas. No se guardará nada hasta que confirmes.</p>
+  <div class="form-grid">
+    <div><label for="bulkEstablishment">Establecimiento de destino *</label><select id="bulkEstablishment" required><option value="">Cargando establecimientos...</option></select></div>
+    <div><label for="bulkFile">Archivo Excel (.xlsx)</label><input id="bulkFile" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"></div>
+  </div>
+  <div class="actions">
+    <button class="btn btn-light" type="button" id="bulkTemplate">Descargar plantilla Excel</button>
+    <button class="btn btn-blue" type="button" id="bulkValidate">Validar archivo</button>
+    <button class="btn btn-green" type="button" id="bulkConfirm" disabled>Confirmar alta masiva</button>
+  </div>
+  <div id="bulkStatus" class="status" role="status"></div>
+  <div id="bulkSummary"></div>
+  <div id="bulkPreview" class="table-wrap" style="margin-top:12px"></div>
+</div>`:""}
   <div class="panel"><h3 id="formTitle">Registrar ${escapeHtml(cfg.title.toLowerCase())}</h3><form id="recordForm"><div id="formFields" class="form-grid"></div><div class="actions"><button class="btn btn-green" type="submit" id="saveRecord">Guardar registro</button><button class="btn btn-light hidden" id="cancelEdit" type="button">Cancelar edición</button></div><div id="formStatus" class="status" role="status"></div></form></div>
   <div class="panel"><h3>Listado</h3><div class="toolbar"><input id="tableSearch" placeholder="Buscar en los registros..." aria-label="Buscar"><span id="rowCount" class="muted"></span></div><div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"><tr><td class="empty">Cargando...</td></tr></tbody></table></div><div id="tableStatus" class="status" role="status"></div></div>`;
   for(const f of cfg.fields)$("formFields").insertAdjacentHTML("beforeend",await renderField(f,f[2]==="checkbox"?true:""));
+  if(id==="personas"){
+    const legajoInput=$("f_Legajo");
+    if(legajoInput){legajoInput.readOnly=true;legajoInput.setAttribute("aria-readonly","true");legajoInput.title="El sistema asigna automáticamente el siguiente legajo";}
+    try{if(legajoInput)legajoInput.value=formatLegajo(await getNextLegajo())}catch(e){console.error(e);if(legajoInput)legajoInput.placeholder="No se pudo calcular; se verificará al guardar"}
+  }
   $("recordForm").onsubmit=e=>saveRecord(e,id);
+  if(id==="personas")await initPeopleBulkImport();
   $("reloadModule").onclick=()=>loadModuleRows(id);
   $("cancelEdit").onclick=()=>renderCrud(id);
   $("tableSearch").oninput=e=>{searchText=e.target.value;renderTable(id)};
   await loadModuleRows(id);
 }
 async function loadModuleRows(id){
-  try{const rows=await fetchRows(configs[id].table);moduleCache[id]=rows;$("tableStatus").textContent=`Se encontraron ${rows.length} registro(s).`;renderTable(id)}
-  catch(e){console.error(e);$("tableStatus").textContent="No se pudo consultar: "+e.message;$("tableBody").innerHTML='<tr><td class="empty">No se pudieron cargar los datos. Verificá la conexión y RLS.</td></tr>'}
+  try{
+    const rows=await fetchRows(configs[id].table);
+    moduleCache[id]=rows;
+    const refTables=[...new Set(configs[id].fields.filter(f=>String(f[2]).startsWith("ref:")).map(f=>f[2].slice(4)))];
+    await Promise.all(refTables.map(async table=>{moduleCache[table]=await fetchRows(table)}));
+    $("tableStatus").textContent=`Se encontraron ${rows.length} registro(s).`;
+    renderTable(id)
+  }catch(e){console.error(e);$("tableStatus").textContent="No se pudo consultar: "+e.message;$("tableBody").innerHTML='<tr><td class="empty">No se pudieron cargar los datos. Verificá la conexión y RLS.</td></tr>'}
+}
+function displayCellValue(moduleId,row,key){
+  const value=row[key];
+  if(value===null||value===undefined||value==="")return "—";
+  const field=configs[moduleId]?.fields.find(f=>f[0]===key);
+  if(field&&String(field[2]).startsWith("ref:")){
+    const table=field[2].slice(4),related=(moduleCache[table]||[]).find(item=>String(item.id)===String(value));
+    if(related){
+      const labels={
+        establecimientos:r=>r.Nombre,
+        sectores:r=>r.nombre,
+        puestos:r=>r.Nombre,
+        personas:r=>`${r.Apellido||""}, ${r.Nombre||""}`.replace(/^, |, $/g,""),
+        peligros:r=>r.nombre,
+        inspecciones:r=>`${r.tipo||"Inspección"} — ${r.fecha||""}`,
+        riesgos:r=>r.descripcion,
+        hallazgos:r=>r.descripcion
+      };
+      return String(labels[table]?.(related)||related.nombre||related.Nombre||related.titulo||related.descripcion||value);
+    }
+    return "Referencia no encontrada";
+  }
+  if(field&&field[2]==="date")return formatDateDMY(value);
+  return String(value);
 }
 function renderTable(id){
-  const cfg=configs[id],rows=(moduleCache[id]||[]).filter(r=>!searchText||cfg.columns.some(k=>String(r[k]??"").toLowerCase().includes(searchText.toLowerCase())));
+  const cfg=configs[id],allRows=moduleCache[id]||[];
+  const rows=allRows.filter(r=>!searchText||cfg.columns.some(k=>displayCellValue(id,r,k).toLowerCase().includes(searchText.toLowerCase())));
   $("rowCount").textContent=`${rows.length} registro(s)`;
   $("tableHead").innerHTML=`<tr>${cfg.columns.map(k=>`<th>${escapeHtml(cfg.fields.find(f=>f[0]===k)?.[1]||k)}</th>`).join("")}<th>Acciones</th></tr>`;
   const tb=$("tableBody");tb.replaceChildren();
@@ -292,7 +621,7 @@ function renderTable(id){
       const td=document.createElement("td"),v=row[k];
       if(typeof v==="boolean")td.innerHTML=`<span class="badge ${v?"ok":"off"}">${v?"Sí":"No"}</span>`;
       else if(k==="archivo_url"&&v&&String(v).startsWith("http"))td.innerHTML=`<a href="${escapeHtml(v)}" target="_blank" rel="noopener noreferrer">Abrir</a>`;
-      else td.textContent=v===null||v===undefined||v===""?"—":String(v);
+      else td.textContent=displayCellValue(id,row,k);
       tr.appendChild(td);
     });
     const td=document.createElement("td");td.append(makeButton("Editar","btn btn-light btn-sm",()=>startEdit(id,row)),makeButton("Eliminar","btn btn-red btn-sm",()=>deleteRecord(id,row)));tr.appendChild(td);tb.appendChild(tr);
@@ -302,6 +631,7 @@ function makeButton(text,cls,fn){const b=document.createElement("button");b.type
 async function startEdit(id,row){
   await renderCrud(id);editing=row;$("formTitle").textContent="Editar registro";$("saveRecord").textContent="Guardar cambios";$("cancelEdit").classList.remove("hidden");
   for(const f of configs[id].fields){const el=$("f_"+f[0].replace(/[^a-zA-Z0-9_-]/g,"_"));if(!el)continue;if(f[2]==="checkbox")el.checked=row[f[0]]!==false;else el.value=row[f[0]]??""}
+  if(id==="personas"){const legajoInput=$("f_Legajo");if(legajoInput){legajoInput.readOnly=true;legajoInput.title="El legajo asignado no se puede editar";}}
 }
 async function saveRecord(ev,id){
   ev.preventDefault();const cfg=configs[id],b=$("saveRecord");b.disabled=true;$("formStatus").textContent="Guardando...";
@@ -313,6 +643,7 @@ async function saveRecord(ev,id){
       else{const v=el.value.trim();payload[f[0]]=v===""?null:(f[2]==="number"?Number(v):v)}
     }
     if(cfg.org&&!editing)payload.organizacion_id=activeOrg;
+    if(id==="personas")payload.Legajo=editing?editing.Legajo:formatLegajo(await getNextLegajo());
     const result=editing?await db.from(cfg.table).update(payload).eq("id",editing.id).select("id"):await db.from(cfg.table).insert(payload).select("id");
     if(result.error)throw result.error;
     if(!result.data?.length)throw new Error("No se confirmó la operación. Verificá los permisos RLS.");
