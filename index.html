@@ -335,6 +335,23 @@ async function fetchReferenceOptions(table){
   const rows=await fetchRows(table);
   return rows.map(r=>({id:r.id,label:labels[table]?.(r)||r.nombre||r.titulo||r.id}));
 }
+function formatDateDMY(value){
+  if(value===null||value===undefined||value==="")return "—";
+  const raw=String(value).trim();
+  const m=raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(m)return m[3]+"/"+m[2]+"/"+m[1];
+  const d=new Date(raw);
+  if(Number.isNaN(d.getTime()))return raw;
+  return String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+d.getFullYear();
+}
+async function getNextLegajo(){
+  const {data,error}=await db.from("personas").select("Legajo").eq("organizacion_id",activeOrg).limit(5000);
+  if(error)throw error;
+  let max=0;
+  (data||[]).forEach(p=>{const n=Number(String(p.Legajo??"").trim());if(Number.isSafeInteger(n)&&n>max)max=n});
+  return max+1;
+}
+function formatLegajo(n){return String(n).padStart(2,"0")}
 async function renderField(field,value){
   const [key,label,type,required]=field,req=required?"required":"";
   const id="f_"+key.replace(/[^a-zA-Z0-9_-]/g,"_");
@@ -419,7 +436,8 @@ async function bulkDownloadTemplate(){
       ["Nombre y Apellido son obligatorios."],
       ["Puesto debe coincidir con un puesto existente en el establecimiento seleccionado."],
       ["Fecha de Ingreso: AAAA-MM-DD (ejemplo: 2026-01-15). Puede quedar vacía."],
-      ["Legajo y Documento son opcionales, pero no deben repetirse en el archivo ni en la organización."],
+      ["El sistema asigna automáticamente el legajo correlativo; el valor de la columna Legajo se ignora."],
+      ["Documento no debe repetirse en el archivo ni en la organización."],
       ["Activo acepta Sí/No, Activo/Inactivo, Verdadero/Falso o 1/0. Vacío significa Sí."],
       ["La validación se realiza antes de guardar; solo se importan las filas válidas."],
       ["Esta plantilla no crea establecimientos, sectores ni puestos."]
@@ -502,9 +520,10 @@ async function bulkConfirmImport(){
   const button=$("bulkConfirm"),status=$("bulkStatus");button.disabled=true;status.textContent="Guardando registros...";
   let inserted=0;
   try{
+    let nextLegajo=await getNextLegajo();
     for(let i=0;i<rows.length;i+=50){
       const batch=rows.slice(i,i+50).map(r=>({
-        organizacion_id:activeOrg,Legajo:r.legajo||null,Nombre:r.nombre,Apellido:r.apellido,
+        organizacion_id:activeOrg,Legajo:formatLegajo(nextLegajo++),Nombre:r.nombre,Apellido:r.apellido,
         Documneto:r.documento||null,Cargo:r.cargo||null,"Fecha de Ingreso":r.fecha,
         puesto_id:r.puestoId,Activo:r.activo
       }));
@@ -579,6 +598,7 @@ function displayCellValue(moduleId,row,key){
     }
     return "Referencia no encontrada";
   }
+  if(field&&field[2]==="date")return formatDateDMY(value);
   return String(value);
 }
 function renderTable(id){
@@ -615,6 +635,7 @@ async function saveRecord(ev,id){
       else{const v=el.value.trim();payload[f[0]]=v===""?null:(f[2]==="number"?Number(v):v)}
     }
     if(cfg.org&&!editing)payload.organizacion_id=activeOrg;
+    if(id==="personas"&&!editing)payload.Legajo=formatLegajo(await getNextLegajo());
     const result=editing?await db.from(cfg.table).update(payload).eq("id",editing.id).select("id"):await db.from(cfg.table).insert(payload).select("id");
     if(result.error)throw result.error;
     if(!result.data?.length)throw new Error("No se confirmó la operación. Verificá los permisos RLS.");
