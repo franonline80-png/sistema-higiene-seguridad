@@ -23,6 +23,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
 label{display:block;font-size:13px;font-weight:700;margin:0 0 6px}
 input,select,textarea{width:100%;min-width:0;border:1px solid #cbd5e1;background:#fff;padding:10px 12px;border-radius:8px;margin-bottom:14px;color:var(--text)}
 input:focus,select:focus,textarea:focus{outline:2px solid #93c5fd;border-color:#3b82f6}
+input[readonly],input.readonly-field{background:#f1f5f9;color:#334155;font-weight:700;cursor:not-allowed;border-style:dashed}
 .btn{border:0;border-radius:8px;padding:10px 14px;background:var(--navy);color:white;font-weight:600}
 .btn:hover{filter:brightness(1.1)}
 .btn-blue{background:var(--blue)}.btn-green{background:var(--green)}.btn-red{background:var(--red)}.btn-light{background:#e8eef5;color:#203247}.btn-sm{padding:6px 9px;font-size:12px;margin:2px}
@@ -363,6 +364,7 @@ async function renderField(field,value){
   }else if(type.startsWith("select:")){
     control=`<select id="${id}" name="${escapeHtml(key)}" ${req}><option value="">Seleccione...</option>${type.slice(7).split(",").map(o=>`<option value="${escapeHtml(o)}" ${o===value?"selected":""}>${escapeHtml(o)}</option>`).join("")}</select>`;
   }else if(type==="textarea")control=`<textarea id="${id}" name="${escapeHtml(key)}" rows="3" ${req}>${escapeHtml(value||"")}</textarea>`;
+  else if(key==="Legajo")control=`<input id="${id}" name="${escapeHtml(key)}" type="text" value="${escapeHtml(value??"")}" readonly aria-readonly="true" class="readonly-field" placeholder="Se asigna automáticamente">`;
   else control=`<input id="${id}" name="${escapeHtml(key)}" type="${escapeHtml(type)}" value="${escapeHtml(value??"")}" ${req} ${type==="number"?'step="any"':""}>`;
   return `<div class="${type==="textarea"?"field-full":""}"><label for="${id}">${escapeHtml(label)}${required?" *":""}</label>${control}</div>`;
 }
@@ -436,7 +438,7 @@ async function bulkDownloadTemplate(){
       ["Nombre y Apellido son obligatorios."],
       ["Puesto debe coincidir con un puesto existente en el establecimiento seleccionado."],
       ["Fecha de Ingreso: AAAA-MM-DD (ejemplo: 2026-01-15). Puede quedar vacía."],
-      ["El sistema asigna automáticamente el legajo correlativo; el valor de la columna Legajo se ignora."],
+      ["El sistema asigna automáticamente el legajo correlativo (01, 02, 03...); el valor de la columna Legajo se ignora."],
       ["Documento no debe repetirse en el archivo ni en la organización."],
       ["Activo acepta Sí/No, Activo/Inactivo, Verdadero/Falso o 1/0. Vacío significa Sí."],
       ["La validación se realiza antes de guardar; solo se importan las filas válidas."],
@@ -484,14 +486,13 @@ async function bulkValidateFile(){
     const sectorIds=new Set(secRows.filter(s=>s.establecimiento_id===estId).map(s=>s.id));
     const posts=puestoRows.filter(p=>sectorIds.has(p.sector_id)&&p.Activo!==false&&p.activo!==false);
     const people=personaRows.filter(p=>p.organizacion_id===activeOrg);
-    const seenDocs=new Set(),seenLegajos=new Set();
+    const seenDocs=new Set();
     const existingDocs=new Set(people.map(p=>bulkNorm(p.Documneto)).filter(Boolean));
-    const existingLegajos=new Set(people.map(p=>bulkNorm(p.Legajo)).filter(Boolean));
     const output=[];
     raw.forEach((r,i)=>{
       if(Object.values(r).every(v=>String(v??"").trim()===""))return;
       const errors=[],nombre=String(bulkCell(r,["Nombre"] )??"").trim(),apellido=String(bulkCell(r,["Apellido"])??"").trim();
-      const legajo=String(bulkCell(r,["Legajo"])??"").trim(),documento=String(bulkCell(r,["Documento","Documneto","Documento"])??"").trim();
+      const documento=String(bulkCell(r,["Documento","Documneto"])??"").trim();
       const cargo=String(bulkCell(r,["Cargo"])??"").trim(),puestoTexto=String(bulkCell(r,["Puesto"])??"").trim();
       const fecha=bulkDate(bulkCell(r,["Fecha de Ingreso","Fecha de ingreso"]),X),activo=bulkBool(bulkCell(r,["Activo"]));
       if(!nombre)errors.push("Falta Nombre");
@@ -503,11 +504,12 @@ async function bulkValidateFile(){
       if(puestoTexto&&matches.length===0)errors.push("Puesto no existe en el establecimiento");
       if(matches.length>1)errors.push("Puesto ambiguo: hay varios con ese nombre");
       if(documento){const k=bulkNorm(documento);if(existingDocs.has(k)||seenDocs.has(k))errors.push("Documento duplicado");seenDocs.add(k)}
-      if(legajo){const k=bulkNorm(legajo);if(existingLegajos.has(k)||seenLegajos.has(k))errors.push("Legajo duplicado");seenLegajos.add(k)}
       const p=matches.length===1?matches[0]:null;
-      output.push({rowNo:i+2,legajo,nombre,apellido,documento,cargo,fecha:fecha==="__FECHA_INVALIDA__"?null:fecha,puestoTexto,puestoId:p?.id||null,activo:activo===null?true:activo,errors});
+      output.push({rowNo:i+2,legajo:"",nombre,apellido,documento,cargo,fecha:fecha==="__FECHA_INVALIDA__"?null:fecha,puestoTexto,puestoId:p?.id||null,activo:activo===null?true:activo,errors});
     });
     if(!output.length)throw new Error("No se encontraron filas con datos.");
+    let previewLegajo=await getNextLegajo();
+    output.forEach(r=>{r.legajo=r.errors.length?"—":formatLegajo(previewLegajo++)});
     bulkPeopleRows=output;bulkPeopleValid=output.filter(r=>!r.errors.length);
     bulkShowPreview(output);
     status.textContent=bulkPeopleValid.length?"Validación terminada. Revisá los resultados; las filas con errores no se guardarán.":"La validación terminó, pero no hay filas válidas para importar.";
@@ -560,6 +562,11 @@ async function renderCrud(id){
   <div class="panel"><h3 id="formTitle">Registrar ${escapeHtml(cfg.title.toLowerCase())}</h3><form id="recordForm"><div id="formFields" class="form-grid"></div><div class="actions"><button class="btn btn-green" type="submit" id="saveRecord">Guardar registro</button><button class="btn btn-light hidden" id="cancelEdit" type="button">Cancelar edición</button></div><div id="formStatus" class="status" role="status"></div></form></div>
   <div class="panel"><h3>Listado</h3><div class="toolbar"><input id="tableSearch" placeholder="Buscar en los registros..." aria-label="Buscar"><span id="rowCount" class="muted"></span></div><div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"><tr><td class="empty">Cargando...</td></tr></tbody></table></div><div id="tableStatus" class="status" role="status"></div></div>`;
   for(const f of cfg.fields)$("formFields").insertAdjacentHTML("beforeend",await renderField(f,f[2]==="checkbox"?true:""));
+  if(id==="personas"){
+    const legajoInput=$("f_Legajo");
+    if(legajoInput){legajoInput.readOnly=true;legajoInput.setAttribute("aria-readonly","true");legajoInput.title="El sistema asigna automáticamente el siguiente legajo";}
+    try{if(legajoInput)legajoInput.value=formatLegajo(await getNextLegajo())}catch(e){console.error(e);if(legajoInput)legajoInput.placeholder="No se pudo calcular; se verificará al guardar"}
+  }
   $("recordForm").onsubmit=e=>saveRecord(e,id);
   if(id==="personas")await initPeopleBulkImport();
   $("reloadModule").onclick=()=>loadModuleRows(id);
@@ -624,6 +631,7 @@ function makeButton(text,cls,fn){const b=document.createElement("button");b.type
 async function startEdit(id,row){
   await renderCrud(id);editing=row;$("formTitle").textContent="Editar registro";$("saveRecord").textContent="Guardar cambios";$("cancelEdit").classList.remove("hidden");
   for(const f of configs[id].fields){const el=$("f_"+f[0].replace(/[^a-zA-Z0-9_-]/g,"_"));if(!el)continue;if(f[2]==="checkbox")el.checked=row[f[0]]!==false;else el.value=row[f[0]]??""}
+  if(id==="personas"){const legajoInput=$("f_Legajo");if(legajoInput){legajoInput.readOnly=true;legajoInput.title="El legajo asignado no se puede editar";}}
 }
 async function saveRecord(ev,id){
   ev.preventDefault();const cfg=configs[id],b=$("saveRecord");b.disabled=true;$("formStatus").textContent="Guardando...";
@@ -635,7 +643,7 @@ async function saveRecord(ev,id){
       else{const v=el.value.trim();payload[f[0]]=v===""?null:(f[2]==="number"?Number(v):v)}
     }
     if(cfg.org&&!editing)payload.organizacion_id=activeOrg;
-    if(id==="personas"&&!editing)payload.Legajo=formatLegajo(await getNextLegajo());
+    if(id==="personas")payload.Legajo=editing?editing.Legajo:formatLegajo(await getNextLegajo());
     const result=editing?await db.from(cfg.table).update(payload).eq("id",editing.id).select("id"):await db.from(cfg.table).insert(payload).select("id");
     if(result.error)throw result.error;
     if(!result.data?.length)throw new Error("No se confirmó la operación. Verificá los permisos RLS.");
