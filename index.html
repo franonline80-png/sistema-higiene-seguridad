@@ -68,6 +68,21 @@ tr:hover td{background:#fafcff}
 .legal-link strong{display:block;margin-bottom:6px}.legal-link span{color:var(--muted);font-size:12px;line-height:1.5}
 .empty{padding:22px;text-align:center;color:var(--muted)}
 footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
+.consultor-logo svg{display:block;width:100%;height:auto}
+.login-consultor-logo{width:100%;max-width:330px;margin:0 auto 20px;overflow:hidden;border:1px solid #eee8dc;border-radius:10px}
+.consultor-header-logo{width:118px;flex:0 0 118px;overflow:hidden;border-radius:8px;box-shadow:0 0 0 1px #ffffff24}
+.consultor-header-logo svg{display:block;width:100%;height:auto}
+.professional-footer{padding:22px 14px 18px;background:#fff;border-top:1px solid var(--line);margin-top:26px}
+.cpii-credential{display:flex;align-items:center;justify-content:center;gap:16px;max-width:720px;margin:0 auto 14px;text-align:left}
+.cpii-credential svg{width:145px;max-width:38%;height:auto;flex:0 0 auto}
+.cpII-credential-text{display:flex;flex-direction:column;gap:5px;color:#334155;font-size:12px;line-height:1.45}
+.cpII-credential-text strong{font-size:13px;color:#173e59}
+.cpII-credential-text b{color:#1d587a}
+.footer-copy{font-size:11px;color:var(--muted)}
+.professional-title{font-weight:700;color:#173e59;margin-top:-8px}
+.brand-system-name{display:block;font-size:11px;color:#d6e3ef;margin-top:3px}
+@media(max-width:650px){.brand-system-name{font-size:10px}.brand h1{font-size:15px}.professional-title{font-size:14px}}
+@media(max-width:650px){.consultor-header-logo{width:88px;flex-basis:88px}.brand{gap:9px}.brand h1{font-size:15px}.brand p{font-size:11px}.login-consultor-logo{max-width:300px}.cpii-credential{gap:10px}.cpii-credential svg{width:110px}.cpII-credential-text{font-size:11px}}
 
 /* TABLERO PROFESIONAL */
 .dashboard-welcome{background:linear-gradient(120deg,#10243a 0%,#1d4d70 100%);color:white;border-radius:17px;padding:25px 27px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;gap:18px;box-shadow:0 8px 24px #10243a18}
@@ -166,8 +181,18 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 
 <div id="loginScreen">
   <div class="login-box">
-    <div class="brand-mark">✚</div>
-    <h1>Higiene y Seguridad</h1>
+    <div class="consultor-logo login-consultor-logo" role="img" aria-label="Consultor F&S, Francisco Sánchez, Licenciado en Seguridad e Higiene">
+      <svg viewBox="0 0 560 190" aria-hidden="true">
+        <rect width="560" height="190" rx="12" fill="#fbfaf5"/>
+        <path d="M232 42 L280 8 L328 42" fill="none" stroke="#b8792c" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="280" y="101" text-anchor="middle" font-family="Georgia,serif" font-size="58" fill="#111827" letter-spacing="1">CONSULTOR</text>
+        <path d="M34 125 H83 M477 125 H526" stroke="#9ca3af" stroke-width="3"/>
+        <text x="280" y="132" text-anchor="middle" font-family="Georgia,serif" font-size="18" font-weight="bold" fill="#252525">Licenciado en Seguridad e Higiene</text>
+        <text x="280" y="166" text-anchor="middle" font-family="Georgia,serif" font-size="26" font-weight="bold" fill="#111827">F&amp;S</text>
+      </svg>
+    </div>
+    <h1>Francisco Sánchez</h1>
+    <p class="professional-title">Licenciado en Seguridad e Higiene</p>
     <p>Sistema de gestión preventiva. Ingresá con tu cuenta autorizada.</p>
     <form id="loginForm">
       <label for="email">Correo electrónico</label>
@@ -183,8 +208,17 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 <div id="app">
   <header class="topbar">
     <div class="brand">
-      <div class="brand-icon">✚</div>
-      <div><h1>Sistema de Higiene y Seguridad</h1><p>Gestión preventiva y cumplimiento</p></div>
+      <div class="consultor-header-logo" role="img" aria-label="Consultor F&S">
+        <svg viewBox="0 0 560 190" aria-hidden="true">
+          <rect width="560" height="190" rx="12" fill="#fbfaf5"/>
+          <path d="M232 42 L280 8 L328 42" fill="none" stroke="#b8792c" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+          <text x="280" y="101" text-anchor="middle" font-family="Georgia,serif" font-size="58" fill="#111827" letter-spacing="1">CONSULTOR</text>
+          <path d="M34 125 H83 M477 125 H526" stroke="#9ca3af" stroke-width="3"/>
+          <text x="280" y="132" text-anchor="middle" font-family="Georgia,serif" font-size="18" font-weight="bold" fill="#252525">Licenciado en Seguridad e Higiene</text>
+          <text x="280" y="166" text-anchor="middle" font-family="Georgia,serif" font-size="26" font-weight="bold" fill="#111827">F&amp;S</text>
+        </svg>
+      </div>
+      <div><h1>Francisco Sánchez</h1><p>Licenciado en Seguridad e Higiene</p><span class="brand-system-name">Sistema de Higiene y Seguridad</span></div>
     </div>
     <div class="top-actions">
       <select id="orgSelect" class="org-select" aria-label="Organización activa"></select>
@@ -196,7 +230,26 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
     <nav id="navTabs" class="nav-tabs" aria-label="Módulos"></nav>
     <div id="view"></div>
   </main>
-  <footer>© 2026 — Sistema de Gestión de Higiene y Seguridad en el Trabajo</footer>
+  <footer class="professional-footer">
+  <div class="cpii-credential">
+    <svg viewBox="0 0 360 125" role="img" aria-label="Consejo Profesional de Ingeniería Industrial">
+      <rect width="360" height="125" rx="10" fill="#ffffff"/>
+      <g transform="translate(12 8)">
+        <path d="M5 8 H72 L58 42 H0 Z" fill="#285a78"/>
+        <path d="M77 8 H145 L131 42 H63 Z" fill="#285a78"/>
+        <path d="M150 8 H202 L188 42 H136 Z" fill="#82bf45"/>
+        <path d="M207 8 H259 L245 42 H193 Z" fill="#82bf45"/>
+        <path d="M0 47 H59 L45 80 H-14 Z" fill="#285a78"/>
+        <path d="M64 47 H132 L118 80 H50 Z" fill="#285a78"/>
+        <path d="M137 47 H189 L175 80 H123 Z" fill="#285a78"/>
+        <path d="M194 47 H246 L232 80 H180 Z" fill="#285a78"/>
+      </g>
+      <text x="180" y="105" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" font-weight="700" fill="#24485d">CPII · INGENIERÍA INDUSTRIAL</text>
+    </svg>
+    <div class="cpII-credential-text"><strong>Francisco Sánchez</strong><span>Licenciado en Seguridad e Higiene</span><span>Consejo Profesional de Ingeniería Industrial (CPII)</span><b>Matrícula LHS 0863</b></div>
+  </div>
+  <div class="footer-copy">© 2026 — Sistema de Gestión de Higiene y Seguridad en el Trabajo</div>
+</footer>
 </div>
 
 <script>
@@ -353,7 +406,16 @@ async function getNextLegajo(){
   return max+1;
 }
 function formatLegajo(n){return String(n).padStart(2,"0")}
-async function renderField(field,value){
+async function getNextCode(moduleId){
+  const specs={sectores:{table:"sectores",column:"codigo",parentColumn:"establecimiento_id",parentField:"establecimiento_id"},puestos:{table:"puestos",column:"Codigo",parentColumn:"sector_id",parentField:"sector_id"}};
+  const spec=specs[moduleId];if(!spec)throw new Error("Módulo sin numeración automática.");
+  const parentId=$("f_"+spec.parentField)?.value;
+  if(!parentId)throw new Error(moduleId==="sectores"?"Seleccioná primero el establecimiento.":"Seleccioná primero el sector.");
+  const rows=await fetchRows(spec.table,5000);let max=0;
+  rows.filter(r=>String(r[spec.parentColumn]||"")===String(parentId)).forEach(r=>{const n=Number(String(r[spec.column]??"").trim());if(Number.isSafeInteger(n)&&n>max)max=n});
+  return String(max+1).padStart(3,"0");
+}
+async function renderField(field,value,moduleId){
   const [key,label,type,required]=field,req=required?"required":"";
   const id="f_"+key.replace(/[^a-zA-Z0-9_-]/g,"_");
   let control="";
@@ -364,7 +426,8 @@ async function renderField(field,value){
   }else if(type.startsWith("select:")){
     control=`<select id="${id}" name="${escapeHtml(key)}" ${req}><option value="">Seleccione...</option>${type.slice(7).split(",").map(o=>`<option value="${escapeHtml(o)}" ${o===value?"selected":""}>${escapeHtml(o)}</option>`).join("")}</select>`;
   }else if(type==="textarea")control=`<textarea id="${id}" name="${escapeHtml(key)}" rows="3" ${req}>${escapeHtml(value||"")}</textarea>`;
-  else if(key==="Legajo")control=`<input id="${id}" name="${escapeHtml(key)}" type="text" value="${escapeHtml(value??"")}" readonly aria-readonly="true" class="readonly-field" placeholder="Se asigna automáticamente">`;
+  else if(key==="Legajo"||((key==="codigo"||key==="Codigo")&&(moduleId==="sectores"||moduleId==="puestos")))control=`<input id="${id}" name="${escapeHtml(key)}" type="text" value="${escapeHtml(value??"")}" readonly aria-readonly="true" class="readonly-field" placeholder="Se asigna automáticamente">`;
+  else if(key==="Documneto")control=`<input id="${id}" name="${escapeHtml(key)}" type="text" inputmode="numeric" pattern="[0-9]{1,8}" maxlength="8" minlength="1" value="${escapeHtml(value??"")}" ${req} placeholder="Hasta 8 dígitos">`;
   else control=`<input id="${id}" name="${escapeHtml(key)}" type="${escapeHtml(type)}" value="${escapeHtml(value??"")}" ${req} ${type==="number"?'step="any"':""}>`;
   return `<div class="${type==="textarea"?"field-full":""}"><label for="${id}">${escapeHtml(label)}${required?" *":""}</label>${control}</div>`;
 }
@@ -495,6 +558,7 @@ async function bulkValidateFile(){
       const documento=String(bulkCell(r,["Documento","Documneto"])??"").trim();
       const cargo=String(bulkCell(r,["Cargo"])??"").trim(),puestoTexto=String(bulkCell(r,["Puesto"])??"").trim();
       const fecha=bulkDate(bulkCell(r,["Fecha de Ingreso","Fecha de ingreso"]),X),activo=bulkBool(bulkCell(r,["Activo"]));
+      if(documento&&!/^\d{1,8}$/.test(documento))errors.push("Documento debe contener solo números y hasta 8 dígitos");
       if(!nombre)errors.push("Falta Nombre");
       if(!apellido)errors.push("Falta Apellido");
       if(!puestoTexto)errors.push("Falta Puesto");
@@ -561,7 +625,14 @@ async function renderCrud(id){
 </div>`:""}
   <div class="panel"><h3 id="formTitle">Registrar ${escapeHtml(cfg.title.toLowerCase())}</h3><form id="recordForm"><div id="formFields" class="form-grid"></div><div class="actions"><button class="btn btn-green" type="submit" id="saveRecord">Guardar registro</button><button class="btn btn-light hidden" id="cancelEdit" type="button">Cancelar edición</button></div><div id="formStatus" class="status" role="status"></div></form></div>
   <div class="panel"><h3>Listado</h3><div class="toolbar"><input id="tableSearch" placeholder="Buscar en los registros..." aria-label="Buscar"><span id="rowCount" class="muted"></span></div><div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"><tr><td class="empty">Cargando...</td></tr></tbody></table></div><div id="tableStatus" class="status" role="status"></div></div>`;
-  for(const f of cfg.fields)$("formFields").insertAdjacentHTML("beforeend",await renderField(f,f[2]==="checkbox"?true:""));
+  for(const f of cfg.fields)$("formFields").insertAdjacentHTML("beforeend",await renderField(f,f[2]==="checkbox"?true:"",id));
+  if(id==="sectores"||id==="puestos"){
+    const codeKey=id==="sectores"?"codigo":"Codigo",parentKey=id==="sectores"?"establecimiento_id":"sector_id";
+    const parentInput=$("f_"+parentKey),codeInput=$("f_"+codeKey);
+    if(codeInput){codeInput.readOnly=true;codeInput.setAttribute("aria-readonly","true");codeInput.title="El sistema asigna automáticamente el código correlativo";}
+    if(parentInput&&!editing)parentInput.addEventListener("change",async()=>{try{codeInput.value=await getNextCode(id)}catch(e){codeInput.value="";codeInput.placeholder=e.message}});
+    try{if(codeInput&&!editing)codeInput.value=await getNextCode(id)}catch(e){if(codeInput)codeInput.value=""}
+  }
   if(id==="personas"){
     const legajoInput=$("f_Legajo");
     if(legajoInput){legajoInput.readOnly=true;legajoInput.setAttribute("aria-readonly","true");legajoInput.title="El sistema asigna automáticamente el siguiente legajo";}
@@ -632,6 +703,7 @@ async function startEdit(id,row){
   await renderCrud(id);editing=row;$("formTitle").textContent="Editar registro";$("saveRecord").textContent="Guardar cambios";$("cancelEdit").classList.remove("hidden");
   for(const f of configs[id].fields){const el=$("f_"+f[0].replace(/[^a-zA-Z0-9_-]/g,"_"));if(!el)continue;if(f[2]==="checkbox")el.checked=row[f[0]]!==false;else el.value=row[f[0]]??""}
   if(id==="personas"){const legajoInput=$("f_Legajo");if(legajoInput){legajoInput.readOnly=true;legajoInput.title="El legajo asignado no se puede editar";}}
+  if(id==="sectores"||id==="puestos"){const codeInput=$(id==="sectores"?"f_codigo":"f_Codigo");if(codeInput){codeInput.readOnly=true;codeInput.title="El código asignado no se puede editar";}}
 }
 async function saveRecord(ev,id){
   ev.preventDefault();const cfg=configs[id],b=$("saveRecord");b.disabled=true;$("formStatus").textContent="Guardando...";
@@ -644,6 +716,13 @@ async function saveRecord(ev,id){
     }
     if(cfg.org&&!editing)payload.organizacion_id=activeOrg;
     if(id==="personas")payload.Legajo=editing?editing.Legajo:formatLegajo(await getNextLegajo());
+    if(id==="sectores")payload.codigo=editing?editing.codigo:await getNextCode(id);
+    if(id==="puestos")payload.Codigo=editing?editing.Codigo:await getNextCode(id);
+    if(id==="personas"&&payload.Documneto!=null&&payload.Documneto!==""){
+      const dni=String(payload.Documneto);
+      if(!/^\d{1,8}$/.test(dni))throw new Error("El DNI debe contener únicamente números y un máximo de 8 dígitos.");
+      payload.Documneto=dni;
+    }
     const result=editing?await db.from(cfg.table).update(payload).eq("id",editing.id).select("id"):await db.from(cfg.table).insert(payload).select("id");
     if(result.error)throw result.error;
     if(!result.data?.length)throw new Error("No se confirmó la operación. Verificá los permisos RLS.");
