@@ -949,7 +949,7 @@ async function annualGenerateDue(id){
   try{
     const all=await fetchRows("vencimientos",5000);
     const existing=all.find(v=>String(v.observaciones||"").includes(tag));
-    const payload={organizacion_id:activeOrg,tipo:"Capacitación",concepto:row.titulo,descripcion:d.description||"Actividad del plan anual de capacitaciones",fecha_vencimiento:d.dueDate,estado:"Pendiente",prioridad:"Media",observaciones:tag+" Generado desde el plan anual "+d.year+(d.periodicity?" · Periodicidad: "+d.periodicity:"")};
+    const payload={organizacion_id:activeOrg,tipo:"Capacitación",concepto:row.titulo,descripcion:d.description||"Actividad del plan anual de capacitaciones",fecha_vencimiento:d.dueDate,estado:(existing&&existing.estado)||"Pendiente",prioridad:(existing&&existing.prioridad)||"Media",observaciones:tag+" Generado desde el plan anual "+d.year+(d.periodicity?" · Periodicidad: "+d.periodicity:"")};
     const result=existing?await db.from("vencimientos").update(payload).eq("id",existing.id).eq("organizacion_id",activeOrg).select("id"):await db.from("vencimientos").insert(payload).select("id");
     if(result.error)throw result.error;
     if(!result.data||!result.data.length)throw new Error("Supabase no confirmó la operación. Revisá los permisos RLS.");
