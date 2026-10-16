@@ -79,6 +79,9 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 .cpII-credential-text strong{font-size:13px;color:#173e59}
 .cpII-credential-text b{color:#1d587a}
 .footer-copy{font-size:11px;color:var(--muted)}
+.professional-title{font-weight:700;color:#173e59;margin-top:-8px}
+.brand-system-name{display:block;font-size:11px;color:#d6e3ef;margin-top:3px}
+@media(max-width:650px){.brand-system-name{font-size:10px}.brand h1{font-size:15px}.professional-title{font-size:14px}}
 @media(max-width:650px){.consultor-header-logo{width:88px;flex-basis:88px}.brand{gap:9px}.brand h1{font-size:15px}.brand p{font-size:11px}.login-consultor-logo{max-width:300px}.cpii-credential{gap:10px}.cpii-credential svg{width:110px}.cpII-credential-text{font-size:11px}}
 
 /* TABLERO PROFESIONAL */
@@ -178,17 +181,18 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 
 <div id="loginScreen">
   <div class="login-box">
-    <div class="consultor-logo login-consultor-logo" role="img" aria-label="Consultor F&S, Licenciado en Higiene y Seguridad en el Trabajo">
+    <div class="consultor-logo login-consultor-logo" role="img" aria-label="Consultor F&S, Francisco Sánchez, Licenciado en Seguridad e Higiene">
       <svg viewBox="0 0 560 190" aria-hidden="true">
         <rect width="560" height="190" rx="12" fill="#fbfaf5"/>
         <path d="M232 42 L280 8 L328 42" fill="none" stroke="#b8792c" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
         <text x="280" y="101" text-anchor="middle" font-family="Georgia,serif" font-size="58" fill="#111827" letter-spacing="1">CONSULTOR</text>
         <path d="M34 125 H83 M477 125 H526" stroke="#9ca3af" stroke-width="3"/>
-        <text x="280" y="132" text-anchor="middle" font-family="Georgia,serif" font-size="18" font-weight="bold" fill="#252525">Licenciado en Higiene y Seguridad en el Trabajo</text>
+        <text x="280" y="132" text-anchor="middle" font-family="Georgia,serif" font-size="18" font-weight="bold" fill="#252525">Licenciado en Seguridad e Higiene</text>
         <text x="280" y="166" text-anchor="middle" font-family="Georgia,serif" font-size="26" font-weight="bold" fill="#111827">F&amp;S</text>
       </svg>
     </div>
-    <h1>Higiene y Seguridad</h1>
+    <h1>Francisco Sánchez</h1>
+    <p class="professional-title">Licenciado en Seguridad e Higiene</p>
     <p>Sistema de gestión preventiva. Ingresá con tu cuenta autorizada.</p>
     <form id="loginForm">
       <label for="email">Correo electrónico</label>
@@ -210,11 +214,11 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
           <path d="M232 42 L280 8 L328 42" fill="none" stroke="#b8792c" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
           <text x="280" y="101" text-anchor="middle" font-family="Georgia,serif" font-size="58" fill="#111827" letter-spacing="1">CONSULTOR</text>
           <path d="M34 125 H83 M477 125 H526" stroke="#9ca3af" stroke-width="3"/>
-          <text x="280" y="132" text-anchor="middle" font-family="Georgia,serif" font-size="18" font-weight="bold" fill="#252525">Licenciado en Higiene y Seguridad en el Trabajo</text>
+          <text x="280" y="132" text-anchor="middle" font-family="Georgia,serif" font-size="18" font-weight="bold" fill="#252525">Licenciado en Seguridad e Higiene</text>
           <text x="280" y="166" text-anchor="middle" font-family="Georgia,serif" font-size="26" font-weight="bold" fill="#111827">F&amp;S</text>
         </svg>
       </div>
-      <div><h1>Sistema de Higiene y Seguridad</h1><p>Gestión preventiva y cumplimiento</p></div>
+      <div><h1>Francisco Sánchez</h1><p>Licenciado en Seguridad e Higiene</p><span class="brand-system-name">Sistema de Higiene y Seguridad</span></div>
     </div>
     <div class="top-actions">
       <select id="orgSelect" class="org-select" aria-label="Organización activa"></select>
@@ -242,7 +246,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
       </g>
       <text x="180" y="105" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" font-weight="700" fill="#24485d">CPII · INGENIERÍA INDUSTRIAL</text>
     </svg>
-    <div class="cpII-credential-text"><strong>Credencial profesional</strong><span>Consejo Profesional de Ingeniería Industrial (CPII)</span><b>Matrícula LHS 0863</b></div>
+    <div class="cpII-credential-text"><strong>Francisco Sánchez</strong><span>Licenciado en Seguridad e Higiene</span><span>Consejo Profesional de Ingeniería Industrial (CPII)</span><b>Matrícula LHS 0863</b></div>
   </div>
   <div class="footer-copy">© 2026 — Sistema de Gestión de Higiene y Seguridad en el Trabajo</div>
 </footer>
