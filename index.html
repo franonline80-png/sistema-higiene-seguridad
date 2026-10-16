@@ -175,6 +175,36 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
   .nav-menu{min-width:225px}
 }
 
+
+/* PLAN ANUAL DE CAPACITACIONES */
+.plan-intro{background:linear-gradient(120deg,#12283f,#1c5878);color:#fff;padding:20px;border-radius:14px;margin-bottom:16px}
+.plan-intro h2{margin:0 0 7px;font-size:23px}.plan-intro p{margin:0;color:#e2edf5;line-height:1.55;font-size:13px}
+.plan-toolbar{display:flex;gap:9px;align-items:end;flex-wrap:wrap;margin:14px 0}
+.plan-toolbar>div{min-width:130px}.plan-toolbar label{margin-bottom:5px}.plan-toolbar input,.plan-toolbar select{margin:0}
+.plan-form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 13px}
+.plan-field-full{grid-column:1/-1}
+.plan-table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px;background:#fff}
+.plan-table{border-collapse:separate;border-spacing:0;min-width:1320px;width:100%;font-size:12px}
+.plan-table th{position:sticky;top:0;z-index:2;background:#eaf0f6;color:#23415a;text-align:center;white-space:nowrap;padding:10px 7px}
+.plan-table td{padding:7px;border-bottom:1px solid #e8edf2;vertical-align:middle;max-width:none}
+.plan-table .plan-name{min-width:230px;max-width:270px;font-weight:700}
+.plan-table .plan-small{min-width:100px}
+.plan-table .plan-month{width:66px;min-width:66px}
+.plan-table .plan-month select{padding:7px 4px;margin:0;min-width:56px;font-size:12px;text-align:center}
+.plan-table .plan-note{min-width:180px}
+.plan-table .plan-note input{margin:0;min-width:160px}
+.plan-table .plan-state{font-size:10px;font-weight:800;color:#64748b;white-space:nowrap}
+.plan-state-x{color:#1d4ed8}.plan-state-e{color:#15803d}.plan-state-r{color:#a16207}
+.plan-actions{display:flex;gap:4px;flex-wrap:wrap;min-width:150px}
+.plan-actions .btn{white-space:nowrap}
+.plan-check{display:flex;gap:8px;align-items:center;font-weight:600;margin:0 0 14px}
+.plan-check input{width:auto;margin:0}
+.plan-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#475569;margin:12px 0}
+.plan-legend span{display:inline-flex;gap:6px;align-items:center}
+.plan-status{font-size:12px;margin-top:8px;line-height:1.5}
+.plan-objectives{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px;font-size:13px;line-height:1.6}
+@media(max-width:650px){.plan-form-grid{grid-template-columns:1fr}.plan-field-full{grid-column:auto}.plan-intro{padding:16px}.plan-intro h2{font-size:20px}.plan-toolbar>div{flex:1}.plan-toolbar .btn{flex:1}}
+
 </style>
 </head>
 <body>
@@ -274,6 +304,7 @@ const modules=[
 {id:"mediciones_ambientales",label:"Mediciones",icon:"◉"},
 {id:"epp",label:"EPP",icon:"⛑"},
 {id:"capacitaciones",label:"Capacitaciones",icon:"▧"},
+{id:"plan_capacitaciones",label:"Plan anual",icon:"📅"},
 {id:"documentacion",label:"Documentación",icon:"▤"},
 {id:"acciones_correctivas",label:"Planes de acción",icon:"☑"},
 {id:"equipos_instalaciones",label:"Equipos",icon:"⚙"},
@@ -317,7 +348,9 @@ function showLogin(message=""){$("app").style.display="none";$("loginScreen").st
 function showApp(){$("loginScreen").style.display="none";$("app").style.display="block"}
 function getOrgIds(){return organizations.map(o=>o.id)}
 function getOrgName(){return organizations.find(o=>o.id===activeOrg)?.nombre||"Organización"}
-function visibleModules(){return modules.filter(m=>m.id==="inicio"||m.id==="legislacion"||configs[m.id])}
+let annualPlanYear=new Date().getFullYear();
+let annualEditingId=null;
+function visibleModules(){return modules.filter(m=>m.id==="inicio"||m.id==="legislacion"||m.id==="plan_capacitaciones"||configs[m.id])}
 function buildNav(){
   const nav=$("navTabs");nav.replaceChildren();
   const all=visibleModules();
@@ -325,7 +358,7 @@ function buildNav(){
     {label:"Inicio",icon:"⌂",ids:["inicio"]},
     {label:"Organización",icon:"▦",ids:["establecimientos","sectores","puestos","personas"]},
     {label:"Gestión de HyS",icon:"⚠",ids:["riesgos","inspecciones","accidentes_incidentes","mediciones_ambientales","epp"]},
-    {label:"Seguimiento",icon:"✓",ids:["capacitaciones","documentacion","acciones_correctivas","equipos_instalaciones","vencimientos"]},
+    {label:"Seguimiento",icon:"✓",ids:["capacitaciones","plan_capacitaciones","documentacion","acciones_correctivas","equipos_instalaciones","vencimientos"]},
     {label:"Legislación",icon:"§",ids:["legislacion"]}
   ];
   groups.forEach((g,index)=>{
@@ -364,7 +397,7 @@ function buildNav(){
     nav.dataset.outsideBound="1";
   }
 }
-function openModule(id){activeModule=id;editing=null;searchText="";buildNav();if(id==="inicio")return renderHome();if(id==="legislacion")return renderLegislation();if(configs[id])return renderCrud(id)}
+function openModule(id){activeModule=id;editing=null;searchText="";buildNav();if(id==="inicio")return renderHome();if(id==="legislacion")return renderLegislation();if(id==="plan_capacitaciones")return renderAnnualTrainingPlan();if(configs[id])return renderCrud(id)}
 
 async function fetchRows(table,limit=500){
   let q=db.from(table).select("*").limit(limit);
@@ -681,7 +714,7 @@ function displayCellValue(moduleId,row,key){
 }
 function renderTable(id){
   const cfg=configs[id],allRows=moduleCache[id]||[];
-  const rows=allRows.filter(r=>!searchText||cfg.columns.some(k=>displayCellValue(id,r,k).toLowerCase().includes(searchText.toLowerCase())));
+  const rows=allRows.filter(r=>(id!=="capacitaciones"||r.tipo!=="PLAN_ANUAL")&&(!searchText||cfg.columns.some(k=>displayCellValue(id,r,k).toLowerCase().includes(searchText.toLowerCase()))));
   $("rowCount").textContent=`${rows.length} registro(s)`;
   $("tableHead").innerHTML=`<tr>${cfg.columns.map(k=>`<th>${escapeHtml(cfg.fields.find(f=>f[0]===k)?.[1]||k)}</th>`).join("")}<th>Acciones</th></tr>`;
   const tb=$("tableBody");tb.replaceChildren();
@@ -738,7 +771,225 @@ async function deleteRecord(id,row){
 }
 
 /* TABLERO DE CONTROL */
-async function renderHome(){
+async 
+const ANNUAL_PLAN_PREFIX="PLAN_ANUAL_V1:";
+const ANNUAL_PLAN_TYPE="PLAN_ANUAL";
+const ANNUAL_MONTHS=["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+const ANNUAL_BASE_ACTIVITIES=[
+["RIESGOS GENERALES","Análisis de riesgos de los puestos de trabajo"],
+["USO DE EXTINTORES","Teórico y práctico"],
+["Uso y cuidados EPP","Elementos de protección personal"],
+["ORDEN y LIMPIEZA","En los ambientes de trabajo"],
+["Simulacro de emergencia","Emergencia ambiental, incendios y primeros auxilios"],
+["Respuesta ante emergencias","Emergencias ambientales, incendios y primeros auxilios"],
+["Clasificación de residuos","Gestión y clasificación de residuos"],
+["Prevención COVID-19","Tema consignado en el cronograma original"],
+["Uso correcto de herramientas y maquinarias","Uso correcto de herramientas, maquinarias y elementos de trabajo"],
+["Riesgo eléctrico","Seguridad eléctrica"],
+["Autoelevadores Res. 960/15","Resolución 960/15"],
+["Técnicas ergonómicas","Movimiento de cargas"]
+];
+function annualEmptyMonths(){const m={};for(let i=1;i<=12;i++)m[String(i)]="";return m}
+function annualParseRow(row){
+  let data={year:Number(String(row.fecha||"").slice(0,4))||annualPlanYear,description:"",responsible:row.instructor||"",observations:row.observaciones||"",months:annualEmptyMonths(),generatesDue:false,dueDate:"",periodicity:"",objective:"Los trabajadores adquirirán conocimientos de Seguridad y Salud en el Trabajo y medio ambiente para prevenir lesiones y daños a la salud, resolver problemas de seguridad, controlar riesgos de las tareas diarias y aplicar la política de gestión de residuos."};
+  const raw=String(row.contenido||"");
+  if(raw.startsWith(ANNUAL_PLAN_PREFIX)){try{data={...data,...JSON.parse(raw.slice(ANNUAL_PLAN_PREFIX.length))};data.months={...annualEmptyMonths(),...(data.months||{})}}catch(e){console.warn("No se pudo interpretar la planificación anual",row.id,e)}}
+  return data;
+}
+function annualIsPlan(row){return row&&row.tipo===ANNUAL_PLAN_TYPE&&String(row.contenido||"").startsWith(ANNUAL_PLAN_PREFIX)}
+function annualPayload(data){
+  return {organizacion_id:activeOrg,titulo:data.title,tipo:ANNUAL_PLAN_TYPE,fecha:String(data.year)+"-01-01",duracion_horas:null,instructor:data.responsible||null,contenido:ANNUAL_PLAN_PREFIX+JSON.stringify(data),observaciones:data.observations||null};
+}
+async function annualSave(data,rowId){
+  const payload=annualPayload(data);
+  const result=rowId?await db.from("capacitaciones").update(payload).eq("id",rowId).eq("organizacion_id",activeOrg).select("*"):await db.from("capacitaciones").insert(payload).select("*");
+  if(result.error)throw result.error;
+  if(!result.data||!result.data.length)throw new Error("Supabase no confirmó el guardado. Revisá los permisos de acceso de la organización.");
+  return result.data[0];
+}
+function annualStatusBadge(state){
+  if(state==="X")return '<span class="plan-state plan-state-x">X · Programado</span>';
+  if(state==="E")return '<span class="plan-state plan-state-e">E · Ejecutado</span>';
+  if(state==="R")return '<span class="plan-state plan-state-r">R · Reprogramado</span>';
+  return '<span class="plan-state">Sin planificar</span>';
+}
+function annualEsc(v){return escapeHtml(v===null||v===undefined?"":v)}
+function annualMonthSelect(row,month,value){
+  return '<select aria-label="Estado '+ANNUAL_MONTHS[month-1]+'" data-annual-month="'+month+'" data-annual-id="'+annualEsc(row.id)+'"><option value="" '+(!value?"selected":"")+'>—</option><option value="X" '+(value==="X"?"selected":"")+'>X</option><option value="E" '+(value==="E"?"selected":"")+'>E</option><option value="R" '+(value==="R"?"selected":"")+'>R</option></select>';
+}
+async function renderAnnualTrainingPlan(){
+  const view=$("view");
+  view.innerHTML='<section class="plan-intro"><h2>📅 Plan anual de capacitaciones</h2><p>Planificación preventiva anual con seguimiento mensual, reprogramaciones trazables y vinculación controlada con Vencimientos. La grilla conserva el criterio del cronograma DOC AG005 REV 1.</p></section>'+
+  '<div class="panel"><div class="plan-toolbar"><div><label for="annualPlanYear">Año del plan</label><input id="annualPlanYear" type="number" min="2000" max="2100" value="'+annualPlanYear+'"></div><button id="annualLoadBase" class="btn btn-blue" type="button">Cargar 12 actividades del PDF</button><button id="annualNextYear" class="btn btn-light" type="button">Crear plan del año siguiente</button><button id="annualExport" class="btn btn-light" type="button">Exportar Excel (CSV)</button><button id="annualReload" class="btn btn-light" type="button">↻ Actualizar</button></div>'+
+  '<div class="plan-objectives"><strong>Objetivo general</strong><p style="margin:6px 0 0">Los trabajadores adquirirán conocimientos de Seguridad y Salud en el Trabajo y medio ambiente para prevenir lesiones y daños a la salud, resolver problemas de seguridad, controlar riesgos de las tareas diarias y aplicar la política de gestión de residuos.</p><p style="margin:8px 0 0" class="muted">Marco de referencia consignado en el PDF: Ley 19.587/72, art. 9 inc. k; Decreto 351/78, capítulo 21, art. 211; Decreto 905/15, Anexo I, punto 15. Incluye identificación de peligros, estimación de riesgos, prevención, procedimientos seguros y uso correcto de EPP.</p></div></div>'+
+  '<div class="panel"><h3 id="annualFormTitle">Agregar actividad al plan</h3><form id="annualForm"><div class="plan-form-grid"><div><label for="annualTitle">Nombre de la actividad *</label><input id="annualTitle" required maxlength="180" placeholder="Nombre de la capacitación"></div><div><label for="annualResponsible">Profesional responsable</label><input id="annualResponsible" maxlength="180" placeholder="Responsable"></div><div><label for="annualDescription">Descripción / contenido</label><input id="annualDescription" maxlength="500" placeholder="Tema y alcance"></div><div class="plan-field-full"><label for="annualObservations">Observaciones</label><textarea id="annualObservations" rows="2" placeholder="Aclaraciones o motivo de reprogramación"></textarea></div><div><label class="plan-check"><input id="annualGeneratesDue" type="checkbox"> Genera vencimiento</label></div><div><label for="annualDueDate">Fecha del vencimiento</label><input id="annualDueDate" type="date" disabled></div><div><label for="annualPeriodicity">Periodicidad</label><select id="annualPeriodicity" disabled><option value="">Seleccionar...</option><option value="Anual">Anual</option><option value="Semestral">Semestral</option><option value="Trimestral">Trimestral</option><option value="Única">Única vez</option></select></div></div><div class="actions"><button id="annualSave" class="btn btn-green" type="submit">Guardar actividad</button><button id="annualCancel" class="btn btn-light" type="button" style="display:none">Cancelar edición</button></div><div id="annualFormStatus" class="plan-status" role="status"></div></form></div>'+
+  '<div class="panel"><div class="page-title"><div><h3 style="margin:0 0 5px">Cronograma mensual · <span id="annualGridYear">'+annualPlanYear+'</span></h3><p>Las marcas se guardan en el registro de cada actividad. Los cambios mensuales se guardan al modificar la selección.</p></div><span id="annualCount" class="badge">Cargando...</span></div><div class="plan-legend"><span><strong style="color:#1d4ed8">X</strong> Programado</span><span><strong style="color:#15803d">E</strong> Ejecutado</span><span><strong style="color:#a16207">R</strong> Reprogramado</span><span>— Sin planificación</span></div><div id="annualGridStatus" class="plan-status" role="status"></div><div class="plan-table-wrap"><table class="plan-table"><thead><tr><th>Actividad</th><th>Responsable</th>'+ANNUAL_MONTHS.map(m=>'<th>'+m+'</th>').join("")+'<th>Observaciones</th><th>Vencimiento</th><th>Acciones</th></tr></thead><tbody id="annualGridBody"><tr><td colspan="17" class="empty">Cargando cronograma...</td></tr></tbody></table></div></div>';
+  $("annualPlanYear").onchange=()=>{const y=Number($("annualPlanYear").value);if(!Number.isInteger(y)||y<2000||y>2100){$("annualPlanYear").value=annualPlanYear;return}annualPlanYear=y;annualEditingId=null;renderAnnualTrainingPlan()};
+  $("annualReload").onclick=()=>renderAnnualTrainingPlan();
+  $("annualGeneratesDue").onchange=()=>{const on=$("annualGeneratesDue").checked;$("annualDueDate").disabled=!on;$("annualPeriodicity").disabled=!on;if(!on){$("annualDueDate").value="";$("annualPeriodicity").value=""}};
+  $("annualForm").onsubmit=saveAnnualForm;
+  $("annualCancel").onclick=()=>{annualEditingId=null;renderAnnualTrainingPlan()};
+  $("annualLoadBase").onclick=annualLoadBaseActivities;
+  $("annualNextYear").onclick=annualCreateNextYear;
+  $("annualExport").onclick=annualExportCSV;
+  await annualLoadGrid();
+}
+async function annualLoadGrid(){
+  const body=$("annualGridBody");if(!body)return;
+  try{
+    const all=await fetchRows("capacitaciones",5000);
+    const rows=all.filter(r=>annualIsPlan(r)&&Number(annualParseRow(r).year)===annualPlanYear).sort((a,b)=>String(a.titulo||"").localeCompare(String(b.titulo||""),"es"));
+    window.__annualRows=rows;
+    $("annualCount").textContent=rows.length+" actividad(es)";
+    $("annualGridYear").textContent=annualPlanYear;
+    $("annualGridStatus").textContent="Organización: "+getOrgName()+" · Año "+annualPlanYear+". Los datos se guardan en Supabase utilizando la tabla existente de Capacitaciones.";
+    if(!rows.length){body.innerHTML='<tr><td colspan="17" class="empty">Todavía no hay actividades para este año. Podés cargar las 12 actividades recuperadas del PDF o agregar una actividad manualmente.</td></tr>';return}
+    body.innerHTML=rows.map(row=>{
+      const d=annualParseRow(row);
+      const months=ANNUAL_MONTHS.map((m,i)=>'<td class="plan-month">'+annualMonthSelect(row,i+1,d.months[String(i+1)]||"")+'</td>').join("");
+      const due=d.generatesDue?'<div>'+annualEsc(d.dueDate||"Fecha pendiente")+'</div><button class="btn btn-light btn-sm" type="button" data-annual-due="'+annualEsc(row.id)+'">Generar / actualizar</button>':'<span class="muted">No aplica</span>';
+      return '<tr><td class="plan-name">'+annualEsc(row.titulo)+'<div class="muted" style="font-size:11px;font-weight:400;margin-top:4px">'+annualEsc(d.description)+'</div></td><td class="plan-small">'+annualEsc(d.responsible||"—")+'</td>'+months+'<td class="plan-note"><input aria-label="Observaciones" data-annual-note="'+annualEsc(row.id)+'" value="'+annualEsc(d.observations||"")+'" placeholder="Observaciones"><div style="margin-top:5px">'+(d.generatesDue?'<span class="badge warn">Genera vencimiento</span>':'<span class="badge">Sin vencimiento</span>')+'</div></td><td class="plan-small">'+due+'</td><td><div class="plan-actions"><button class="btn btn-light btn-sm" type="button" data-annual-edit="'+annualEsc(row.id)+'">Editar</button><button class="btn btn-light btn-sm" type="button" data-annual-reprogram="'+annualEsc(row.id)+'">Reprogramar</button><button class="btn btn-red btn-sm" type="button" data-annual-delete="'+annualEsc(row.id)+'">Eliminar</button></div></td></tr>';
+    }).join("");
+    body.querySelectorAll("[data-annual-month]").forEach(el=>el.onchange=()=>annualUpdateMonth(el));
+    body.querySelectorAll("[data-annual-edit]").forEach(el=>el.onclick=()=>annualEditActivity(el.dataset.annualEdit));
+    body.querySelectorAll("[data-annual-reprogram]").forEach(el=>el.onclick=()=>annualReprogram(el.dataset.annualReprogram));
+    body.querySelectorAll("[data-annual-delete]").forEach(el=>el.onclick=()=>annualDeleteActivity(el.dataset.annualDelete));
+    body.querySelectorAll("[data-annual-note]").forEach(el=>el.onchange=()=>annualUpdateObservation(el));
+    body.querySelectorAll("[data-annual-due]").forEach(el=>el.onclick=()=>annualGenerateDue(el.dataset.annualDue));
+  }catch(e){console.error(e);$("annualGridStatus").textContent="No se pudo consultar el plan: "+e.message;body.innerHTML='<tr><td colspan="17" class="empty">Error al cargar el plan anual. Verificá la conexión y los permisos de Supabase.</td></tr>'}
+}
+async function saveAnnualForm(ev){
+  ev.preventDefault();const status=$("annualFormStatus"),btn=$("annualSave");btn.disabled=true;status.className="plan-status";status.textContent="Guardando actividad...";
+  try{
+    const title=$("annualTitle").value.trim();if(!title)throw new Error("El nombre de la actividad es obligatorio.");
+    const old=(window.__annualRows||[]).find(r=>String(r.id)===String(annualEditingId));
+    const prior=old?annualParseRow(old):{};
+    const generatesDue=$("annualGeneratesDue").checked;
+    const dueDate=$("annualDueDate").value;
+    const periodicity=$("annualPeriodicity").value;
+    if(generatesDue&&!dueDate)throw new Error("Indicá la fecha de vencimiento antes de guardar.");
+    const data={...prior,title,year:annualPlanYear,description:$("annualDescription").value.trim(),responsible:$("annualResponsible").value.trim(),observations:$("annualObservations").value.trim(),months:prior.months||annualEmptyMonths(),generatesDue,dueDate:generatesDue?dueDate:"",periodicity:generatesDue?periodicity:"",objective:prior.objective||""};
+    const saved=await annualSave(data,annualEditingId);
+    annualEditingId=null;status.textContent="Actividad guardada correctamente.";await renderAnnualTrainingPlan();
+  }catch(e){console.error(e);status.textContent="No se pudo guardar: "+e.message;status.className="plan-status error"}
+  finally{btn.disabled=false}
+}
+async function annualLoadBaseActivities(){
+  if(!confirm("Se agregarán al plan "+annualPlanYear+" las actividades recuperadas del PDF que todavía no existan. No se marcarán meses ni se crearán vencimientos. ¿Continuar?"))return;
+  const btn=$("annualLoadBase");btn.disabled=true;
+  try{
+    const all=await fetchRows("capacitaciones",5000);
+    const exists=all.filter(r=>annualIsPlan(r)&&Number(annualParseRow(r).year)===annualPlanYear).map(r=>String(r.titulo||"").trim().toLowerCase());
+    const payloads=ANNUAL_BASE_ACTIVITIES.filter(a=>!exists.includes(a[0].trim().toLowerCase())).map(a=>{
+      const data={title:a[0],year:annualPlanYear,description:a[1],responsible:"",observations:"",months:annualEmptyMonths(),generatesDue:false,dueDate:"",periodicity:"",objective:"Los trabajadores adquirirán conocimientos de Seguridad y Salud en el Trabajo y medio ambiente para prevenir lesiones y daños a la salud."};
+      return annualPayload(data);
+    });
+    if(!payloads.length){alert("Las 12 actividades ya están cargadas o no hay actividades nuevas para agregar.");return}
+    const {data,error}=await db.from("capacitaciones").insert(payloads).select("id");
+    if(error)throw error;
+    if(!data||data.length!==payloads.length)throw new Error("No se confirmó la incorporación de todas las actividades.");
+    alert("Se cargaron "+data.length+" actividades en el plan "+annualPlanYear+". Los meses quedaron sin marcas y no se generaron vencimientos.");
+    await renderAnnualTrainingPlan();
+  }catch(e){console.error(e);alert("No se pudieron cargar las actividades: "+e.message)}
+  finally{btn.disabled=false}
+}
+function annualEditActivity(id){
+  const row=(window.__annualRows||[]).find(r=>String(r.id)===String(id));if(!row)return;
+  const d=annualParseRow(row);annualEditingId=row.id;
+  $("annualTitle").value=row.titulo||d.title||"";
+  $("annualResponsible").value=d.responsible||row.instructor||"";
+  $("annualDescription").value=d.description||"";
+  $("annualObservations").value=d.observations||row.observaciones||"";
+  $("annualGeneratesDue").checked=!!d.generatesDue;
+  $("annualDueDate").disabled=!d.generatesDue;$("annualPeriodicity").disabled=!d.generatesDue;
+  $("annualDueDate").value=d.dueDate||"";$("annualPeriodicity").value=d.periodicity||"";
+  $("annualFormTitle").textContent="Editar actividad";
+  $("annualSave").textContent="Guardar cambios";$("annualCancel").style.display="inline-block";
+  $("annualForm").scrollIntoView({behavior:"smooth",block:"start"});
+}
+async function annualUpdateMonth(el){
+  const row=(window.__annualRows||[]).find(r=>String(r.id)===String(el.dataset.annualId));if(!row)return;
+  const d=annualParseRow(row),month=String(el.dataset.annualMonth);
+  d.months[month]=el.value;
+  try{await annualSave(d,row.id);await annualLoadGrid()}catch(e){alert("No se pudo guardar el estado mensual: "+e.message);await annualLoadGrid()}
+}
+async function annualUpdateObservation(el){
+  const row=(window.__annualRows||[]).find(r=>String(r.id)===String(el.dataset.annualNote));if(!row)return;
+  const d=annualParseRow(row);d.observations=el.value.trim();
+  try{await annualSave(d,row.id);await annualLoadGrid()}catch(e){alert("No se pudieron guardar las observaciones: "+e.message);await annualLoadGrid()}
+}
+async function annualReprogram(id){
+  const row=(window.__annualRows||[]).find(r=>String(r.id)===String(id));if(!row)return;
+  const d=annualParseRow(row);
+  const from=prompt("Mes original que se reprograma (1=enero, 12=diciembre):");
+  if(from===null)return;
+  const to=prompt("Nuevo mes de planificación (1=enero, 12=diciembre):");
+  if(to===null)return;
+  const a=Number(from),b=Number(to);
+  if(!Number.isInteger(a)||a<1||a>12||!Number.isInteger(b)||b<1||b>12||a===b){alert("Indicá dos meses distintos, con valores del 1 al 12.");return}
+  if(d.months[String(a)]!=="X"){alert("El mes original debe estar marcado como X (Programado) para poder reprogramarlo.");return}
+  if(d.months[String(b)]==="E"){alert("El mes de destino ya figura como ejecutado. Elegí otro mes.");return}
+  d.months[String(a)]="R";d.months[String(b)]="X";
+  const note="Reprogramada de "+ANNUAL_MONTHS[a-1]+" a "+ANNUAL_MONTHS[b-1]+" ("+new Date().toLocaleDateString("es-AR")+").";
+  d.observations=(d.observations?d.observations+" | ":"")+note;
+  try{await annualSave(d,row.id);await annualLoadGrid();alert("Reprogramación guardada: "+ANNUAL_MONTHS[a-1]+" = R; "+ANNUAL_MONTHS[b-1]+" = X.")}catch(e){alert("No se pudo reprogramar: "+e.message)}
+}
+async function annualDeleteActivity(id){
+  const row=(window.__annualRows||[]).find(r=>String(r.id)===String(id));if(!row)return;
+  if(!confirm('¿Eliminar del plan anual la actividad "'+(row.titulo||"")+'"? Esta acción elimina su registro del módulo Capacitaciones.'))return;
+  try{const {error}=await db.from("capacitaciones").delete().eq("id",row.id).eq("organizacion_id",activeOrg);if(error)throw error;await annualLoadGrid()}catch(e){alert("No se pudo eliminar la actividad: "+e.message)}
+}
+async function annualGenerateDue(id){
+  const row=(window.__annualRows||[]).find(r=>String(r.id)===String(id));if(!row)return;
+  const d=annualParseRow(row);
+  if(!d.generatesDue){alert("Esta actividad no está habilitada para generar vencimientos.");return}
+  if(!d.dueDate){alert("Editá la actividad e indicá la fecha de vencimiento.");return}
+  if(!confirm('Se generará o actualizará un vencimiento para "'+row.titulo+'" con fecha '+d.dueDate+'. ¿Continuar?'))return;
+  const tag="[PLAN-CAP-ID:"+row.id+"]";
+  try{
+    const all=await fetchRows("vencimientos",5000);
+    const existing=all.find(v=>String(v.observaciones||"").includes(tag));
+    const payload={organizacion_id:activeOrg,tipo:"Capacitación",concepto:row.titulo,descripcion:d.description||"Actividad del plan anual de capacitaciones",fecha_vencimiento:d.dueDate,estado:"Pendiente",prioridad:"Media",observaciones:tag+" Generado desde el plan anual "+d.year+(d.periodicity?" · Periodicidad: "+d.periodicity:"")};
+    const result=existing?await db.from("vencimientos").update(payload).eq("id",existing.id).eq("organizacion_id",activeOrg).select("id"):await db.from("vencimientos").insert(payload).select("id");
+    if(result.error)throw result.error;
+    if(!result.data||!result.data.length)throw new Error("Supabase no confirmó la operación. Revisá los permisos RLS.");
+    alert(existing?"Se actualizó el vencimiento vinculado.":"Se generó el vencimiento y quedó vinculado a la actividad.");
+    await annualLoadGrid();
+  }catch(e){console.error(e);alert("No se pudo generar el vencimiento: "+e.message)}
+}
+async function annualCreateNextYear(){
+  const sourceYear=annualPlanYear,targetYear=sourceYear+1;
+  if(!confirm("Se copiarán las actividades de "+sourceYear+" al año "+targetYear+". Los estados mensuales y observaciones de ejecución se limpiarán. No se crearán vencimientos. ¿Continuar?"))return;
+  try{
+    const all=await fetchRows("capacitaciones",5000);
+    const source=all.filter(r=>annualIsPlan(r)&&Number(annualParseRow(r).year)===sourceYear);
+    if(!source.length)throw new Error("No hay actividades para copiar en "+sourceYear+".");
+    const exists=all.filter(r=>annualIsPlan(r)&&Number(annualParseRow(r).year)===targetYear);
+    if(exists.length&&!confirm("El año "+targetYear+" ya tiene "+exists.length+" actividad(es). Se agregarán solo las que falten. ¿Continuar?"))return;
+    const names=new Set(exists.map(r=>String(r.titulo||"").trim().toLowerCase()));
+    const payloads=source.filter(r=>!names.has(String(r.titulo||"").trim().toLowerCase())).map(r=>{
+      const d=annualParseRow(r);
+      const next={...d,year:targetYear,months:annualEmptyMonths(),observations:"",dueDate:"",objective:d.objective||""};
+      return annualPayload(next);
+    });
+    if(!payloads.length){alert("El plan "+targetYear+" ya contiene todas las actividades del año anterior.");annualPlanYear=targetYear;renderAnnualTrainingPlan();return}
+    const {data,error}=await db.from("capacitaciones").insert(payloads).select("id");if(error)throw error;
+    if(!data||data.length!==payloads.length)throw new Error("No se confirmó la copia completa del plan.");
+    annualPlanYear=targetYear;await renderAnnualTrainingPlan();
+    alert("Plan "+targetYear+" creado con "+data.length+" actividad(es). Los estados mensuales y observaciones se reiniciaron; los vencimientos no se copiaron ni generaron.");
+  }catch(e){console.error(e);alert("No se pudo crear el nuevo plan: "+e.message)}
+}
+function annualExportCSV(){
+  const rows=window.__annualRows||[];
+  const header=["Actividad","Descripción","Responsable",...ANNUAL_MONTHS,"Observaciones","Genera vencimiento","Fecha vencimiento","Periodicidad"];
+  const quote=v=>'"'+String(v===null||v===undefined?"":v).replace(/"/g,'""')+'"';
+  const lines=[header.map(quote).join(";")];
+  rows.forEach(row=>{const d=annualParseRow(row);lines.push([row.titulo,d.description,d.responsible,...ANNUAL_MONTHS.map((m,i)=>d.months[String(i+1)]||""),d.observations,d.generatesDue?"Sí":"No",d.dueDate,d.periodicity].map(quote).join(";"))});
+  const blob=new Blob(["\ufeff"+lines.join("\r\n")],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="Plan_anual_capacitaciones_"+annualPlanYear+".csv";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+}
+
+function renderHome(){
   const view=$("view");
   const fechaLocal=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
   const hoy=fechaLocal(new Date()),limite=new Date();limite.setDate(limite.getDate()+30);
@@ -822,7 +1073,7 @@ async function renderHome(){
     $("dashAccCount").textContent=accidentes.length;
     $("dashAccList").innerHTML=listaHTML(accidentes.slice(0,5).map(r=>alertaHTML("⚠","red",`${r.tipo||"Accidente/incidente"} · ${fechaLegible(r.fecha)}`,r.descripcion||r.lugar||"Sin descripción registrada",`Estado: ${r.estado||"Sin estado"}`)),"No hay accidentes o incidentes abiertos registrados.");
 
-    const caps=capAll.filter(r=>r.organizacion_id===activeOrg&&r.fecha&&r.fecha>=hoy&&r.fecha<=fechaLimite).sort((a,b)=>String(a.fecha).localeCompare(String(b.fecha)));
+    const caps=capAll.filter(r=>r.organizacion_id===activeOrg&&r.tipo!=="PLAN_ANUAL"&&r.fecha&&r.fecha>=hoy&&r.fecha<=fechaLimite).sort((a,b)=>String(a.fecha).localeCompare(String(b.fecha)));
     $("dashCapCount").textContent=caps.length;
     $("dashCapList").innerHTML=listaHTML(caps.slice(0,5).map(r=>alertaHTML("🎓","blue",r.titulo||"Capacitación",`${r.tipo||"Tipo no especificado"}${r.duracion_horas?" · "+r.duracion_horas+" horas":""}`,`${fechaLegible(r.fecha)}${r.instructor?" · "+r.instructor:""}`)),"No hay capacitaciones programadas para los próximos 30 días.");
 
