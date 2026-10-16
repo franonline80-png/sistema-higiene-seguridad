@@ -791,7 +791,7 @@ const ANNUAL_BASE_ACTIVITIES=[
 ];
 function annualEmptyMonths(){const m={};for(let i=1;i<=12;i++)m[String(i)]="";return m}
 function annualParseRow(row){
-  let data={year:Number(String(row.fecha||"").slice(0,4))||annualPlanYear,description:"",responsible:row.instructor||"",observations:row.observaciones||"",months:annualEmptyMonths(),generatesDue:false,dueDate:"",periodicity:"",objective:"Los trabajadores adquirirán conocimientos de Seguridad y Salud en el Trabajo y medio ambiente para prevenir lesiones y daños a la salud, resolver problemas de seguridad, controlar riesgos de las tareas diarias y aplicar la política de gestión de residuos."};
+  let data={title:row.titulo||"",year:Number(String(row.fecha||"").slice(0,4))||annualPlanYear,description:"",responsible:row.instructor||"",observations:row.observaciones||"",months:annualEmptyMonths(),generatesDue:false,dueDate:"",periodicity:"",objective:"Los trabajadores adquirirán conocimientos de Seguridad y Salud en el Trabajo y medio ambiente para prevenir lesiones y daños a la salud, resolver problemas de seguridad, controlar riesgos de las tareas diarias y aplicar la política de gestión de residuos."};
   const raw=String(row.contenido||"");
   if(raw.startsWith(ANNUAL_PLAN_PREFIX)){try{data={...data,...JSON.parse(raw.slice(ANNUAL_PLAN_PREFIX.length))};data.months={...annualEmptyMonths(),...(data.months||{})}}catch(e){console.warn("No se pudo interpretar la planificación anual",row.id,e)}}
   return data;
