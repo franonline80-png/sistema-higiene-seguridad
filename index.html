@@ -989,7 +989,7 @@ function annualExportCSV(){
   const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="Plan_anual_capacitaciones_"+annualPlanYear+".csv";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
 }
 
-function renderHome(){
+async function renderHome(){
   const view=$("view");
   const fechaLocal=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
   const hoy=fechaLocal(new Date()),limite=new Date();limite.setDate(limite.getDate()+30);
