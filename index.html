@@ -68,6 +68,18 @@ tr:hover td{background:#fafcff}
 .legal-link strong{display:block;margin-bottom:6px}.legal-link span{color:var(--muted);font-size:12px;line-height:1.5}
 .empty{padding:22px;text-align:center;color:var(--muted)}
 footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
+.consultor-logo svg{display:block;width:100%;height:auto}
+.login-consultor-logo{width:100%;max-width:330px;margin:0 auto 20px;overflow:hidden;border:1px solid #eee8dc;border-radius:10px}
+.consultor-header-logo{width:118px;flex:0 0 118px;overflow:hidden;border-radius:8px;box-shadow:0 0 0 1px #ffffff24}
+.consultor-header-logo svg{display:block;width:100%;height:auto}
+.professional-footer{padding:22px 14px 18px;background:#fff;border-top:1px solid var(--line);margin-top:26px}
+.cpii-credential{display:flex;align-items:center;justify-content:center;gap:16px;max-width:720px;margin:0 auto 14px;text-align:left}
+.cpii-credential svg{width:145px;max-width:38%;height:auto;flex:0 0 auto}
+.cpII-credential-text{display:flex;flex-direction:column;gap:5px;color:#334155;font-size:12px;line-height:1.45}
+.cpII-credential-text strong{font-size:13px;color:#173e59}
+.cpII-credential-text b{color:#1d587a}
+.footer-copy{font-size:11px;color:var(--muted)}
+@media(max-width:650px){.consultor-header-logo{width:88px;flex-basis:88px}.brand{gap:9px}.brand h1{font-size:15px}.brand p{font-size:11px}.login-consultor-logo{max-width:300px}.cpii-credential{gap:10px}.cpii-credential svg{width:110px}.cpII-credential-text{font-size:11px}}
 
 /* TABLERO PROFESIONAL */
 .dashboard-welcome{background:linear-gradient(120deg,#10243a 0%,#1d4d70 100%);color:white;border-radius:17px;padding:25px 27px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;gap:18px;box-shadow:0 8px 24px #10243a18}
@@ -166,7 +178,16 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 
 <div id="loginScreen">
   <div class="login-box">
-    <div class="brand-mark">✚</div>
+    <div class="consultor-logo login-consultor-logo" role="img" aria-label="Consultor F&S, Licenciado en Higiene y Seguridad en el Trabajo">
+      <svg viewBox="0 0 560 190" aria-hidden="true">
+        <rect width="560" height="190" rx="12" fill="#fbfaf5"/>
+        <path d="M232 42 L280 8 L328 42" fill="none" stroke="#b8792c" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="280" y="101" text-anchor="middle" font-family="Georgia,serif" font-size="58" fill="#111827" letter-spacing="1">CONSULTOR</text>
+        <path d="M34 125 H83 M477 125 H526" stroke="#9ca3af" stroke-width="3"/>
+        <text x="280" y="132" text-anchor="middle" font-family="Georgia,serif" font-size="18" font-weight="bold" fill="#252525">Licenciado en Higiene y Seguridad en el Trabajo</text>
+        <text x="280" y="166" text-anchor="middle" font-family="Georgia,serif" font-size="26" font-weight="bold" fill="#111827">F&amp;S</text>
+      </svg>
+    </div>
     <h1>Higiene y Seguridad</h1>
     <p>Sistema de gestión preventiva. Ingresá con tu cuenta autorizada.</p>
     <form id="loginForm">
@@ -183,7 +204,16 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 <div id="app">
   <header class="topbar">
     <div class="brand">
-      <div class="brand-icon">✚</div>
+      <div class="consultor-header-logo" role="img" aria-label="Consultor F&S">
+        <svg viewBox="0 0 560 190" aria-hidden="true">
+          <rect width="560" height="190" rx="12" fill="#fbfaf5"/>
+          <path d="M232 42 L280 8 L328 42" fill="none" stroke="#b8792c" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+          <text x="280" y="101" text-anchor="middle" font-family="Georgia,serif" font-size="58" fill="#111827" letter-spacing="1">CONSULTOR</text>
+          <path d="M34 125 H83 M477 125 H526" stroke="#9ca3af" stroke-width="3"/>
+          <text x="280" y="132" text-anchor="middle" font-family="Georgia,serif" font-size="18" font-weight="bold" fill="#252525">Licenciado en Higiene y Seguridad en el Trabajo</text>
+          <text x="280" y="166" text-anchor="middle" font-family="Georgia,serif" font-size="26" font-weight="bold" fill="#111827">F&amp;S</text>
+        </svg>
+      </div>
       <div><h1>Sistema de Higiene y Seguridad</h1><p>Gestión preventiva y cumplimiento</p></div>
     </div>
     <div class="top-actions">
@@ -196,7 +226,26 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
     <nav id="navTabs" class="nav-tabs" aria-label="Módulos"></nav>
     <div id="view"></div>
   </main>
-  <footer>© 2026 — Sistema de Gestión de Higiene y Seguridad en el Trabajo</footer>
+  <footer class="professional-footer">
+  <div class="cpii-credential">
+    <svg viewBox="0 0 360 125" role="img" aria-label="Consejo Profesional de Ingeniería Industrial">
+      <rect width="360" height="125" rx="10" fill="#ffffff"/>
+      <g transform="translate(12 8)">
+        <path d="M5 8 H72 L58 42 H0 Z" fill="#285a78"/>
+        <path d="M77 8 H145 L131 42 H63 Z" fill="#285a78"/>
+        <path d="M150 8 H202 L188 42 H136 Z" fill="#82bf45"/>
+        <path d="M207 8 H259 L245 42 H193 Z" fill="#82bf45"/>
+        <path d="M0 47 H59 L45 80 H-14 Z" fill="#285a78"/>
+        <path d="M64 47 H132 L118 80 H50 Z" fill="#285a78"/>
+        <path d="M137 47 H189 L175 80 H123 Z" fill="#285a78"/>
+        <path d="M194 47 H246 L232 80 H180 Z" fill="#285a78"/>
+      </g>
+      <text x="180" y="105" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" font-weight="700" fill="#24485d">CPII · INGENIERÍA INDUSTRIAL</text>
+    </svg>
+    <div class="cpII-credential-text"><strong>Credencial profesional</strong><span>Consejo Profesional de Ingeniería Industrial (CPII)</span><b>Matrícula LHS 0863</b></div>
+  </div>
+  <div class="footer-copy">© 2026 — Sistema de Gestión de Higiene y Seguridad en el Trabajo</div>
+</footer>
 </div>
 
 <script>
