@@ -175,6 +175,34 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
   .nav-menu{min-width:225px}
 }
 
+
+/* Capacitaciones: plan anual */
+.training-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin:14px 0}
+.training-toolbar>div{min-width:130px;flex:1}
+.training-toolbar input,.training-toolbar select{margin:0}
+.training-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.training-tabs button.active{background:#173e59;color:#fff}
+.training-calendar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.training-month{background:#fff;border:1px solid #dce5ee;border-radius:11px;padding:12px;min-width:0}
+.training-month h4{margin:0 0 9px;font-size:13px;color:#23415a}
+.training-activity{display:block;width:100%;text-align:left;white-space:normal;background:#f8fafc;border:1px solid #e2e8f0;border-left:4px solid #64748b;border-radius:7px;padding:8px;margin:5px 0;font-size:12px;color:#172033}
+.training-activity.pending{border-left-color:#d97706}.training-activity.done{border-left-color:#15803d}.training-activity.rescheduled{border-left-color:#2563eb}
+.training-activity small{display:block;color:#64748b;margin-top:4px}
+.training-table-wrap{overflow:auto;border:1px solid #dce5ee;border-radius:10px;background:white}
+.training-table{border-collapse:collapse;width:100%;min-width:850px;font-size:12px}
+.training-table th,.training-table td{padding:10px;border-bottom:1px solid #e8edf2;text-align:left;vertical-align:top}
+.training-table th{background:#eaf0f6;white-space:nowrap}
+.training-detail{border:1px solid #cbd5e1;border-radius:12px;background:#f8fafc;padding:16px;margin:14px 0}
+.training-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.training-detail-grid>div{min-width:0;overflow-wrap:anywhere}
+.training-status{display:inline-block;padding:4px 8px;border-radius:20px;font-size:11px;font-weight:800;background:#fef3c7;color:#92400e}
+.training-status.done{background:#dcfce7;color:#166534}.training-status.rescheduled{background:#dbeafe;color:#1d4ed8}
+.training-history{padding-left:20px;margin:8px 0;color:#475569;font-size:12px;line-height:1.6}
+.training-legend{display:flex;gap:12px;flex-wrap:wrap;color:#64748b;font-size:12px;margin:10px 0}
+.training-legend span{display:flex;gap:5px;align-items:center}
+.training-dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+@media(max-width:760px){.training-calendar{grid-template-columns:repeat(2,minmax(0,1fr))}.training-detail-grid{grid-template-columns:1fr}}
+@media(max-width:480px){.training-calendar{grid-template-columns:1fr}.training-toolbar>div{min-width:100%}}
 </style>
 </head>
 <body>
@@ -312,6 +340,114 @@ vencimientos:{title:"Vencimientos",table:"vencimientos",org:true,fields:[
 ["establecimiento_id","Establecimiento","ref:establecimientos",false],["tipo","Tipo de vencimiento","text",true],["concepto","Concepto","text",true],["descripcion","Descripción","textarea",false],["fecha_vencimiento","Fecha de vencimiento","date",true],["responsable_id","Responsable","ref:personas",false],["estado","Estado","select:Pendiente,En curso,Cumplido,Vencido",true],["prioridad","Prioridad","select:Baja,Media,Alta,Crítica",false],["observaciones","Observaciones","textarea",false]],columns:["establecimiento_id","tipo","concepto","descripcion","fecha_vencimiento","responsable_id","estado","prioridad","observaciones"],order:"fecha_vencimiento"}
 };
 
+
+const TRAIN_PREFIX="CAP_PLAN_V2:";
+const TRAIN_TYPE="PLAN_ANUAL";
+const TRAIN_MONTHS=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+let trainingYear=new Date().getFullYear(),trainingView="calendar",trainingEditId=null,trainingDetailId=null,trainingRows=[];
+function trainEmptyHistory(){return []}
+function trainParse(row){
+ let d={title:row.titulo||"",year:Number(String(row.fecha||"").slice(0,4))||trainingYear,objective:"",responsible:row.instructor||"",duration:"",month:1,status:"Pendiente",actualDate:"",originalMonth:null,newMonth:null,history:[],generatesDue:false,dueDate:"",observations:row.observaciones||""};
+ try{const raw=String(row.contenido||"");if(raw.startsWith(TRAIN_PREFIX))d={...d,...JSON.parse(raw.slice(TRAIN_PREFIX.length))}}catch(e){console.warn("Plan de capacitación inválido",row.id,e)}
+ d.month=Number(d.month)||1;d.history=Array.isArray(d.history)?d.history:[];return d
+}
+function trainIsPlan(r){return r&&r.tipo===TRAIN_TYPE&&String(r.contenido||"").startsWith(TRAIN_PREFIX)}
+function trainPayload(d){return {organizacion_id:activeOrg,titulo:d.title,tipo:TRAIN_TYPE,fecha:String(d.year)+"-01-01",duracion_horas:d.duration?Number(d.duration):null,instructor:d.responsible||null,contenido:TRAIN_PREFIX+JSON.stringify(d),observaciones:d.observations||null}}
+function trainEsc(v){return escapeHtml(v==null?"":v)}
+function trainStatus(s){const c=s==="Realizada"?"done":s==="Reprogramada"?"rescheduled":"pending";return '<span class="training-status '+c+'">'+trainEsc(s||"Pendiente")+'</span>'}
+async function trainSave(d,id){
+ const p=trainPayload(d),r=id?await db.from("capacitaciones").update(p).eq("id",id).eq("organizacion_id",activeOrg).select("*"):await db.from("capacitaciones").insert(p).select("*");
+ if(r.error)throw r.error;if(!r.data||!r.data.length)throw new Error("Supabase no confirmó el guardado. Verificá los permisos de la organización.");return r.data[0]
+}
+async function renderTrainingModule(){
+ const v=$("view");
+ v.innerHTML='<section class="plan-intro"><h2>Capacitaciones · Plan anual</h2><p>Planificación, ejecución y trazabilidad de las capacitaciones preventivas de la organización.</p></section>'+
+ '<div class="panel"><div class="training-toolbar"><div><label for="trainingYear">Año del plan</label><input id="trainingYear" type="number" min="2000" max="2100" value="'+trainingYear+'"></div><button class="btn btn-blue" id="trainingAdd">+ Actividad individual</button><button class="btn btn-light" id="trainingTemplate">Descargar plantilla Excel</button><div><label for="trainingFile">Importar Excel (.xlsx)</label><input id="trainingFile" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"></div><button class="btn btn-light" id="trainingValidate">Validar Excel</button><button class="btn btn-light" id="trainingNext">Crear año siguiente</button><button class="btn btn-light" id="trainingExport">Exportar CSV</button><button class="btn btn-light" id="trainingReload">↻ Actualizar</button></div><div id="trainingImportStatus" class="status" role="status"></div><div id="trainingImportPreview"></div></div>'+
+ '<div class="panel"><div class="page-title"><div><h3 style="margin:0">Cronograma anual · <span id="trainingYearTitle">'+trainingYear+'</span></h3><p class="muted">Seleccioná una actividad para consultar su ficha y seguimiento.</p></div><span class="badge" id="trainingCount">Cargando...</span></div><div class="training-tabs"><button class="btn btn-light active" id="trainingCalendarTab">Calendario</button><button class="btn btn-light" id="trainingTableTab">Tabla</button></div><div class="training-legend"><span><i class="training-dot" style="background:#d97706"></i>Pendiente</span><span><i class="training-dot" style="background:#15803d"></i>Realizada</span><span><i class="training-dot" style="background:#2563eb"></i>Reprogramada</span><span>R = mes original; X = nuevo mes</span></div><div id="trainingGrid"></div><div id="trainingDetail"></div></div>'+
+ '<div class="panel" id="trainingFormPanel" style="display:none"><h3 id="trainingFormTitle">Nueva capacitación</h3><form id="trainingForm"><div class="form-grid"><div><label for="trTitle">Nombre *</label><input id="trTitle" required maxlength="180"></div><div><label for="trObjective">Objetivo o temática *</label><input id="trObjective" required maxlength="500"></div><div><label for="trResponsible">Responsable</label><input id="trResponsible" maxlength="180"></div><div><label for="trMonth">Mes programado *</label><select id="trMonth" required>'+TRAIN_MONTHS.map((m,i)=>'<option value="'+(i+1)+'">'+m+'</option>').join("")+'</select></div><div><label for="trDuration">Duración (horas)</label><input id="trDuration" type="number" min="0.25" max="1000" step="0.25"></div><div><label for="trObservations">Observaciones</label><input id="trObservations" maxlength="1000"></div><div><label class="plan-check"><input id="trDue" type="checkbox" style="width:auto"> Vincular a vencimientos</label></div><div><label for="trDueDate">Fecha de vencimiento *</label><input id="trDueDate" type="date" disabled></div></div><div class="actions"><button class="btn btn-green" id="trSave" type="submit">Guardar actividad</button><button class="btn btn-light" id="trCancel" type="button">Cancelar</button></div><div class="status" id="trFormStatus" role="status"></div></form></div>';
+ $("trainingYear").onchange=()=>{const y=Number($("trainingYear").value);if(!Number.isInteger(y)||y<2000||y>2100){alert("Ingresá un año entre 2000 y 2100.");$("trainingYear").value=trainingYear;return}trainingYear=y;trainingDetailId=null;trainingEditId=null;renderTrainingModule()};
+ $("trainingAdd").onclick=()=>trainShowForm(null);
+ $("trainingTemplate").onclick=trainTemplate;
+ $("trainingValidate").onclick=trainValidateExcel;
+ $("trainingNext").onclick=trainNextYear;
+ $("trainingExport").onclick=trainExport;
+ $("trainingReload").onclick=()=>renderTrainingModule();
+ $("trainingCalendarTab").onclick=()=>{trainingView="calendar";trainRenderGrid()};
+ $("trainingTableTab").onclick=()=>{trainingView="table";trainRenderGrid()};
+ $("trDue").onchange=()=>{$("trDueDate").disabled=!$("trDue").checked;if(!$("trDue").checked)$("trDueDate").value=""};
+ $("trainingForm").onsubmit=trainSubmit;
+ $("trCancel").onclick=()=>{$("trainingFormPanel").style.display="none";trainingEditId=null};
+ await trainLoad();
+}
+async function trainLoad(){
+ const g=$("trainingGrid");if(!g)return;g.innerHTML='<div class="dashboard-loading">Cargando actividades...</div>';
+ try{const all=await fetchRows("capacitaciones",5000);trainingRows=all.filter(r=>trainIsPlan(r)&&Number(trainParse(r).year)===trainingYear).sort((a,b)=>trainParse(a).month-trainParse(b).month||String(a.titulo).localeCompare(String(b.titulo),"es"));$("trainingCount").textContent=trainingRows.length+" actividad(es)";$("trainingYearTitle").textContent=trainingYear;trainRenderGrid();trainRenderDetail()}catch(e){console.error(e);g.innerHTML='<div class="error">No se pudo cargar el plan: '+trainEsc(e.message)+'</div>'}
+}
+function trainRenderGrid(){
+ const g=$("trainingGrid");if(!g)return;
+ $("trainingCalendarTab").classList.toggle("active",trainingView==="calendar");$("trainingTableTab").classList.toggle("active",trainingView==="table");
+ if(!trainingRows.length){g.innerHTML='<div class="dashboard-empty">No hay actividades cargadas para '+trainingYear+'. Podés agregar una actividad individual o importar el cronograma desde Excel.</div>';return}
+ if(trainingView==="calendar"){
+  g.innerHTML='<div class="training-calendar">'+TRAIN_MONTHS.map((m,i)=>{const rows=trainingRows.filter(r=>{const d=trainParse(r);return d.month===i+1||d.originalMonth===i+1});return '<section class="training-month"><h4>'+m+' · '+rows.length+'</h4>'+(rows.length?rows.map(r=>{const d=trainParse(r),c=d.status==="Realizada"?"done":d.status==="Reprogramada"?"rescheduled":"pending";return '<button type="button" class="training-activity '+c+'" data-training-open="'+trainEsc(r.id)+'"><strong>'+trainEsc(r.titulo)+'</strong><small>'+trainEsc(d.responsible||"Sin responsable")+' · '+trainEsc(d.status)+(d.originalMonth===i+1?' · R':d.newMonth===i+1?' · X':'')+'</small></button>'}).join(""):'<div class="muted" style="font-size:12px">Sin actividades</div>')+'</section>'}).join("")+'</div>';
+ }else{
+  g.innerHTML='<div class="training-table-wrap"><table class="training-table"><thead><tr><th>Actividad</th><th>Objetivo</th><th>Responsable</th><th>Mes</th><th>Duración</th><th>Estado</th><th>Fecha real</th><th>Acción</th></tr></thead><tbody>'+trainingRows.map(r=>{const d=trainParse(r);return '<tr><td><button class="btn btn-light btn-sm" data-training-open="'+trainEsc(r.id)+'">'+trainEsc(r.titulo)+'</button></td><td>'+trainEsc(d.objective)+'</td><td>'+trainEsc(d.responsible||"—")+'</td><td>'+TRAIN_MONTHS[d.month-1]+(d.originalMonth?' · R '+TRAIN_MONTHS[d.originalMonth-1]:'')+(d.newMonth?' · X '+TRAIN_MONTHS[d.newMonth-1]:'')+'</td><td>'+trainEsc(d.duration||"—")+'</td><td>'+trainStatus(d.status)+'</td><td>'+trainEsc(d.actualDate||"—")+'</td><td><button class="btn btn-light btn-sm" data-training-open="'+trainEsc(r.id)+'">Ver detalle</button></td></tr>'}).join("")+'</tbody></table></div>';
+ }
+ g.querySelectorAll("[data-training-open]").forEach(b=>b.onclick=()=>{trainingDetailId=b.dataset.trainingOpen;trainRenderDetail()});
+}
+function trainRenderDetail(){
+ const el=$("trainingDetail");if(!el)return;const row=trainingRows.find(r=>String(r.id)===String(trainingDetailId));if(!row){el.innerHTML="";return}const d=trainParse(row);
+ el.innerHTML='<section class="training-detail"><div class="page-title"><div><h3 style="margin:0 0 6px">'+trainEsc(d.title)+'</h3>'+trainStatus(d.status)+'</div><button class="btn btn-light btn-sm" id="trCloseDetail">Cerrar</button></div><div class="training-detail-grid"><div><strong>Objetivo</strong><div>'+trainEsc(d.objective||"—")+'</div></div><div><strong>Responsable</strong><div>'+trainEsc(d.responsible||"—")+'</div></div><div><strong>Mes actual</strong><div>'+TRAIN_MONTHS[d.month-1]+'</div></div><div><strong>Duración</strong><div>'+trainEsc(d.duration?d.duration+" horas":"No indicada")+'</div></div><div><strong>Fecha real de ejecución</strong><div>'+trainEsc(d.actualDate||"Pendiente")+'</div></div><div><strong>Vencimiento</strong><div>'+trainEsc(d.generatesDue?(d.dueDate||"Fecha no indicada"):"No vinculado")+'</div></div><div><strong>Observaciones</strong><div>'+trainEsc(d.observations||"—")+'</div></div></div><div class="actions" style="margin-top:14px"><button class="btn btn-light" id="trEdit">Editar</button><button class="btn btn-blue" id="trReschedule">Reprogramar</button><button class="btn btn-green" id="trDone">Marcar realizada</button><button class="btn btn-red" id="trDelete">Eliminar / anular</button></div><h4>Historial de cambios</h4>'+(d.history.length?'<ol class="training-history">'+d.history.slice().reverse().map(h=>'<li>'+trainEsc(h.date)+' · '+trainEsc(h.text)+'</li>').join("")+'</ol>':'<p class="muted">Sin cambios registrados.</p>')+'</section>';
+ $("trCloseDetail").onclick=()=>{trainingDetailId=null;trainRenderDetail()};
+ $("trEdit").onclick=()=>trainShowForm(row);
+ $("trReschedule").onclick=()=>trainReschedule(row);
+ $("trDone").onclick=()=>trainMarkDone(row);
+ $("trDelete").onclick=()=>trainDelete(row);
+}
+function trainShowForm(row){
+ trainingEditId=row?row.id:null;const d=row?trainParse(row):{title:"",objective:"",responsible:"",month:1,duration:"",observations:"",generatesDue:false,dueDate:""};
+ $("trainingFormPanel").style.display="block";$("trainingFormTitle").textContent=row?"Editar capacitación":"Nueva capacitación";
+ $("trTitle").value=d.title||"";$("trObjective").value=d.objective||"";$("trResponsible").value=d.responsible||"";$("trMonth").value=String(d.month||1);$("trDuration").value=d.duration||"";$("trObservations").value=d.observations||"";$("trDue").checked=!!d.generatesDue;$("trDueDate").disabled=!d.generatesDue;$("trDueDate").value=d.dueDate||"";$("trFormStatus").textContent="";
+ $("trainingFormPanel").scrollIntoView({behavior:"smooth",block:"start"});
+}
+async function trainSubmit(ev){
+ ev.preventDefault();const status=$("trFormStatus"),btn=$("trSave");btn.disabled=true;status.textContent="Validando y guardando...";
+ try{const title=$("trTitle").value.trim(),objective=$("trObjective").value.trim(),month=Number($("trMonth").value),duration=$("trDuration").value?Number($("trDuration").value):null,due=$("trDue").checked,dueDate=$("trDueDate").value;if(!title||!objective)throw new Error("Nombre y objetivo son obligatorios.");if(!Number.isInteger(month)||month<1||month>12)throw new Error("Elegí un mes válido.");if(duration!==null&&(!Number.isFinite(duration)||duration<=0))throw new Error("La duración debe ser mayor que cero.");if(due&&!dueDate)throw new Error("Indicá la fecha de vencimiento.");const old=trainingRows.find(r=>String(r.id)===String(trainingEditId)),d=old?trainParse(old):{year:trainingYear,status:"Pendiente",history:[],originalMonth:null,newMonth:null,actualDate:""};d.title=title;d.objective=objective;d.responsible=$("trResponsible").value.trim();d.month=month;d.duration=duration;d.observations=$("trObservations").value.trim();d.generatesDue=due;d.dueDate=due?dueDate:"";if(old){d.history.push({date:new Date().toISOString(),text:"Se modificaron los datos de la actividad."})}else{d.year=trainingYear;d.status="Pendiente";d.history=[]}await trainSave(d,trainingEditId);trainingEditId=null;$("trainingFormPanel").style.display="none";await trainLoad();status.textContent="Actividad guardada."}catch(e){console.error(e);status.textContent="No se pudo guardar: "+e.message}finally{btn.disabled=false}
+}
+async function trainReschedule(row){
+ const d=trainParse(row),form='<div class="form-grid"><div><label for="trResMonth">Nuevo mes</label><select id="trResMonth">'+TRAIN_MONTHS.map((m,i)=>'<option value="'+(i+1)+'" '+(i+1===d.month?'selected':'')+'>'+m+'</option>').join("")+'</select></div><div><label for="trResReason">Motivo del cambio *</label><input id="trResReason" maxlength="500" required></div></div>';
+ const host=$("trainingDetail");host.insertAdjacentHTML("beforeend",'<div class="training-detail" id="trResBox"><h4>Reprogramar actividad</h4>'+form+'<div class="actions"><button class="btn btn-blue" id="trResConfirm">Confirmar reprogramación</button><button class="btn btn-light" id="trResCancel">Cancelar</button></div></div>');
+ $("trResCancel").onclick=()=>$("trResBox").remove();
+ $("trResConfirm").onclick=async()=>{const n=Number($("trResMonth").value),reason=$("trResReason").value.trim();if(!reason){alert("Indicá el motivo de la reprogramación.");return}if(n===d.month){alert("El nuevo mes debe ser diferente.");return}if(d.originalMonth==null)d.originalMonth=d.month;d.month=n;d.newMonth=n;d.status="Reprogramada";d.history.push({date:new Date().toISOString(),text:"Reprogramada de "+TRAIN_MONTHS[(d.originalMonth||1)-1]+" (R) a "+TRAIN_MONTHS[n-1]+" (X). Motivo: "+reason});try{await trainSave(d,row.id);await trainLoad();trainRenderDetail()}catch(e){alert("No se pudo reprogramar: "+e.message)}
+ }
+}
+async function trainMarkDone(row){
+ const d=trainParse(row);if(!confirm('¿Confirmás que "'+row.titulo+'" fue realizada?'))return;
+ const date=prompt("Fecha real de ejecución (AAAA-MM-DD):",new Date().toISOString().slice(0,10));if(date===null)return;if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||Number.isNaN(Date.parse(date))){alert("Ingresá una fecha válida en formato AAAA-MM-DD.");return}
+ d.status="Realizada";d.actualDate=date;d.history.push({date:new Date().toISOString(),text:"Marcada como realizada. Fecha real: "+date+"."});
+ try{await trainSave(d,row.id);await trainLoad();trainRenderDetail()}catch(e){alert("No se pudo registrar la ejecución: "+e.message)}
+}
+async function trainDelete(row){
+ const d=trainParse(row),hasHistory=d.history.length>0||d.status!=="Pendiente";
+ if(hasHistory){if(!confirm("La actividad tiene seguimiento o historial. Se anulará y conservará el registro. ¿Continuar?"))return;d.status="Anulada";d.history.push({date:new Date().toISOString(),text:"Actividad anulada por el usuario."});try{await trainSave(d,row.id);trainingDetailId=null;await trainLoad()}catch(e){alert("No se pudo anular: "+e.message)}}else{if(!confirm("La actividad no tiene historial. ¿Eliminarla definitivamente?"))return;try{const r=await db.from("capacitaciones").delete().eq("id",row.id).eq("organizacion_id",activeOrg);if(r.error)throw r.error;trainingDetailId=null;await trainLoad()}catch(e){alert("No se pudo eliminar: "+e.message)}}
+}
+async function trainTemplate(){
+ try{const X=await ensureXLSX(),ws=X.utils.aoa_to_sheet([["Nombre","Objetivo","Responsable","Mes","Duracion","Vincular vencimiento","Fecha vencimiento","Observaciones"],["Uso de extintores","Reconocer y utilizar extintores","Responsable de HyS",3,2,"No","",""]]);ws["!cols"]=[{wch:36},{wch:45},{wch:28},{wch:12},{wch:14},{wch:23},{wch:20},{wch:40}];const ins=X.utils.aoa_to_sheet([["INSTRUCCIONES"],["No cambies los encabezados. Una fila por actividad."],["Nombre, Objetivo y Mes son obligatorios. Mes admite 1-12 o el nombre del mes."],["Duración debe ser un número positivo, expresado en horas."],["Vincular vencimiento acepta Sí/No. Si es Sí, Fecha vencimiento es obligatoria."],["Si hay errores en cualquier fila, no se importará ninguna actividad."],["Los duplicados se informan y requieren decisión explícita."]]);const wb=X.utils.book_new();X.utils.book_append_sheet(wb,ws,"Capacitaciones");X.utils.book_append_sheet(wb,ins,"Instrucciones");X.writeFile(wb,"Plantilla_Plan_Anual_Capacitaciones.xlsx");$("trainingImportStatus").textContent="Plantilla descargada."}catch(e){$("trainingImportStatus").textContent="No se pudo crear la plantilla: "+e.message}
+}
+function trainNorm(s){return String(s??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim().toLowerCase()}
+async function trainValidateExcel(){
+ const file=$("trainingFile").files?.[0],status=$("trainingImportStatus"),preview=$("trainingImportPreview");preview.innerHTML="";if(!file){status.textContent="Seleccioná un archivo .xlsx.";return}if(!/\.xlsx$/i.test(file.name)){status.textContent="El archivo debe ser .xlsx.";return}status.textContent="Validando todas las filas...";try{
+ const X=await ensureXLSX(),wb=X.read(await file.arrayBuffer(),{type:"array"}),sheet=wb.Sheets[wb.SheetNames[0]];if(!sheet)throw new Error("El archivo no contiene hojas.");const raw=X.utils.sheet_to_json(sheet,{defval:""});if(!raw.length)throw new Error("La hoja no contiene actividades.");const keys=Object.keys(raw[0]),map={};keys.forEach(k=>map[trainNorm(k)]=k);const required=["nombre","objetivo","mes"];const missing=required.filter(k=>!map[k]);if(missing.length)throw new Error("Faltan columnas obligatorias: "+missing.join(", "));const rows=raw.map((r,i)=>{const val=k=>r[map[k]]??"",name=String(val("nombre")).trim(),objective=String(val("objetivo")).trim(),responsible=String(val("responsable")).trim(),monthRaw=val("mes"),mn=Number(monthRaw)||TRAIN_MONTHS.findIndex(m=>trainNorm(m)===trainNorm(monthRaw))+1,duration=String(val("duracion")).trim()?Number(val("duracion")):null,dueRaw=trainNorm(val("vincular vencimiento")),due=["si","sí","true","1","x"].includes(dueRaw),dueDate=String(val("fecha vencimiento")).trim(),observations=String(val("observaciones")).trim(),errors=[];if(!name)errors.push("Nombre vacío");if(!objective)errors.push("Objetivo vacío");if(!Number.isInteger(mn)||mn<1||mn>12)errors.push("Mes inválido");if(duration!==null&&(!Number.isFinite(duration)||duration<=0))errors.push("Duración inválida");if(due&&!dueDate)errors.push("Falta fecha de vencimiento");if(dueDate&&!/^\d{4}-\d{2}-\d{2}$/.test(dueDate))errors.push("Fecha de vencimiento debe ser AAAA-MM-DD");return {row:i+2,name,objective,responsible,month:mn,duration,due,dueDate,observations,errors}});
+ const duplicates=rows.map(r=>({...r,duplicates:trainingRows.filter(x=>trainNorm(x.titulo)===trainNorm(r.name)&&trainParse(x).month===r.month)}));const errors=duplicates.filter(r=>r.errors.length);preview.innerHTML='<div class="notice">'+rows.length+' fila(s) · '+(rows.length-errors.length)+' válida(s) · '+errors.length+' con errores. '+(errors.length?'La importación está bloqueada hasta corregir todas las filas.':'No se detectaron errores de formato.')+'</div><div class="training-table-wrap"><table class="training-table"><thead><tr><th>Fila</th><th>Nombre</th><th>Mes</th><th>Resultado</th></tr></thead><tbody>'+duplicates.map(r=>'<tr><td>'+(r.row+2)+'</td><td>'+trainEsc(r.name)+'</td><td>'+trainEsc(TRAIN_MONTHS[(r.month||1)-1])+'</td><td>'+(r.errors.length?'<span class="badge off">'+trainEsc(r.errors.join("; "))+'</span>':r.duplicates.length?'<span class="badge warn">Posible duplicado</span>':'<span class="badge ok">Válida</span>')+'</td></tr>').join("")+'</tbody></table></div>';
+ if(errors.length){status.textContent="Importación bloqueada: corregí todos los errores y volvé a validar.";return}
+ const payloads=[];for(const r of duplicates){if(r.duplicates.length&&!confirm('La actividad "'+r.name+'" del mes '+TRAIN_MONTHS[r.month-1]+' podría estar duplicada. ¿Querés agregarla igualmente?'))continue;payloads.push({title:r.name,objective:r.objective,responsible:r.responsible,year:trainingYear,month:r.month,duration:r.duration,status:"Pendiente",actualDate:"",originalMonth:null,newMonth:null,history:[],generatesDue:r.due,dueDate:r.dueDate,observations:r.observations})}
+ const btn=document.createElement("button");btn.className="btn btn-green";btn.textContent="Confirmar importación de "+payloads.length+" actividad(es)";btn.disabled=!payloads.length;btn.onclick=async()=>{btn.disabled=true;try{const result=await db.from("capacitaciones").insert(payloads.map(trainPayload)).select("id");if(result.error)throw result.error;if(!result.data||result.data.length!==payloads.length)throw new Error("No se confirmó la importación completa.");status.textContent="Se importaron "+result.data.length+" actividades.";preview.innerHTML="";await trainLoad()}catch(e){status.textContent="No se importó el archivo: "+e.message;btn.disabled=false}};preview.appendChild(btn);status.textContent="Validación completa. Revisá duplicados y confirmá para guardar."
+ }catch(e){console.error(e);status.textContent="No se pudo validar el archivo: "+e.message}
+}
+async function trainNextYear(){
+ if(!confirm("Se copiarán las actividades del año "+trainingYear+" al año "+(trainingYear+1)+", sin estados ni fechas reales de ejecución. ¿Continuar?"))return;try{const all=await fetchRows("capacitaciones",5000),src=all.filter(r=>trainIsPlan(r)&&Number(trainParse(r).year)===trainingYear),target=all.filter(r=>trainIsPlan(r)&&Number(trainParse(r).year)===trainingYear+1);if(!src.length)throw new Error("No hay actividades para copiar.");const existing=new Set(target.map(r=>trainNorm(r.titulo)+"|"+trainParse(r).month));const ps=src.filter(r=>!existing.has(trainNorm(r.titulo)+"|"+trainParse(r).month)).map(r=>{const d=trainParse(r);return trainPayload({...d,year:trainingYear+1,status:"Pendiente",actualDate:"",originalMonth:null,newMonth:null,history:[],generatesDue:false,dueDate:""})});if(!ps.length){alert("El año siguiente ya contiene esas actividades.");return}const res=await db.from("capacitaciones").insert(ps).select("id");if(res.error)throw res.error;if(!res.data||res.data.length!==ps.length)throw new Error("No se confirmó la copia completa.");trainingYear++;await renderTrainingModule();alert("Plan del año "+trainingYear+" creado correctamente.")}catch(e){alert("No se pudo crear el nuevo año: "+e.message)}
+}
+function trainExport(){const lines=[["Nombre","Objetivo","Responsable","Mes","Duracion","Estado","Fecha real","Mes original R","Nuevo mes X","Vincular vencimiento","Fecha vencimiento","Observaciones"].join(";")];trainingRows.forEach(r=>{const d=trainParse(r);lines.push([d.title,d.objective,d.responsible,TRAIN_MONTHS[d.month-1],d.duration,d.status,d.actualDate,d.originalMonth?TRAIN_MONTHS[d.originalMonth-1]:"",d.newMonth?TRAIN_MONTHS[d.newMonth-1]:"",d.generatesDue?"Sí":"No",d.dueDate,d.observations].map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(";"))});const blob=new Blob(["\ufeff"+lines.join("\r\n")],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="Plan_Anual_Capacitaciones_"+trainingYear+".csv";a.click();URL.revokeObjectURL(url)}
+
 function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 const moduleIconPositions={inicio:0,establecimientos:1,sectores:2,puestos:3,personas:4,riesgos:5,inspecciones:6,accidentes_incidentes:7,mediciones_ambientales:8,epp:9,capacitaciones:10,documentacion:11,acciones_correctivas:12,equipos_instalaciones:13,vencimientos:14,legislacion:15};
 function moduleIconMarkup(id,size="small"){
@@ -371,7 +507,7 @@ function buildNav(){
     nav.dataset.outsideBound="1";
   }
 }
-function openModule(id){activeModule=id;editing=null;searchText="";buildNav();if(id==="inicio")return renderHome();if(id==="legislacion")return renderLegislation();if(configs[id])return renderCrud(id)}
+function openModule(id){activeModule=id;editing=null;searchText="";buildNav();if(id==="inicio")return renderHome();if(id==="legislacion")return renderLegislation();if(id==="capacitaciones")return renderTrainingModule();if(configs[id])return renderCrud(id)}
 
 async function fetchRows(table,limit=500){
   let q=db.from(table).select("*").limit(limit);
