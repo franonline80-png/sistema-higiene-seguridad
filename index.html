@@ -46,6 +46,7 @@ input[readonly],input.readonly-field{background:#f1f5f9;color:#334155;font-weigh
 .metric,.panel{background:#fff;border:1px solid #e7edf4;border-radius:13px;padding:18px;box-shadow:0 2px 7px #0f172a08}
 .metric-label{color:var(--muted);font-size:12px;font-weight:700;margin-bottom:10px}.metric-value{font-size:29px;font-weight:800}.metric-icon{float:right;font-size:23px}
 .panel{margin-bottom:18px}.panel h3{font-size:16px;margin:0 0 14px}.panel p{line-height:1.6}
+.hazard-category-panel{margin-bottom:18px}.hazard-category-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.hazard-category-card{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:9px;min-height:148px;padding:14px;border:1px solid #dbe4ee;border-radius:13px;background:linear-gradient(160deg,#fff,#f7faff);color:var(--text);transition:transform .15s,border-color .15s,box-shadow .15s}.hazard-category-card:hover{transform:translateY(-2px);border-color:#93b4d6;box-shadow:0 5px 16px #0f172a12}.hazard-category-card.selected{border:2px solid #2563eb;background:#eff6ff;box-shadow:0 0 0 2px #2563eb12}.hazard-illustration{width:52px;height:52px;display:grid;place-items:center;border-radius:15px;font-size:28px;box-shadow:inset 0 0 0 1px #ffffffb8}.hazard-category-name{font-size:13px;font-weight:800;line-height:1.25}.hazard-category-description{font-size:11px;line-height:1.4;color:var(--muted)}.hazard-category-count{font-size:11px;color:#475569;margin-top:auto}.hazard-filter-row{display:grid;grid-template-columns:minmax(180px,.8fr) minmax(220px,1.2fr);gap:12px}.hazard-filter-row input,.hazard-filter-row select{margin-bottom:10px}.hazard-note{padding:10px 12px;border-radius:9px;background:#f1f5f9;color:#475569;font-size:12px;line-height:1.5;margin:0 0 12px}@media(max-width:1100px){.hazard-category-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:650px){.hazard-category-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.hazard-category-card{min-height:142px;padding:11px}.hazard-filter-row{grid-template-columns:1fr}.hazard-illustration{width:46px;height:46px;font-size:25px}}
 .form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 14px}
 .field-full{grid-column:1/-1}
 .actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:5px}
@@ -296,7 +297,8 @@ const modules=[
 {id:"sectores",label:"Sectores",icon:"▤"},
 {id:"puestos",label:"Puestos",icon:"▣"},
 {id:"personas",label:"Personas",icon:"♙"},
-{id:"riesgos",label:"Riesgos",icon:"⚠"},
+{id:"peligros",label:"Peligros",icon:"◈"},
+{id:"riesgos",label:"Gestión de riesgos",icon:"⚠"},
 {id:"inspecciones",label:"Inspecciones",icon:"✓"},
 {id:"accidentes_incidentes",label:"Accidentes",icon:"✚"},
 {id:"mediciones_ambientales",label:"Mediciones",icon:"◉"},
@@ -316,6 +318,9 @@ sectores:{title:"Sectores",table:"sectores",org:false,fields:[
 ["establecimiento_id","Establecimiento","ref:establecimientos",true],["nombre","Nombre","text",true],["codigo","Código","text",false],["descripcion","Descripción","textarea",false],["activo","Activo","checkbox",false]],columns:["establecimiento_id","nombre","codigo","descripcion","activo"],order:"nombre"},
 puestos:{title:"Puestos",table:"puestos",org:false,fields:[
 ["sector_id","Sector","ref:sectores",true],["Nombre","Nombre","text",true],["Codigo","Código","text",false],["Descripcion","Descripción","textarea",false],["Activo","Activo","checkbox",false]],columns:["sector_id","Nombre","Codigo","Descripcion","Activo"],order:"Nombre"},
+peligros:{title:"Peligros",table:"peligros",org:false,fields:[
+["categoria","Categoría","select:Ergonómicos,Químicos,Físicos,Biológicos,Mecánicos y de seguridad,Eléctricos,Locativos y de circulación,Psicosociales y organizacionales,Incendio y emergencias,Transporte, almacenamiento y logística",true],
+["nombre","Nombre del peligro","text",true],["descripcion","Descripción","textarea",false],["activo","Activo","checkbox",false]],columns:["categoria","nombre","descripcion","activo"],order:"categoria"},
 personas:{title:"Personas",table:"personas",org:true,fields:[
 ["Legajo","Legajo","text",false],["Nombre","Nombre","text",true],["Apellido","Apellido","text",true],["Documneto","Documento","text",false],["Cargo","Cargo","text",false],["Fecha de Ingreso","Fecha de ingreso","date",false],["puesto_id","Puesto","ref:puestos",true],["Activo","Activo","checkbox",false]],columns:["Legajo","Nombre","Apellido","Documneto","Cargo","Fecha de Ingreso","puesto_id","Activo"],order:"Apellido"},
 riesgos:{title:"Gestión de riesgos",table:"riesgos",org:false,fields:[
@@ -341,6 +346,12 @@ vencimientos:{title:"Vencimientos",table:"vencimientos",org:true,fields:[
 };
 
 
+const HAZARD_CATEGORIES=[
+{value:"Ergonómicos",icon:"🧍",bg:"#dbeafe",description:"Cargas, posturas y movimientos"},{value:"Químicos",icon:"🧪",bg:"#fef3c7",description:"Sustancias, gases y vapores"},{value:"Físicos",icon:"🔊",bg:"#ede9fe",description:"Ruido, vibraciones y temperatura"},{value:"Biológicos",icon:"🦠",bg:"#dcfce7",description:"Virus, bacterias y hongos"},{value:"Mecánicos y de seguridad",icon:"⚙️",bg:"#ffedd5",description:"Golpes, cortes y atrapamientos"},{value:"Eléctricos",icon:"⚡",bg:"#fef9c3",description:"Contactos y arco eléctrico"},{value:"Locativos y de circulación",icon:"🪜",bg:"#e0f2fe",description:"Caídas, superficies y tránsito"},{value:"Psicosociales y organizacionales",icon:"🧠",bg:"#fce7f3",description:"Carga mental y organización"},{value:"Incendio y emergencias",icon:"🧯",bg:"#fee2e2",description:"Ignición, fuego y evacuación"},{value:"Transporte, almacenamiento y logística",icon:"🚚",bg:"#e2e8f0",description:"Carga, descarga y estiba"}
+];
+function hazardCategoryCards(){const rows=moduleCache.peligros||[];return '<section class="panel hazard-category-panel"><div class="page-title"><div><h3 style="margin:0 0 5px">Catálogo visual de peligros</h3><p class="muted">Elegí una categoría para clasificar un peligro o filtrar el catálogo.</p></div><span class="badge">'+rows.length+' peligro(s)</span></div><div class="hazard-category-grid">'+HAZARD_CATEGORIES.map(c=>{const n=rows.filter(r=>String(r.categoria||"").trim()===c.value).length;return '<button type="button" class="hazard-category-card" data-hazard-category="'+escapeHtml(c.value)+'"><span class="hazard-illustration" style="background:'+c.bg+'">'+c.icon+'</span><span class="hazard-category-name">'+escapeHtml(c.value)+'</span><span class="hazard-category-description">'+escapeHtml(c.description)+'</span><span class="hazard-category-count">'+n+' registrados</span></button>'}).join("")+'</div><p class="muted" style="font-size:12px;margin:12px 0 0">El catálogo está preparado para ampliarse con tu archivo. Las ilustraciones sirven para navegar; la clasificación definitiva se revisará al importar tus datos.</p></section>'}
+function setupHazardCategoryCards(){const input=$("f_categoria");if(!input)return;const refresh=()=>document.querySelectorAll("[data-hazard-category]").forEach(b=>b.classList.toggle("selected",b.dataset.hazardCategory===input.value));document.querySelectorAll("[data-hazard-category]").forEach(b=>b.onclick=()=>{input.value=b.dataset.hazardCategory;refresh();input.dispatchEvent(new Event("change",{bubbles:true}));$("f_nombre")?.focus()});input.addEventListener("change",refresh);refresh()}
+function setupRiskDangerSelector(selectedId){const cat=$("riskDangerCategory"),search=$("riskDangerSearch"),sel=$("f_peligro_id");if(!cat||!search||!sel)return;const rows=moduleCache.peligros||[];const selected=rows.find(r=>String(r.id)===String(selectedId||sel.value));if(selected?.categoria)cat.value=selected.categoria;const filter=()=>{const term=search.value.trim().toLocaleLowerCase("es"),category=cat.value;let visible=0;Array.from(sel.options).forEach((o,i)=>{if(i===0){o.hidden=false;return}const row=rows.find(r=>String(r.id)===o.value);const ok=!!row&&(!category||String(row.categoria||"")===category)&&(!term||String(row.nombre||"").toLocaleLowerCase("es").includes(term)||String(row.descripcion||"").toLocaleLowerCase("es").includes(term));o.hidden=!ok;if(ok)visible++});if(sel.value&&sel.selectedOptions[0]?.hidden)sel.value="";const note=$("riskDangerNote");if(note)note.textContent=rows.length?visible+" peligro(s) disponible(s) con estos filtros.":"Todavía no hay peligros cargados. Entrá en Peligros para crear registros o incorporar el catálogo desde tu archivo."};cat.onchange=filter;search.oninput=filter;sel.onchange=()=>{const row=rows.find(r=>String(r.id)===sel.value);if(row?.categoria)cat.value=row.categoria;filter()};filter()}
 const TRAIN_PREFIX="CAP_PLAN_V2:";
 const TRAIN_TYPE="PLAN_ANUAL";
 const TRAIN_MONTHS=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
@@ -570,7 +581,10 @@ async function renderField(field,value,moduleId){
   const id="f_"+key.replace(/[^a-zA-Z0-9_-]/g,"_");
   let control="";
   if(type==="checkbox")control=`<input id="${id}" name="${escapeHtml(key)}" type="checkbox" style="width:auto;margin:4px 0 14px" ${value===false?"":"checked"}>`;
-  else if(type.startsWith("ref:")){
+  else if(moduleId==="riesgos"&&key==="peligro_id"){
+    const rows=await fetchRows("peligros");
+    control='<div class="hazard-reference"><div class="hazard-filter-row"><div><label for="riskDangerCategory">Filtrar por categoría</label><select id="riskDangerCategory"><option value="">Todas las categorías</option>'+HAZARD_CATEGORIES.map(c=>'<option value="'+escapeHtml(c.value)+'">'+escapeHtml(c.value)+'</option>').join("")+'</select></div><div><label for="riskDangerSearch">Buscar peligro</label><input id="riskDangerSearch" type="search" placeholder="Ej.: ruido, carga, caída..." autocomplete="off"></div></div><select id="'+id+'" name="'+escapeHtml(key)+'" '+req+'><option value="">Seleccione un peligro...</option>'+rows.map(r=>'<option value="'+escapeHtml(r.id)+'" data-category="'+escapeHtml(r.categoria||"")+'" '+(String(r.id)===String(value)?"selected":"")+'">'+escapeHtml(r.nombre||"Peligro sin nombre")+(r.categoria?" · "+escapeHtml(r.categoria):"")+'</option>').join("")+'</select><p id="riskDangerNote" class="hazard-note">'+(rows.length?rows.length+" peligro(s) disponibles. Filtrá por categoría o escribí para buscar.":"Todavía no hay peligros cargados. Entrá en Peligros para crear registros o incorporar el catálogo desde tu archivo.")+'</p></div>';
+  }else if(type.startsWith("ref:")){
     const opts=await fetchReferenceOptions(type.split(":")[1]);
     control=`<select id="${id}" name="${escapeHtml(key)}" ${req}><option value="">Seleccione...</option>${opts.map(o=>`<option value="${escapeHtml(o.id)}" ${o.id===value?"selected":""}>${escapeHtml(o.label)}</option>`).join("")}</select>`;
   }else if(type.startsWith("select:")){
@@ -773,9 +787,12 @@ async function renderCrud(id){
   <div id="bulkSummary"></div>
   <div id="bulkPreview" class="table-wrap" style="margin-top:12px"></div>
 </div>`:""}
+  ${id==="peligros"?hazardCategoryCards():""}
   <div class="panel"><h3 id="formTitle">Registrar ${escapeHtml(cfg.title.toLowerCase())}</h3><form id="recordForm"><div id="formFields" class="form-grid"></div><div class="actions"><button class="btn btn-green" type="submit" id="saveRecord">Guardar registro</button><button class="btn btn-light hidden" id="cancelEdit" type="button">Cancelar edición</button></div><div id="formStatus" class="status" role="status"></div></form></div>
   <div class="panel"><h3>Listado</h3><div class="toolbar"><input id="tableSearch" placeholder="Buscar en los registros..." aria-label="Buscar"><span id="rowCount" class="muted"></span></div><div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"><tr><td class="empty">Cargando...</td></tr></tbody></table></div><div id="tableStatus" class="status" role="status"></div></div>`;
   for(const f of cfg.fields)$("formFields").insertAdjacentHTML("beforeend",await renderField(f,f[2]==="checkbox"?true:"",id));
+  if(id==="peligros")setupHazardCategoryCards();
+  if(id==="riesgos")setupRiskDangerSelector();
   if(id==="sectores"||id==="puestos"){
     const codeKey=id==="sectores"?"codigo":"Codigo",parentKey=id==="sectores"?"establecimiento_id":"sector_id";
     const parentInput=$("f_"+parentKey),codeInput=$("f_"+codeKey);
@@ -802,7 +819,7 @@ async function loadModuleRows(id){
     const refTables=[...new Set(configs[id].fields.filter(f=>String(f[2]).startsWith("ref:")).map(f=>f[2].slice(4)))];
     await Promise.all(refTables.map(async table=>{moduleCache[table]=await fetchRows(table)}));
     $("tableStatus").textContent=`Se encontraron ${rows.length} registro(s).`;
-    renderTable(id)
+    renderTable(id);if(id==="peligros"){$("view").querySelector(".hazard-category-panel")?.remove();$("view").querySelector(".page-title")?.insertAdjacentHTML("afterend",hazardCategoryCards());setupHazardCategoryCards()}
   }catch(e){console.error(e);$("tableStatus").textContent="No se pudo consultar: "+e.message;$("tableBody").innerHTML='<tr><td class="empty">No se pudieron cargar los datos. Verificá la conexión y RLS.</td></tr>'}
 }
 function displayCellValue(moduleId,row,key){
@@ -852,6 +869,8 @@ function makeButton(text,cls,fn){const b=document.createElement("button");b.type
 async function startEdit(id,row){
   await renderCrud(id);editing=row;$("formTitle").textContent="Editar registro";$("saveRecord").textContent="Guardar cambios";$("cancelEdit").classList.remove("hidden");
   for(const f of configs[id].fields){const el=$("f_"+f[0].replace(/[^a-zA-Z0-9_-]/g,"_"));if(!el)continue;if(f[2]==="checkbox")el.checked=row[f[0]]!==false;else el.value=row[f[0]]??""}
+  if(id==="peligros")setupHazardCategoryCards();
+  if(id==="riesgos")setupRiskDangerSelector(row.peligro_id);
   if(id==="personas"){const legajoInput=$("f_Legajo");if(legajoInput){legajoInput.readOnly=true;legajoInput.title="El legajo asignado no se puede editar";}}
   if(id==="sectores"||id==="puestos"){const codeInput=$(id==="sectores"?"f_codigo":"f_Codigo");if(codeInput){codeInput.readOnly=true;codeInput.title="El código asignado no se puede editar";}}
 }
