@@ -818,6 +818,7 @@ async function loadModuleRows(id){
     moduleCache[id]=rows;
     const refTables=[...new Set(configs[id].fields.filter(f=>String(f[2]).startsWith("ref:")).map(f=>f[2].slice(4)))];
     await Promise.all(refTables.map(async table=>{moduleCache[table]=await fetchRows(table)}));
+    if(id==="riesgos")setupRiskDangerSelector($("f_peligro_id")?.value);
     $("tableStatus").textContent=`Se encontraron ${rows.length} registro(s).`;
     renderTable(id);if(id==="peligros"){$("view").querySelector(".hazard-category-panel")?.remove();$("view").querySelector(".page-title")?.insertAdjacentHTML("afterend",hazardCategoryCards());setupHazardCategoryCards()}
   }catch(e){console.error(e);$("tableStatus").textContent="No se pudo consultar: "+e.message;$("tableBody").innerHTML='<tr><td class="empty">No se pudieron cargar los datos. Verificá la conexión y RLS.</td></tr>'}
