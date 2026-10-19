@@ -204,6 +204,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 .training-dot{width:9px;height:9px;border-radius:50%;display:inline-block}
 @media(max-width:760px){.training-calendar{grid-template-columns:repeat(2,minmax(0,1fr))}.training-detail-grid{grid-template-columns:1fr}}
 @media(max-width:480px){.training-calendar{grid-template-columns:1fr}.training-toolbar>div{min-width:100%}}
+.session-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}.session-summary .dashboard-metric{min-width:0}.session-duration{font-variant-numeric:tabular-nums;white-space:nowrap}@media(max-width:650px){.session-summary{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -281,6 +282,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 </footer>
 </div>
 
+<script src="/session-history.js"></script>
 <script>
 "use strict";
 
@@ -293,6 +295,7 @@ let user=null,organizations=[],activeOrg="",activeModule="inicio",editing=null,m
 
 const modules=[
 {id:"inicio",label:"Inicio",icon:"⌂"},
+{id:"sesiones",label:"Actividad y sesiones",icon:"◷"},
 {id:"establecimientos",label:"Establecimientos",icon:"▦"},
 {id:"sectores",label:"Sectores",icon:"▤"},
 {id:"puestos",label:"Puestos",icon:"▣"},
@@ -497,7 +500,7 @@ function showLogin(message=""){$("app").style.display="none";$("loginScreen").st
 function showApp(){$("loginScreen").style.display="none";$("app").style.display="block"}
 function getOrgIds(){return organizations.map(o=>o.id)}
 function getOrgName(){return organizations.find(o=>o.id===activeOrg)?.nombre||"Organización"}
-function visibleModules(){return modules.filter(m=>m.id==="inicio"||m.id==="legislacion"||configs[m.id])}
+function visibleModules(){return modules.filter(m=>m.id==="inicio"||m.id==="legislacion"||m.id==="sesiones"||configs[m.id])}
 function buildNav(){
   const nav=$("navTabs");nav.replaceChildren();
   const all=visibleModules();
@@ -505,7 +508,7 @@ function buildNav(){
     {label:"Inicio",icon:"⌂",ids:["inicio"]},
     {label:"Organización",icon:"▦",ids:["establecimientos","sectores","puestos","personas"]},
     {label:"Gestión de HyS",icon:"⚠",ids:["riesgos","inspecciones","accidentes_incidentes","mediciones_ambientales","epp"]},
-    {label:"Seguimiento",icon:"✓",ids:["capacitaciones","documentacion","acciones_correctivas","equipos_instalaciones","vencimientos"]},
+    {label:"Seguimiento",icon:"✓",ids:["capacitaciones","documentacion","acciones_correctivas","equipos_instalaciones","vencimientos","sesiones"]},
     {label:"Legislación",icon:"§",ids:["legislacion"]}
   ];
   groups.forEach((g,index)=>{
@@ -544,7 +547,7 @@ function buildNav(){
     nav.dataset.outsideBound="1";
   }
 }
-function openModule(id){activeModule=id;editing=null;searchText="";buildNav();if(id==="inicio")return renderHome();if(id==="legislacion")return renderLegislation();if(id==="capacitaciones")return renderTrainingModule();if(configs[id])return renderCrud(id)}
+function openModule(id){activeModule=id;editing=null;searchText="";buildNav();if(id==="inicio")return renderHome();if(id==="legislacion")return renderLegislation();if(id==="capacitaciones")return renderTrainingModule();if(id==="sesiones")return renderSessionsModule();if(configs[id])return renderCrud(id)}
 
 async function fetchRows(table,limit=500){
   let q=db.from(table).select("*").limit(limit);
@@ -1052,6 +1055,7 @@ function renderLegislation(){
 async function initialize(){
   const {data,error}=await db.auth.getUser();if(error)throw error;
   user=data.user;if(!user)throw new Error("No hay una sesión activa.");
+  await startSessionTracking();
   const {data:members,error:me}=await db.from("usuarios_organizaciones").select("organizacion_id,rol").eq("usuario_id",user.id).eq("activo",true);
   if(me)throw me;
   const ids=[...new Set((members||[]).map(x=>x.organizacion_id).filter(Boolean))];
@@ -1072,8 +1076,9 @@ $("loginForm").addEventListener("submit",async e=>{
   finally{b.disabled=false;b.textContent="Ingresar"}
 });
 $("logoutButton").addEventListener("click",async()=>{
+  try{await closeCurrentSession()}catch(e){alert("No se pudo registrar el cierre de sesión: "+e.message);return}
   const {error}=await db.auth.signOut();if(error){alert("No se pudo cerrar sesión: "+error.message);return}
-  user=null;organizations=[];activeOrg="";moduleCache={};showLogin();
+  user=null;organizations=[];activeOrg="";moduleCache={};sessionAccessToken=null;showLogin();
 });
 $("refreshAll").addEventListener("click",()=>{moduleCache={};openModule(activeModule)});
 db.auth.getSession().then(async({data,error})=>{
