@@ -1055,7 +1055,7 @@ function renderLegislation(){
 async function initialize(){
   const {data,error}=await db.auth.getUser();if(error)throw error;
   user=data.user;if(!user)throw new Error("No hay una sesión activa.");
-  await startSessionTracking();
+  try{await startSessionTracking()}catch(sessionError){console.error("No se pudo registrar la sesión; la aplicación continuará disponible:",sessionError)}
   const {data:members,error:me}=await db.from("usuarios_organizaciones").select("organizacion_id,rol").eq("usuario_id",user.id).eq("activo",true);
   if(me)throw me;
   const ids=[...new Set((members||[]).map(x=>x.organizacion_id).filter(Boolean))];
