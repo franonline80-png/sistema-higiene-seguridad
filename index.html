@@ -593,7 +593,8 @@ function buildNav(){
     nav.dataset.outsideBound="1";
   }
 }
-function openModule(id){activeModule=id;editing=null;searchText="";buildNav();if(id==="inicio")return renderHome();if(id==="legislacion")return renderLegislation();if(id==="capacitaciones")return renderTrainingModule();if(id==="sesiones")return renderSessionsModule();if(id==="reportes")return renderReportsModule();if(configs[id])return renderCrud(id)}
+let peoplePageSize=10,peoplePage=1;
+function openModule(id){activeModule=id;editing=null;searchText="";peoplePage=1;buildNav();if(id==="inicio")return renderHome();if(id==="legislacion")return renderLegislation();if(id==="capacitaciones")return renderTrainingModule();if(id==="sesiones")return renderSessionsModule();if(id==="reportes")return renderReportsModule();if(configs[id])return renderCrud(id)}
 
 async function fetchRows(table,limit=500){
   let q=db.from(table).select("*").limit(limit);
@@ -857,7 +858,7 @@ async function renderCrud(id){
 </div>`:""}
   ${id==="peligros"?hazardCategoryCards():""}
   <div class="panel"><h3 id="formTitle">Registrar ${escapeHtml(cfg.title.toLowerCase())}</h3><form id="recordForm"><div id="formFields" class="form-grid"></div><div class="actions"><button class="btn btn-green" type="submit" id="saveRecord">Guardar registro</button><button class="btn btn-light hidden" id="cancelEdit" type="button">Cancelar edición</button></div><div id="formStatus" class="status" role="status"></div></form></div>
-  <div class="panel"><h3>Listado</h3><div class="toolbar"><input id="tableSearch" placeholder="Buscar en los registros..." aria-label="Buscar"><span id="rowCount" class="muted"></span></div><div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"><tr><td class="empty">Cargando...</td></tr></tbody></table></div><div id="tableStatus" class="status" role="status"></div></div>`;
+  <div class="panel"><h3>Listado</h3><div class="toolbar"><input id="tableSearch" placeholder="Buscar en los registros..." aria-label="Buscar"><span id="rowCount" class="muted"></span>${id==="personas"?`<label for="peoplePageSize" class="muted">Mostrar</label><select id="peoplePageSize" aria-label="Cantidad de personas por página"><option value="5">5</option><option value="10" selected>10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select><span class="muted">por página</span>`:""}</div><div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"><tr><td class="empty">Cargando...</td></tr></tbody></table></div><div id="tableStatus" class="status" role="status"></div>${id==="personas"?`<div id="peoplePagination" class="toolbar" style="justify-content:flex-end;align-items:center;gap:8px;margin-top:12px"></div>`:""}</div>`;
   for(const f of cfg.fields)$("formFields").insertAdjacentHTML("beforeend",await renderField(f,f[2]==="checkbox"?true:"",id));
   if(id==="peligros")setupHazardCategoryCards();
   if(id==="riesgos")setupRiskDangerSelector();
@@ -877,7 +878,8 @@ async function renderCrud(id){
   if(id==="personas")await initPeopleBulkImport();
   $("reloadModule").onclick=()=>loadModuleRows(id);
   $("cancelEdit").onclick=()=>renderCrud(id);
-  $("tableSearch").oninput=e=>{searchText=e.target.value;renderTable(id)};
+  $("tableSearch").oninput=e=>{searchText=e.target.value;if(id==="personas")peoplePage=1;renderTable(id)};
+  if(id==="personas"){$("peoplePageSize").value=String(peoplePageSize);$("peoplePageSize").onchange=e=>{peoplePageSize=Number(e.target.value)||10;peoplePage=1;renderTable(id)}}
   await loadModuleRows(id);
 }
 async function loadModuleRows(id){
@@ -918,11 +920,14 @@ function displayCellValue(moduleId,row,key){
 function renderTable(id){
   const cfg=configs[id],allRows=moduleCache[id]||[];
   const rows=allRows.filter(r=>!searchText||cfg.columns.some(k=>displayCellValue(id,r,k).toLowerCase().includes(searchText.toLowerCase())));
-  $("rowCount").textContent=`${rows.length} registro(s)`;
+  const pageCount=id==="personas"?Math.max(1,Math.ceil(rows.length/peoplePageSize)):1;
+  if(id==="personas")peoplePage=Math.min(Math.max(1,peoplePage),pageCount);
+  const visibleRows=id==="personas"?rows.slice((peoplePage-1)*peoplePageSize,peoplePage*peoplePageSize):rows;
+  $("rowCount").textContent=id==="personas"?`${rows.length} persona(s) · mostrando ${rows.length?((peoplePage-1)*peoplePageSize+1):0}–${Math.min(peoplePage*peoplePageSize,rows.length)}`:`${rows.length} registro(s)`;
   $("tableHead").innerHTML=`<tr>${cfg.columns.map(k=>`<th>${escapeHtml(cfg.fields.find(f=>f[0]===k)?.[1]||k)}</th>`).join("")}<th>Acciones</th></tr>`;
   const tb=$("tableBody");tb.replaceChildren();
-  if(!rows.length){tb.innerHTML=`<tr><td colspan="${cfg.columns.length+1}" class="empty">No hay registros para mostrar.</td></tr>`;return}
-  rows.forEach(row=>{
+  if(!rows.length){tb.innerHTML=`<tr><td colspan="${cfg.columns.length+1}" class="empty">No hay registros para mostrar.</td></tr>`;if(id==="personas")$("peoplePagination").replaceChildren();return}
+  visibleRows.forEach(row=>{
     const tr=document.createElement("tr");
     cfg.columns.forEach(k=>{
       const td=document.createElement("td"),v=row[k];
@@ -933,6 +938,12 @@ function renderTable(id){
     });
     const td=document.createElement("td");td.append(makeButton("Editar","btn btn-light btn-sm",()=>startEdit(id,row)),makeButton("Eliminar","btn btn-red btn-sm",()=>deleteRecord(id,row)));tr.appendChild(td);tb.appendChild(tr);
   });
+  if(id==="personas"){
+    const nav=$("peoplePagination");nav.replaceChildren();
+    const info=document.createElement("span");info.className="muted";info.textContent=`Página ${peoplePage} de ${pageCount}`;nav.appendChild(info);
+    const prev=makeButton("Anterior","btn btn-light btn-sm",()=>{if(peoplePage>1){peoplePage--;renderTable(id)}});prev.disabled=peoplePage<=1;nav.appendChild(prev);
+    const next=makeButton("Siguiente","btn btn-light btn-sm",()=>{if(peoplePage<pageCount){peoplePage++;renderTable(id)}});next.disabled=peoplePage>=pageCount;nav.appendChild(next);
+  }
 }
 function makeButton(text,cls,fn){const b=document.createElement("button");b.type="button";b.className=cls;b.textContent=text;b.onclick=fn;return b}
 async function startEdit(id,row){
