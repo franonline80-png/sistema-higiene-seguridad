@@ -205,6 +205,50 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 @media(max-width:760px){.training-calendar{grid-template-columns:repeat(2,minmax(0,1fr))}.training-detail-grid{grid-template-columns:1fr}}
 @media(max-width:480px){.training-calendar{grid-template-columns:1fr}.training-toolbar>div{min-width:100%}}
 .session-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}.session-summary .dashboard-metric{min-width:0}.session-duration{font-variant-numeric:tabular-nums;white-space:nowrap}@media(max-width:650px){.session-summary{grid-template-columns:1fr}}
+
+/* Reportes e informes */
+.reports-shell{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(340px,.85fr);gap:18px;align-items:start}
+.reports-main,.reports-preview{min-width:0}
+.reports-filters{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end;margin-bottom:18px}
+.reports-filters label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px}
+.reports-filters select,.reports-filters input{width:100%;min-width:0;padding:10px;border:1px solid var(--line);border-radius:9px;background:white;color:var(--text)}
+.report-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.report-card{display:flex;gap:12px;align-items:center;text-align:left;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;min-height:145px;color:var(--text);transition:.18s;box-shadow:0 2px 5px #10243a08}
+.report-card:hover,.report-card.selected{border-color:#14815f;box-shadow:0 0 0 1px #14815f20,0 6px 18px #10243a0b;transform:translateY(-1px)}
+.report-card img{width:92px;height:112px;object-fit:cover;border-radius:8px;flex:0 0 92px;background:#edf2f7}
+.report-card h3{font-size:14px;line-height:1.25;margin:8px 0 5px}
+.report-card p{font-size:12px;color:var(--muted);line-height:1.4;margin:0}
+.report-card .report-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:#e2f4ec;color:#087653;font-size:19px}
+.report-arrow{margin-top:8px;color:#14815f;font-weight:800}
+.report-quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
+.report-quick button{background:#fff;border:1px solid var(--line);border-radius:9px;padding:11px 9px;text-align:left;font-size:12px;color:var(--text);line-height:1.35}
+.report-quick button:hover{border-color:#14815f}
+.report-preview-wrap{position:sticky;top:12px;background:#f8fafc;border:1px solid var(--line);border-radius:13px;padding:12px}
+.report-preview-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:2px 2px 12px}
+.report-preview-head h3{margin:0;font-size:15px}
+.report-preview-head p{margin:3px 0 0;color:var(--muted);font-size:12px}
+.report-paper{background:#fff;min-height:480px;padding:22px 20px;box-shadow:0 2px 8px #10243a12;border:1px solid #e4e8ee;color:#172033;font-size:10px}
+.paper-brand{display:flex;justify-content:space-between;gap:12px;align-items:center;border-bottom:2px solid #166b50;padding-bottom:12px;margin-bottom:12px}
+.paper-brand strong{display:block;font-size:11px}.paper-brand span{color:#64748b;font-size:9px}
+.paper-logo{width:35px;height:35px;border-radius:7px;background:#e2f4ec;color:#12664e;display:flex;align-items:center;justify-content:center;font-size:20px}
+.paper-title{background:#12664e;color:white;padding:9px;text-align:center;font-size:13px;font-weight:800;margin:12px 0}
+.paper-section{font-size:10px;font-weight:800;margin:12px 0 6px}
+.paper-table{width:100%;border-collapse:collapse;font-size:9px;margin-bottom:8px}
+.paper-table th,.paper-table td{border:1px solid #d7dee7;padding:6px;text-align:left;vertical-align:top}
+.paper-table th{background:#f1f5f9}
+.paper-note{background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px;padding:9px;line-height:1.5}
+.paper-signatures{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:28px 8px 12px;text-align:center;font-size:9px}
+.paper-signatures span{border-top:1px solid #64748b;padding-top:5px}
+.paper-footer{border-top:1px solid #d7dee7;padding-top:7px;margin-top:14px;display:flex;justify-content:space-between;color:#64748b;font-size:8px}
+.report-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
+.report-actions .btn{padding:10px 8px;font-size:12px}
+.report-status{margin:8px 0;color:var(--muted);font-size:12px;min-height:16px}
+.report-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.report-stat{padding:10px;background:#f1f7f5;border-radius:8px}.report-stat b{display:block;font-size:20px;color:#12664e}.report-stat span{font-size:10px;color:var(--muted)}
+@media(max-width:1050px){.reports-shell{grid-template-columns:1fr}.report-preview-wrap{position:static}.reports-filters{grid-template-columns:1fr 1fr}.report-quick{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.report-grid{grid-template-columns:1fr}.report-card{min-height:120px}.report-card img{width:78px;height:96px;flex-basis:78px}.reports-filters{grid-template-columns:1fr}.report-actions{grid-template-columns:1fr}.report-paper{padding:14px 11px}.report-preview-wrap{padding:8px}}
+@media print{body *{visibility:hidden!important}#reportPrintRoot,#reportPrintRoot *{visibility:visible!important}#reportPrintRoot{position:absolute;left:0;top:0;width:100%;background:#fff!important}.report-paper{border:0;box-shadow:none;padding:10mm;min-height:0;font-size:10pt}.paper-title{print-color-adjust:exact;-webkit-print-color-adjust:exact}.paper-table th,.paper-title{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+
 </style>
 </head>
 <body>
@@ -296,6 +340,7 @@ let user=null,organizations=[],activeOrg="",activeModule="inicio",editing=null,m
 const modules=[
 {id:"inicio",label:"Inicio",icon:"⌂"},
 {id:"sesiones",label:"Actividad y sesiones",icon:"◷"},
+{id:"reportes",label:"Reportes e informes",icon:"▤"},
 {id:"establecimientos",label:"Establecimientos",icon:"▦"},
 {id:"sectores",label:"Sectores",icon:"▤"},
 {id:"puestos",label:"Puestos",icon:"▣"},
@@ -500,7 +545,7 @@ function showLogin(message=""){$("app").style.display="none";$("loginScreen").st
 function showApp(){$("loginScreen").style.display="none";$("app").style.display="block"}
 function getOrgIds(){return organizations.map(o=>o.id)}
 function getOrgName(){return organizations.find(o=>o.id===activeOrg)?.nombre||"Organización"}
-function visibleModules(){return modules.filter(m=>m.id==="inicio"||m.id==="legislacion"||m.id==="sesiones"||configs[m.id])}
+function visibleModules(){return modules.filter(m=>m.id==="inicio"||m.id==="legislacion"||m.id==="sesiones"||m.id==="reportes"||configs[m.id])}
 function buildNav(){
   const nav=$("navTabs");nav.replaceChildren();
   const all=visibleModules();
@@ -509,6 +554,7 @@ function buildNav(){
     {label:"Organización",icon:"▦",ids:["establecimientos","sectores","puestos","personas"]},
     {label:"Gestión de HyS",icon:"⚠",ids:["riesgos","inspecciones","accidentes_incidentes","mediciones_ambientales","epp"]},
     {label:"Seguimiento",icon:"✓",ids:["capacitaciones","documentacion","acciones_correctivas","equipos_instalaciones","vencimientos","sesiones"]},
+    {label:"Informes",icon:"▤",ids:["reportes"]},
     {label:"Legislación",icon:"§",ids:["legislacion"]}
   ];
   groups.forEach((g,index)=>{
@@ -547,7 +593,7 @@ function buildNav(){
     nav.dataset.outsideBound="1";
   }
 }
-function openModule(id){activeModule=id;editing=null;searchText="";buildNav();if(id==="inicio")return renderHome();if(id==="legislacion")return renderLegislation();if(id==="capacitaciones")return renderTrainingModule();if(id==="sesiones")return renderSessionsModule();if(configs[id])return renderCrud(id)}
+function openModule(id){activeModule=id;editing=null;searchText="";buildNav();if(id==="inicio")return renderHome();if(id==="legislacion")return renderLegislation();if(id==="capacitaciones")return renderTrainingModule();if(id==="sesiones")return renderSessionsModule();if(id==="reportes")return renderReportsModule();if(configs[id])return renderCrud(id)}
 
 async function fetchRows(table,limit=500){
   let q=db.from(table).select("*").limit(limit);
@@ -1030,6 +1076,101 @@ async function renderHome(){
       if($(id))$(id).innerHTML='<div class="dashboard-empty">No se pudieron consultar estos datos.</div>';
     });
   }
+}
+
+
+const reportDefinitions=[
+ {id:"inspecciones",title:"Informe de inspección de seguridad",short:"Inspecciones",desc:"Hallazgos, niveles de riesgo y medidas correctivas.",icon:"☷",image:"https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=240&q=80"},
+ {id:"riesgos",title:"Informe de evaluación de riesgos",short:"Evaluación de riesgos",desc:"Peligros, probabilidad, consecuencias y controles.",icon:"⚠",image:"https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=240&q=80"},
+ {id:"accidentes_incidentes",title:"Informe de accidente o incidente",short:"Accidentes e incidentes",desc:"Investigación, causas y acciones preventivas.",icon:"✚",image:"https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=240&q=80"},
+ {id:"gestion",title:"Informe mensual o anual de gestión",short:"Gestión mensual o anual",desc:"Indicadores, estadísticas y evolución del sistema.",icon:"▥",image:"https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=240&q=80"},
+ {id:"epp",title:"Acta de entrega de EPP",short:"Entrega de EPP",desc:"Registro de elementos, cantidades y recepción.",icon:"⛑",image:"https://images.unsplash.com/photo-1613214150384-8d1c7f8b8f8a?auto=format&fit=crop&w=240&q=80"},
+ {id:"mediciones_ambientales",title:"Informe de mediciones ambientales",short:"Mediciones ambientales",desc:"Resultados, parámetros, límites y conclusiones.",icon:"◉",image:"https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=240&q=80"}
+];
+let reportSelected="inspecciones",reportRowsCache={},reportFilteredRows=[];
+function reportEsc(v){return escapeHtml(String(v??"—"))}
+function reportDate(v){return v?formatDateDMY(v):"—"}
+function reportMonthBounds(value){const [y,m]=value.split("-").map(Number);return {start:y+"-"+String(m).padStart(2,"0")+"-01",end:y+"-"+String(m).padStart(2,"0")+"-31"}}
+function renderReportsModule(){
+ const now=new Date(),month=String(now.getMonth()+1).padStart(2,"0"),period=now.getFullYear()+"-"+month;
+ $("view").innerHTML=`<div class="page-title"><div><h2>Reportes e informes</h2><p>Generá, revisá y descargá informes en PDF con los datos registrados en el sistema.</p></div><button class="btn btn-light" id="reportsReload" type="button">↻ Actualizar datos</button></div>
+ <div class="reports-shell"><section class="reports-main">
+ <div class="panel reports-filters">
+ <div><label for="reportPeriod">Período</label><input id="reportPeriod" type="month" value="${period}"></div>
+ <div><label for="reportSector">Sector</label><select id="reportSector"><option value="">Todos los sectores</option></select></div>
+ <div><label for="reportType">Tipo de reporte</label><select id="reportType"><option value="todos">Todos</option>${reportDefinitions.map(d=>`<option value="${d.id}">${reportEsc(d.short)}</option>`).join("")}</select></div>
+ <button class="btn btn-green" id="reportGenerate" type="button">▤ Generar reporte</button></div>
+ <h3>Seleccioná un tipo de reporte</h3><p class="muted" style="margin-top:-6px;margin-bottom:12px">Elegí el formulario que querés previsualizar. Los datos se obtienen de los módulos registrados.</p>
+ <div class="report-grid" id="reportCards">${reportDefinitions.map(d=>`<button type="button" class="report-card ${d.id===reportSelected?"selected":""}" data-report-card="${d.id}"><img src="${d.image}" alt="" loading="lazy" onerror="this.style.display='none'"><div><span class="report-icon">${d.icon}</span><h3>${reportEsc(d.title)}</h3><p>${reportEsc(d.desc)}</p><div class="report-arrow">Ver informe →</div></div></button>`).join("")}</div>
+ <h3 style="margin-top:18px">Reportes rápidos</h3><p class="muted" style="margin-top:-6px">Accesos directos a resúmenes frecuentes.</p>
+ <div class="report-quick"><button data-quick-report="inspecciones">⭐<br>Resumen de inspecciones</button><button data-quick-report="riesgos">⚠<br>Riesgos críticos</button><button data-quick-report="capacitaciones">●<br>Capacitaciones</button><button data-quick-report="acciones_correctivas">▤<br>Acciones pendientes</button></div>
+ <div id="reportStatus" class="report-status" role="status"></div></section>
+ <aside class="reports-preview"><div class="report-preview-wrap"><div class="report-preview-head"><div><h3>◉ Vista previa del informe</h3><p>Así se verá el documento al imprimirlo o guardarlo como PDF.</p></div><span id="reportPageLabel" class="muted">A4</span></div>
+ <div id="reportPrintRoot"><article class="report-paper" id="reportPaper"></article></div>
+ <div class="report-actions"><button class="btn btn-green" id="reportDownload" type="button">⬇ Descargar PDF</button><button class="btn btn-light" id="reportPrint" type="button">▣ Imprimir</button><button class="btn btn-light" id="reportShare" type="button">↗ Compartir</button></div>
+ <p class="muted" style="font-size:11px;margin:8px 2px 0">Para guardar el PDF, elegí “Guardar como PDF” en el cuadro de impresión.</p></div></aside></div>`;
+ const sectorSelect=$("reportSector");
+ fetchRows("sectores").then(rows=>{sectorSelect.innerHTML='<option value="">Todos los sectores</option>'+rows.map(r=>`<option value="${reportEsc(r.id)}">${reportEsc(r.nombre)}</option>`).join("")}).catch(e=>console.warn("No se pudieron cargar sectores",e));
+ $("reportCards").addEventListener("click",e=>{const b=e.target.closest("[data-report-card]");if(!b)return;reportSelected=b.dataset.reportCard;updateReportCards();generateReportPreview()});
+ $("reportType").addEventListener("change",e=>{if(e.target.value!=="todos"){reportSelected=e.target.value;updateReportCards();generateReportPreview()}});
+ $("reportGenerate").onclick=generateReportPreview;
+ $("reportsReload").onclick=()=>{reportRowsCache={};generateReportPreview()};
+ $("reportSector").addEventListener("change",generateReportPreview);
+ $("reportPeriod").addEventListener("change",generateReportPreview);
+ $("reportDownload").onclick=downloadReportPdf;
+ $("reportPrint").onclick=downloadReportPdf;
+ $("reportShare").onclick=shareReport;
+ $("view").querySelectorAll("[data-quick-report]").forEach(b=>b.onclick=()=>{const id=b.dataset.quickReport;if(id==="capacitaciones")reportSelected="gestion";else if(id==="acciones_correctivas")reportSelected="inspecciones";else reportSelected=id;updateReportCards();generateReportPreview()});
+ generateReportPreview();
+}
+function updateReportCards(){document.querySelectorAll("[data-report-card]").forEach(b=>b.classList.toggle("selected",b.dataset.reportCard===reportSelected))}
+async function getReportRows(id){
+ const table=id==="gestion"?"inspecciones":id;
+ if(reportRowsCache[table])return reportRowsCache[table];
+ try{reportRowsCache[table]=await fetchRows(table,1000)}catch(e){console.warn("No se pudieron consultar datos para el reporte",table,e);reportRowsCache[table]=[]}
+ return reportRowsCache[table];
+}
+async function generateReportPreview(){
+ const paper=$("reportPaper");if(!paper)return;
+ const def=reportDefinitions.find(d=>d.id===reportSelected)||reportDefinitions[0];
+ const period=$("reportPeriod")?.value||"",sectorId=$("reportSector")?.value||"";
+ const bounds=period?reportMonthBounds(period):null;
+ const dateField=({inspecciones:"fecha",accidentes_incidentes:"fecha",mediciones_ambientales:"fecha",capacitaciones:"fecha",riesgos:"fecha_evaluacion",epp:"fecha_adquisicion"})[reportSelected]||"fecha";
+ const raw=await getReportRows(reportSelected);
+ const sectors=await getReportRows("sectores");
+ let rows=raw.filter(r=>!bounds||!r[dateField]||(String(r[dateField])>=bounds.start&&String(r[dateField])<=bounds.end));
+ if(sectorId){const sector=sectors.find(s=>String(s.id)===String(sectorId));rows=rows.filter(r=>String(r.sector_id||"")===String(sectorId)||(!r.sector_id&&sector&&String(r.establecimiento_id||"")===String(sector.establecimiento_id||"")))}
+ reportFilteredRows=rows;
+ const org=getOrgName(),issued=new Date().toLocaleDateString("es-AR"),periodLabel=period?new Date(period+"-02T12:00:00").toLocaleDateString("es-AR",{month:"long",year:"numeric"}):"Todos los períodos";
+ const cols=({inspecciones:[["fecha","Fecha"],["tipo","Tipo"],["estado","Estado"],["inspector","Inspector"]],riesgos:[["descripcion","Riesgo identificado"],["nivel_riesgo","Nivel"],["responsable","Responsable"],["fecha_evaluacion","Evaluación"]],accidentes_incidentes:[["fecha","Fecha"],["tipo","Tipo"],["lugar","Lugar"],["estado","Estado"]],mediciones_ambientales:[["fecha","Fecha"],["tipo","Medición"],["parametro","Parámetro"],["valor","Resultado"]],epp:[["nombre","Elemento"],["cantidad","Cantidad"],["estado","Estado"],["marca","Marca"]],gestion:[["fecha","Fecha"],["tipo","Registro"],["estado","Estado"],["observaciones","Observaciones"]]})[reportSelected]||[["fecha","Fecha"],["tipo","Tipo"],["estado","Estado"]];
+ const shown=rows.slice(0,12);
+ let tableRows=shown.map(r=>"<tr>"+cols.map(([k])=>"<td>"+reportEsc(k==="fecha"||k==="fecha_evaluacion"?reportDate(r[k]):r[k])+"</td>").join("")+"</tr>").join("");
+ if(!tableRows)tableRows='<tr><td colspan="'+cols.length+'" style="text-align:center;padding:18px">No hay registros para los filtros seleccionados. Este informe se completará cuando existan datos.</td></tr>';
+ const intro=({inspecciones:"Registro de inspecciones, hallazgos y seguimiento preventivo.",riesgos:"Resumen de peligros identificados y evaluación de riesgos laborales.",accidentes_incidentes:"Registro de sucesos, investigación y seguimiento de acciones.",gestion:"Resumen operativo del período seleccionado y datos disponibles.",epp:"Resumen de elementos de protección personal registrados.",mediciones_ambientales:"Resultados registrados de mediciones en ambientes laborales."})[reportSelected];
+ paper.innerHTML=`<div class="paper-brand"><div style="display:flex;align-items:center;gap:9px"><div class="paper-logo">✚</div><div><strong>${reportEsc(org)}</strong><span>Higiene y Seguridad en el Trabajo</span></div></div><div style="text-align:right"><strong>Informe N.º: HYS-${new Date().getFullYear()}-${String(Date.now()).slice(-5)}</strong><span style="display:block">Emisión: ${issued}</span></div></div>
+ <div class="paper-title">${reportEsc(def.title).toUpperCase()}</div>
+ <div class="paper-section">1. Datos generales</div><table class="paper-table"><tbody><tr><th>Período</th><td>${reportEsc(periodLabel)}</td><th>Sector</th><td>${sectorId?reportEsc($("reportSector").selectedOptions[0]?.textContent):"Todos los sectores"}</td></tr><tr><th>Elaborado por</th><td>Área de Higiene y Seguridad</td><th>Registros</th><td>${rows.length}</td></tr></tbody></table>
+ <p style="line-height:1.5">${reportEsc(intro)}</p>
+ <div class="report-stat-row"><div class="report-stat"><b>${rows.length}</b><span>Registros encontrados</span></div><div class="report-stat"><b>${rows.filter(r=>/abierto|pendiente|en curso|programada/i.test(String(r.estado||""))).length}</b><span>Con seguimiento</span></div><div class="report-stat"><b>${rows.filter(r=>/cerrado|cerrada|cumplido/i.test(String(r.estado||""))).length}</b><span>Finalizados</span></div></div>
+ <div class="paper-section">2. Detalle de registros ${rows.length>12?"(primeros 12 de "+rows.length+")":""}</div><table class="paper-table"><thead><tr>${cols.map(([,label])=>"<th>"+reportEsc(label)+"</th>").join("")}</tr></thead><tbody>${tableRows}</tbody></table>
+ <div class="paper-section">3. Observaciones y recomendaciones</div><div class="paper-note">Revisar los registros pendientes y mantener actualizado el seguimiento de las medidas preventivas. Este documento refleja los datos disponibles en el sistema al momento de su generación.</div>
+ <div class="paper-signatures"><span>Responsable de Higiene y Seguridad</span><span>Autoridad / Responsable del sector</span></div><div class="paper-footer"><span>Sistema de Higiene y Seguridad · Generado ${new Date().toLocaleString("es-AR")}</span><span>Vista previa</span></div>`;
+ $("reportPageLabel").textContent=rows.length>12?"Registros: "+rows.length:"PDF · A4";
+ $("reportStatus").textContent="Vista previa actualizada. "+rows.length+" registro(s) encontrados. La exportación utiliza el cuadro de impresión del navegador.";
+}
+function downloadReportPdf(){
+ const paper=$("reportPaper");if(!paper)return;
+ const def=reportDefinitions.find(d=>d.id===reportSelected)||reportDefinitions[0];
+ const w=window.open("","_blank");if(!w){$("reportStatus").textContent="El navegador bloqueó la ventana. Permití ventanas emergentes para guardar el PDF.";return}
+ const css=[...document.querySelectorAll("style")].map(x=>x.textContent).join("\n");
+ w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>'+reportEsc(def.title)+'</title><style>'+css+' body{background:#fff!important;padding:12mm!important}.report-paper{max-width:190mm;margin:auto;box-shadow:none;border:0;padding:0!important;font-size:10pt}@page{size:A4;margin:12mm}</style></head><body><article class="report-paper">'+paper.innerHTML+'</article><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>');
+ w.document.close();
+}
+async function shareReport(){
+ const def=reportDefinitions.find(d=>d.id===reportSelected)||reportDefinitions[0];
+ const textShare=def.title+" — "+getOrgName()+" — "+($("reportPeriod")?.value||"Todos los períodos");
+ if(navigator.share){try{await navigator.share({title:def.title,text:textShare});return}catch(e){if(e.name==="AbortError")return}}
+ try{await navigator.clipboard.writeText(textShare);$("reportStatus").textContent="Resumen copiado para compartir."}catch(e){$("reportStatus").textContent="Podés usar Imprimir o Descargar PDF para guardar el informe y compartirlo."}
 }
 
 function renderLegislation(){
