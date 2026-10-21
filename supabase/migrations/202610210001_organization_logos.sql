@@ -60,6 +60,18 @@ on conflict (id) do update set
   file_size_limit = excluded.file_size_limit,
   allowed_mime_types = excluded.allowed_mime_types;
 
+drop policy if exists "Organization members read logos" on storage.objects;
+create policy "Organization members read logos"
+  on storage.objects for select to authenticated
+  using (
+    bucket_id = 'logos-establecimientos'
+    and exists (
+      select 1 from public.usuarios_organizaciones uo
+      where uo.organizacion_id::text = (storage.foldername(name))[1]
+        and uo.usuario_id = auth.uid() and uo.activo = true
+    )
+  );
+
 drop policy if exists "Organization members upload logos" on storage.objects;
 create policy "Organization members upload logos"
   on storage.objects for insert to authenticated
