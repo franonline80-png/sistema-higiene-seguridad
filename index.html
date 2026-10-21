@@ -675,28 +675,35 @@ return '<section class="panel hazard-category-panel"><div class="page-title"><di
 }
 function setupHazardCategoryCards(){const input=$("f_tipo");if(!input)return;const refresh=()=>document.querySelectorAll("[data-hazard-category]").forEach(b=>b.classList.toggle("selected",b.dataset.hazardCategory===input.value));document.querySelectorAll("[data-hazard-category]").forEach(b=>b.onclick=()=>{input.value=b.dataset.hazardCategory;refresh();input.dispatchEvent(new Event("change",{bubbles:true}));$("f_nombre")?.focus()});input.addEventListener("change",refresh);refresh()}
 function setupRiskDangerSelector(selectedId){
- const cat=$("riskDangerCategory"),sel=$("f_peligro_id"),riskSel=$("riskAssociatedSelect"),desc=$("f_descripcion");
- if(!cat||!sel)return;
- const rows=moduleCache.peligros||[],catalog=Array.isArray(ASSOCIATED_RISK_CATALOG)?ASSOCIATED_RISK_CATALOG:[];
- const rowForCatalogHazard=x=>rows.find(r=>String(r.tipo||"").trim()===String(x[0]).trim()&&String(r.nombre||"").trim().toLocaleLowerCase("es")===String(x[1]).trim().toLocaleLowerCase("es"));
- const renderCatalog=()=>{
-  const out=$("riskCatalogResults"),note=$("riskCatalogFilterNote");if(!out)return;
-  const category=cat.value,matching=catalog.filter(x=>!category||String(x[0]).trim()===category);
-  if(note)note.textContent=category?"Catálogo filtrado por categoría: "+category+". "+matching.length+" riesgo(s) disponibles.":"Mostrando todos los riesgos del catálogo maestro ("+matching.length+").";
-  out.innerHTML=matching.length?'<div class="risk-catalog-result-count">'+matching.length+' riesgo(s)</div><div class="risk-catalog-result-list">'+matching.map((x,i)=>'<button type="button" class="risk-catalog-result" data-risk-index="'+i+'"><span class="risk-catalog-result-hazard">'+escapeHtml(x[1])+'</span><strong>'+escapeHtml(x[2])+'</strong><small>'+escapeHtml(x[0])+'</small></button>').join("")+'</div>':'<div class="risk-catalog-empty">No hay riesgos registrados para esta categoría.</div>';
-  out.querySelectorAll("[data-risk-index]").forEach(btn=>btn.addEventListener("click",()=>{
-   const x=matching[Number(btn.getAttribute("data-risk-index"))];if(!x)return;
-   const hazard=rowForCatalogHazard(x);
-   if(hazard){sel.value=String(hazard.id);sel.dispatchEvent(new Event("change",{bubbles:true}))}
-   if(riskSel){riskSel.innerHTML='<option value="'+escapeHtml(x[2])+'">'+escapeHtml(x[2])+'</option>';riskSel.value=x[2];riskSel.dispatchEvent(new Event("change",{bubbles:true}))}
-   if(desc){desc.value=x[2];desc.dispatchEvent(new Event("input",{bubbles:true}))}
-   out.querySelectorAll(".risk-catalog-result").forEach(el=>el.classList.toggle("is-selected",el===btn));
-  }));
+ const cat=$("riskDangerCategory"),search=$("riskDangerSearch"),sel=$("f_peligro_id"),riskSel=$("riskAssociatedSelect"),desc=$("f_descripcion");
+ if(!cat||!search||!sel)return;
+ const rows=moduleCache.peligros||[];
+ const catalog=Array.isArray(ASSOCIATED_RISK_CATALOG)?ASSOCIATED_RISK_CATALOG:[];
+ const getRisks=row=>{
+   if(!row)return [];
+   const stored=String(row.descripcion||"");
+   if(stored.startsWith("Riesgos asociados:"))return stored.slice("Riesgos asociados:".length).split(";").map(x=>x.trim()).filter(Boolean);
+   return [...new Set(catalog.filter(x=>String(x[0]).trim()===String(row.tipo||"").trim()&&String(x[1]).trim().toLocaleLowerCase("es")===String(row.nombre||"").trim().toLocaleLowerCase("es")).map(x=>x[2]))];
  };
  const selected=rows.find(r=>String(r.id)===String(selectedId||sel.value));if(selected?.tipo)cat.value=selected.tipo;
- cat.onchange=renderCatalog;
+ const renderCatalog=(row,risks)=>{
+   const out=$("riskCatalogResults"),note=$("riskCatalogFilterNote");if(!out)return;
+   const category=cat.value;const matching=row?catalog.filter(x=>String(x[0]).trim()===String(row.tipo||"").trim()&&String(x[1]).trim().toLocaleLowerCase("es")===String(row.nombre||"").trim().toLocaleLowerCase("es")):catalog.filter(x=>!category||String(x[0]).trim()===category);
+   if(note)note.textContent=row?"Catálogo filtrado por el peligro: "+(row.nombre||"")+". "+matching.length+" riesgo(s) asociado(s).":(category?"Catálogo filtrado por categoría: "+category+". ":"")+"Mostrando "+matching.length+" riesgo(s) del catálogo maestro.";
+   out.innerHTML=matching.length?'<div class="risk-catalog-result-count">'+matching.length+' riesgo(s)</div><div class="risk-catalog-result-list">'+matching.map(x=>'<button type="button" class="risk-catalog-result" data-risk-value="'+escapeHtml(x[2])+'"><span class="risk-catalog-result-hazard">'+escapeHtml(x[1])+'</span><strong>'+escapeHtml(x[2])+'</strong><small>'+escapeHtml(x[0])+'</small></button>').join("")+'</div>':'<div class="risk-catalog-empty">No hay riesgos asociados cargados para este peligro en el catálogo maestro.</div>';
+   out.querySelectorAll("[data-risk-value]").forEach(btn=>btn.addEventListener("click",()=>{if(riskSel){riskSel.value=btn.getAttribute("data-risk-value")||"";riskSel.dispatchEvent(new Event("change",{bubbles:true}));$("riskTabSelect")?.click()}}));
+ };
+ const showAssociated=()=>{
+   const row=rows.find(r=>String(r.id)===String(sel.value)),risks=getRisks(row);
+   if(riskSel){const previous=riskSel.value;riskSel.innerHTML='<option value="">Seleccione un riesgo asociado...</option>'+risks.map(r=>'<option value="'+escapeHtml(r)+'">'+escapeHtml(r)+'</option>').join("");if(risks.includes(previous))riskSel.value=previous;riskSel.disabled=!row||!risks.length;const note=$("riskAssociatedNote");if(note)note.textContent=!row?"Primero seleccioná un peligro.":risks.length?risks.length+" riesgo(s) asociado(s) disponible(s).":"Este peligro todavía no tiene riesgos asociados en el catálogo."}
+   const panel=$("riskAssociatedPanel");if(panel){panel.innerHTML=row?(risks.length?'<strong>Riesgos asociados a '+escapeHtml(row.nombre||"el peligro")+'</strong><ul style="margin:6px 0 0;padding-left:20px">'+risks.map(r=>'<li>'+escapeHtml(r)+'</li>').join("")+'</ul>':'Este peligro todavía no tiene riesgos asociados cargados.'):"Seleccioná un peligro para ver sus riesgos asociados."}
+   renderCatalog(row,risks);
+ };
+ const filter=()=>{const term=search.value.trim().toLocaleLowerCase("es"),category=cat.value;let visible=0;Array.from(sel.options).forEach((o,i)=>{if(i===0){o.hidden=false;return}const row=rows.find(r=>String(r.id)===o.value);const ok=!!row&&(!category||String(row.tipo||"")===category)&&(!term||String(row.nombre||"").toLocaleLowerCase("es").includes(term)||String(row.descripcion||"").toLocaleLowerCase("es").includes(term));o.hidden=!ok;if(ok)visible++});if(sel.value&&sel.selectedOptions[0]?.hidden)sel.value="";const note=$("riskDangerNote");if(note)note.textContent?note.textContent=rows.length?visible+" peligro(s) disponible(s) con estos filtros.":"No hay peligros cargados en la base de datos.":null;showAssociated()};
+ cat.onchange=filter;search.oninput=filter;sel.onchange=()=>{const row=rows.find(r=>String(r.id)===sel.value);if(row?.tipo)cat.value=row.tipo;showAssociated()};
  if(riskSel)riskSel.onchange=()=>{if(desc&&riskSel.value){desc.value=riskSel.value;desc.dispatchEvent(new Event("input",{bubbles:true}))}};
- renderCatalog();
+
+ filter();
 }
 const TRAIN_PREFIX="CAP_PLAN_V2:";
 const TRAIN_TYPE="PLAN_ANUAL";
