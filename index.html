@@ -249,6 +249,54 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 @media(max-width:600px){.report-grid{grid-template-columns:1fr}.report-card{min-height:120px}.report-card img{width:78px;height:96px;flex-basis:78px}.reports-filters{grid-template-columns:1fr}.report-actions{grid-template-columns:1fr}.report-paper{padding:14px 11px}.report-preview-wrap{padding:8px}}
 @media print{body *{visibility:hidden!important}#reportPrintRoot,#reportPrintRoot *{visibility:visible!important}#reportPrintRoot{position:absolute;left:0;top:0;width:100%;background:#fff!important}.report-paper{border:0;box-shadow:none;padding:10mm;min-height:0;font-size:10pt}.paper-title{print-color-adjust:exact;-webkit-print-color-adjust:exact}.paper-table th,.paper-title{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
 
+
+/* Gestión de riesgos: panel visual y evaluación estructurada */
+.risk-hero{position:relative;overflow:hidden;background:linear-gradient(120deg,#10243a 0%,#164e63 58%,#2563eb 100%);color:#fff;border-radius:18px;padding:24px;margin:0 0 18px;box-shadow:0 12px 28px #0f27401c}
+.risk-hero:after{content:"";position:absolute;width:240px;height:240px;border:1px solid #ffffff20;border-radius:50%;right:-70px;top:-115px;box-shadow:0 0 0 28px #ffffff0a,0 0 0 58px #ffffff08}
+.risk-hero-content{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.risk-eyebrow{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#bfdbfe;font-weight:800;margin:0 0 8px}
+.risk-hero h3{font-size:24px;margin:0 0 8px;color:#fff}
+.risk-hero p{max-width:720px;margin:0;color:#dbeafe;line-height:1.55;font-size:13px}
+.risk-hero-mark{height:74px;width:74px;border-radius:20px;background:#ffffff18;border:1px solid #ffffff30;display:grid;place-items:center;font-size:37px;flex-shrink:0}
+.risk-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:0 0 18px}
+.risk-metric{background:#fff;border:1px solid var(--line);border-radius:13px;padding:16px;min-width:0;box-shadow:0 3px 10px #0f274008}
+.risk-metric-top{display:flex;justify-content:space-between;gap:8px;align-items:center;color:var(--muted);font-size:12px;font-weight:700}
+.risk-metric-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:#eff6ff;font-size:18px}
+.risk-metric-value{font-size:27px;line-height:1.2;font-weight:800;letter-spacing:-.7px;margin:10px 0 4px;color:var(--navy)}
+.risk-metric-foot{font-size:11px;color:var(--muted)}
+.risk-workspace{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,.8fr);gap:16px;align-items:start;margin-bottom:18px}
+.risk-matrix-card,.risk-guidance-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}
+.risk-card-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
+.risk-card-heading h3{margin:0 0 4px;font-size:16px}
+.risk-card-heading p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+.risk-matrix{border-collapse:separate;border-spacing:4px;width:100%;font-size:11px;background:transparent}
+.risk-matrix th{position:static;background:transparent;color:var(--muted);font-size:10px;text-align:center;padding:5px;border:0}
+.risk-matrix td{padding:9px 4px;text-align:center;border:0;border-radius:6px;font-weight:800;max-width:none;white-space:nowrap}
+.risk-low{background:#dcfce7;color:#166534}.risk-medium{background:#fef3c7;color:#92400e}.risk-high{background:#fed7aa;color:#9a3412}.risk-critical{background:#fee2e2;color:#991b1b}
+.risk-matrix-legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;color:var(--muted);font-size:10px}
+.risk-legend-item{display:flex;align-items:center;gap:5px}.risk-legend-dot{width:9px;height:9px;border-radius:3px}
+.risk-guidance-list{display:grid;gap:12px;margin-top:12px}
+.risk-guidance-item{display:flex;gap:10px;align-items:flex-start;font-size:12px;line-height:1.5;color:#475569}
+.risk-guidance-item b{display:block;color:var(--text);font-size:12px;margin-bottom:2px}
+.risk-guidance-icon{width:30px;height:30px;display:grid;place-items:center;flex-shrink:0;border-radius:9px;background:#eff6ff}
+.risk-form-panel{border-top:4px solid #2563eb}
+.risk-form-panel .risk-form-subtitle{font-size:12px;color:var(--muted);margin:-5px 0 18px;line-height:1.5}
+.risk-form-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 22px}
+.risk-form-grid>div:has(.hazard-reference){grid-column:1/-1}
+.risk-form-grid>div:has(#f_nivel_riesgo){background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:14px}
+.risk-form-grid>div:has(#f_nivel_riesgo) input{margin-bottom:0}
+.risk-form-grid #f_nivel_riesgo{font-size:18px;font-weight:800}
+.risk-form-panel .hazard-reference{padding:16px;border:1px solid #dbeafe;border-radius:12px;background:#f8fbff}
+.risk-form-panel .hazard-filter-row{gap:12px}
+.risk-form-panel .hazard-note{background:#fff;border-color:#dbeafe}
+.risk-catalog-callout{display:flex;align-items:center;gap:12px;padding:13px 14px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:11px;margin:12px 0;color:#1e3a5f}
+.risk-catalog-callout .risk-catalog-symbol{font-size:22px}
+.risk-catalog-callout p{font-size:12px;line-height:1.5;margin:3px 0 0;color:#475569}
+.risk-catalog-callout .btn{margin-left:auto;flex-shrink:0}
+.risk-list-panel h3{display:flex;align-items:center;gap:8px}
+@media(max-width:900px){.risk-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.risk-workspace{grid-template-columns:1fr}}
+@media(max-width:560px){.risk-hero{padding:18px}.risk-hero h3{font-size:20px}.risk-hero-mark{width:54px;height:54px;font-size:27px}.risk-metrics{gap:8px}.risk-metric{padding:12px}.risk-metric-value{font-size:23px}.risk-form-grid{grid-template-columns:1fr}.risk-form-grid>div:has(.hazard-reference){grid-column:auto}.risk-catalog-callout{align-items:flex-start;flex-wrap:wrap}.risk-catalog-callout .btn{margin-left:0;width:100%}}
+
 </style>
 </head>
 <body>
@@ -681,7 +729,7 @@ async function renderField(field,value,moduleId){
   if(type==="checkbox")control=`<input id="${id}" name="${escapeHtml(key)}" type="checkbox" style="width:auto;margin:4px 0 14px" ${value===false?"":"checked"}>`;
   else if(moduleId==="riesgos"&&key==="peligro_id"){
     const rows=await fetchRows("peligros");
-    control='<div class="hazard-reference"><div class="hazard-filter-row"><div><label for="riskDangerCategory">Filtrar por categoría</label><select id="riskDangerCategory"><option value="">Todas las categorías</option>'+HAZARD_CATEGORIES.map(c=>'<option value="'+escapeHtml(c.value)+'">'+escapeHtml(c.value)+'</option>').join("")+'</select></div><div><label for="riskDangerSearch">Buscar peligro</label><input id="riskDangerSearch" type="search" placeholder="Ej.: ruido, carga, caída..." autocomplete="off"></div></div><select id="'+id+'" name="'+escapeHtml(key)+'" '+req+'><option value="">Seleccione un peligro...</option>'+rows.map(r=>'<option value="'+escapeHtml(r.id)+'" data-category="'+escapeHtml(r.categoria||r.tipo||"")+'" '+(String(r.id)===String(value)?"selected":"")+'">'+escapeHtml(r.nombre||"Peligro sin nombre")+((r.categoria||r.tipo)?" · "+escapeHtml(r.categoria||r.tipo):"")+'</option>').join("")+'</select>'+(rows.length?"":'<div class="actions" style="margin-top:10px"><button type="button" class="btn btn-blue" id="importRiskCatalogFromForm" onclick="importAssociatedRiskCatalog()">Cargar catálogo de peligros y riesgos asociados</button></div><p class="muted" style="font-size:12px;margin-top:6px">Este botón incorpora el mismo catálogo maestro disponible en el módulo Peligros; no es una segunda lista.</p>')+'<div style="margin-top:12px"><label for="riskAssociatedSelect">Riesgos asociados *</label><select id="riskAssociatedSelect" name="riesgo_asociado" required><option value="">Seleccione primero un peligro...</option></select><p id="riskAssociatedNote" class="muted" style="font-size:12px;margin-top:5px">Los riesgos disponibles dependen del peligro seleccionado.</p></div><div id="riskAssociatedPanel" class="hazard-note" style="margin-top:10px">Seleccioná un peligro para ver sus riesgos asociados.</div><p id="riskDangerNote" class="hazard-note">'+(rows.length?rows.length+" peligro(s) disponibles. Filtrá por categoría o escribí para buscar.":"Todavía no hay peligros cargados. Entrá en Peligros para crear registros o incorporar el catálogo desde tu archivo.")+'</p></div>';
+    control='<div class="hazard-reference"><div class="hazard-filter-row"><div><label for="riskDangerCategory">Filtrar por categoría</label><select id="riskDangerCategory"><option value="">Todas las categorías</option>'+HAZARD_CATEGORIES.map(c=>'<option value="'+escapeHtml(c.value)+'">'+escapeHtml(c.value)+'</option>').join("")+'</select></div><div><label for="riskDangerSearch">Buscar peligro</label><input id="riskDangerSearch" type="search" placeholder="Ej.: ruido, carga, caída..." autocomplete="off"></div></div><select id="'+id+'" name="'+escapeHtml(key)+'" '+req+'><option value="">Seleccione un peligro...</option>'+rows.map(r=>'<option value="'+escapeHtml(r.id)+'" data-category="'+escapeHtml(r.categoria||r.tipo||"")+'" '+(String(r.id)===String(value)?"selected":"")+'">'+escapeHtml(r.nombre||"Peligro sin nombre")+((r.categoria||r.tipo)?" · "+escapeHtml(r.categoria||r.tipo):"")+'</option>').join("")+'</select>'+(rows.length?"":'<div class="risk-catalog-callout"><span class="risk-catalog-symbol">📚</span><div><strong>El catálogo de peligros está vacío</strong><p>Incorporá el catálogo maestro para habilitar la selección de peligros y sus riesgos relacionados.</p></div><button type="button" class="btn btn-blue" id="importRiskCatalogFromForm" onclick="importAssociatedRiskCatalog()">Cargar catálogo</button></div>')+'<div style="margin-top:12px"><label for="riskAssociatedSelect">Riesgos asociados *</label><select id="riskAssociatedSelect" name="riesgo_asociado" required><option value="">Seleccione primero un peligro...</option></select><p id="riskAssociatedNote" class="muted" style="font-size:12px;margin-top:5px">Los riesgos disponibles dependen del peligro seleccionado.</p></div><div id="riskAssociatedPanel" class="hazard-note" style="margin-top:10px">Seleccioná un peligro para ver sus riesgos asociados.</div><p id="riskDangerNote" class="hazard-note">'+(rows.length?rows.length+" peligro(s) disponibles. Filtrá por categoría o escribí para buscar.":"Todavía no hay peligros cargados. Entrá en Peligros para crear registros o incorporar el catálogo desde tu archivo.")+'</p></div>';
   }else if(type.startsWith("ref:")){
     const opts=await fetchReferenceOptions(type.split(":")[1]);
     control=`<select id="${id}" name="${escapeHtml(key)}" ${req}><option value="">Seleccione...</option>${opts.map(o=>`<option value="${escapeHtml(o.id)}" ${o.id===value?"selected":""}>${escapeHtml(o.label)}</option>`).join("")}</select>`;
@@ -866,9 +914,32 @@ async function bulkConfirmImport(){
   finally{button.disabled=false}
 }
 
+
+function riskManagementIntro(){
+ const rows=moduleCache.riesgos||[],hazards=moduleCache.peligros||[];
+ const active=rows.filter(r=>r.activo!==false&&String(r.activo)!=="false").length;
+ const high=rows.filter(r=>{const n=Number(r.nivel_riesgo)||Number(r.Probabilidad)*Number(r.consecuencia);return n>=15}).length;
+ const matrix=Array.from({length:5},(_,i)=>{const p=5-i;return '<tr><th>'+p+'</th>'+Array.from({length:5},(_,j)=>{const score=p*(j+1),cls=score<=4?'risk-low':score<=9?'risk-medium':score<=14?'risk-high':'risk-critical';return '<td class="'+cls+'" title="Probabilidad '+p+' × consecuencia '+(j+1)+' = '+score+'">'+score+'</td>'}).join('')+'</tr>'}).join('');
+ return '<section class="risk-hero"><div class="risk-hero-content"><div><div class="risk-eyebrow">Sistema de prevención · Evaluación de riesgos</div><h3>Gestión de riesgos laborales</h3><p>Identificá los peligros por puesto, evaluá la probabilidad y la consecuencia, priorizá las medidas preventivas y dejá trazabilidad de cada evaluación.</p></div><div class="risk-hero-mark" aria-hidden="true">🛡️</div></div></section>'+
+ '<section class="risk-metrics" aria-label="Indicadores de gestión de riesgos">'+
+ '<article class="risk-metric"><div class="risk-metric-top"><span>Evaluaciones registradas</span><span class="risk-metric-icon">▤</span></div><div class="risk-metric-value" id="riskMetricTotal">'+rows.length+'</div><div class="risk-metric-foot">Registros en el sistema</div></article>'+
+ '<article class="risk-metric"><div class="risk-metric-top"><span>Peligros del catálogo</span><span class="risk-metric-icon">⚠️</span></div><div class="risk-metric-value" id="riskMetricHazards">'+hazards.length+'</div><div class="risk-metric-foot">Referencias para evaluar</div></article>'+
+ '<article class="risk-metric"><div class="risk-metric-top"><span>Evaluaciones activas</span><span class="risk-metric-icon">✓</span></div><div class="risk-metric-value" id="riskMetricActive">'+active+'</div><div class="risk-metric-foot">Seguimiento preventivo</div></article>'+
+ '<article class="risk-metric"><div class="risk-metric-top"><span>Prioridad alta/crítica</span><span class="risk-metric-icon">⏱</span></div><div class="risk-metric-value" id="riskMetricHigh">'+high+'</div><div class="risk-metric-foot">Puntaje igual o superior a 15</div></article></section>'+
+ '<section class="risk-workspace"><div class="risk-matrix-card"><div class="risk-card-heading"><div><h3>Matriz de valoración</h3><p>Probabilidad × consecuencia · Referencia visual de prioridad</p></div><span class="badge">1–25</span></div><table class="risk-matrix" aria-label="Matriz de riesgo de probabilidad por consecuencia"><thead><tr><th>Prob. ↓ / Cons. →</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead><tbody>'+matrix+'</tbody></table><div class="risk-matrix-legend"><span class="risk-legend-item"><i class="risk-legend-dot risk-low"></i>Bajo (1–4)</span><span class="risk-legend-item"><i class="risk-legend-dot risk-medium"></i>Moderado (5–9)</span><span class="risk-legend-item"><i class="risk-legend-dot risk-high"></i>Alto (10–14)</span><span class="risk-legend-item"><i class="risk-legend-dot risk-critical"></i>Crítico (15–25)</span></div></div>'+
+ '<aside class="risk-guidance-card"><div class="risk-card-heading"><div><h3>Flujo de evaluación</h3><p>Una evaluación útil termina en acciones verificables.</p></div></div><div class="risk-guidance-list"><div class="risk-guidance-item"><span class="risk-guidance-icon">1</span><div><b>Identificar</b>Seleccioná puesto, categoría y peligro asociado.</div></div><div class="risk-guidance-item"><span class="risk-guidance-icon">2</span><div><b>Valorar</b>Asigná probabilidad y consecuencia según los criterios de la organización.</div></div><div class="risk-guidance-item"><span class="risk-guidance-icon">3</span><div><b>Controlar</b>Registrá las medidas existentes y las acciones propuestas con responsable y fecha.</div></div></div></aside></section>';
+}
+function updateRiskOverview(){
+ const rows=moduleCache.riesgos||[],hazards=moduleCache.peligros||[];
+ const active=rows.filter(r=>r.activo!==false&&String(r.activo)!=="false").length;
+ const high=rows.filter(r=>{const n=Number(r.nivel_riesgo)||Number(r.Probabilidad)*Number(r.consecuencia);return n>=15}).length;
+ [['riskMetricTotal',rows.length],['riskMetricHazards',hazards.length],['riskMetricActive',active],['riskMetricHigh',high]].forEach(([id,value])=>{const el=$(id);if(el)el.textContent=String(value)});
+}
+
 async function renderCrud(id){
   const cfg=configs[id];editing=null;
-  $("view").innerHTML=`<div class="page-title"><div><h2>${escapeHtml(cfg.title)}</h2><p>Registros de ${escapeHtml(getOrgName())}. Los permisos se aplican mediante Supabase.</p></div><button class="btn btn-blue" id="reloadModule" type="button">↻ Actualizar listado</button></div>
+  $("view").innerHTML=`<div class="page-title ${id==="riesgos"?"risk-page-heading":""}"><div><h2>${escapeHtml(cfg.title)}</h2><p>Registros de ${escapeHtml(getOrgName())}. Los permisos se aplican mediante Supabase.</p></div><button class="btn btn-blue" id="reloadModule" type="button">↻ Actualizar listado</button></div>
+  ${id==="riesgos"?riskManagementIntro():""}
   ${id==="personas"?`<div class="panel" id="bulkPeoplePanel">
   <h3>Alta masiva desde Excel</h3>
   <p class="muted">Importá varias personas a la vez. Primero descargá la plantilla, elegí el establecimiento, cargá el archivo y validá las filas. No se guardará nada hasta que confirmes.</p>
@@ -886,8 +957,8 @@ async function renderCrud(id){
   <div id="bulkPreview" class="table-wrap" style="margin-top:12px"></div>
 </div>`:""}
   ${id==="peligros"?hazardCategoryCards():""}
-  <div class="panel"><h3 id="formTitle">Registrar ${escapeHtml(cfg.title.toLowerCase())}</h3><form id="recordForm"><div id="formFields" class="form-grid"></div><div class="actions"><button class="btn btn-green" type="submit" id="saveRecord">Guardar registro</button><button class="btn btn-light hidden" id="cancelEdit" type="button">Cancelar edición</button></div><div id="formStatus" class="status" role="status"></div></form></div>
-  <div class="panel"><h3>Listado</h3><div class="toolbar"><input id="tableSearch" placeholder="Buscar en los registros..." aria-label="Buscar"><span id="rowCount" class="muted"></span>${id==="personas"?`<label for="peoplePageSize" class="muted">Mostrar</label><select id="peoplePageSize" aria-label="Cantidad de personas por página"><option value="5">5</option><option value="10" selected>10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select><span class="muted">por página</span>`:""}</div><div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"><tr><td class="empty">Cargando...</td></tr></tbody></table></div><div id="tableStatus" class="status" role="status"></div>${id==="personas"?`<div id="peoplePagination" class="toolbar" style="justify-content:flex-end;align-items:center;gap:8px;margin-top:12px"></div>`:""}</div>`;
+  <div class="panel ${id==="riesgos"?"risk-form-panel":""}"><h3 id="formTitle">${id==="riesgos"?"＋ Nueva evaluación de riesgo":"Registrar "+escapeHtml(cfg.title.toLowerCase())}</h3>${id==="riesgos"?'<p class="risk-form-subtitle">Completá la identificación, valoración y controles. Los campos marcados con * son obligatorios.</p>':""}<form id="recordForm"><div id="formFields" class="form-grid ${id==="riesgos"?"risk-form-grid":""}"></div><div class="actions"><button class="btn btn-green" type="submit" id="saveRecord">Guardar registro</button><button class="btn btn-light hidden" id="cancelEdit" type="button">Cancelar edición</button></div><div id="formStatus" class="status" role="status"></div></form></div>
+  <div class="panel ${id==="riesgos"?"risk-list-panel":""}"><h3>${id==="riesgos"?"▤ Evaluaciones registradas":"Listado"}</h3><div class="toolbar"><input id="tableSearch" placeholder="Buscar en los registros..." aria-label="Buscar"><span id="rowCount" class="muted"></span>${id==="personas"?`<label for="peoplePageSize" class="muted">Mostrar</label><select id="peoplePageSize" aria-label="Cantidad de personas por página"><option value="5">5</option><option value="10" selected>10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select><span class="muted">por página</span>`:""}</div><div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"><tr><td class="empty">Cargando...</td></tr></tbody></table></div><div id="tableStatus" class="status" role="status"></div>${id==="personas"?`<div id="peoplePagination" class="toolbar" style="justify-content:flex-end;align-items:center;gap:8px;margin-top:12px"></div>`:""}</div>`;
   for(const f of cfg.fields)$("formFields").insertAdjacentHTML("beforeend",await renderField(f,f[2]==="checkbox"?true:"",id));
   if(id==="peligros")setupHazardCategoryCards();
   if(id==="riesgos")setupRiskDangerSelector();
@@ -917,7 +988,7 @@ async function loadModuleRows(id){
     moduleCache[id]=rows;
     const refTables=[...new Set(configs[id].fields.filter(f=>String(f[2]).startsWith("ref:")).map(f=>f[2].slice(4)))];
     await Promise.all(refTables.map(async table=>{moduleCache[table]=await fetchRows(table)}));
-    if(id==="riesgos")setupRiskDangerSelector($("f_peligro_id")?.value);
+    if(id==="riesgos"){setupRiskDangerSelector($("f_peligro_id")?.value);updateRiskOverview()}
     $("tableStatus").textContent=`Se encontraron ${rows.length} registro(s).`;
     renderTable(id);if(id==="peligros"){$("view").querySelector(".hazard-category-panel")?.remove();$("view").querySelector(".page-title")?.insertAdjacentHTML("afterend",hazardCategoryCards());setupHazardCategoryCards()}
   }catch(e){console.error(e);$("tableStatus").textContent="No se pudo consultar: "+e.message;$("tableBody").innerHTML='<tr><td class="empty">No se pudieron cargar los datos. Verificá la conexión y RLS.</td></tr>'}
