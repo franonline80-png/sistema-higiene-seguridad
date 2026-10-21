@@ -555,7 +555,7 @@ function getOrgName(){return organizations.find(o=>o.id===activeOrg)?.nombre||"O
 let activeOrgLogoPath=null;
 function clearOrgLogoPreview(){
  const img=$("orgLogoPreview");img.removeAttribute("src");img.style.display="none";
- $("orgLogoRemove").hidden=true;activeOrgLogoPath=null;
+ $("orgLogoRemove").hidden=true;activeOrgLogoPath=null;$("orgLogoButton").textContent="Cargar logo";
 }
 async function loadOrganizationLogo(){
  clearOrgLogoPreview();
@@ -566,7 +566,7 @@ async function loadOrganizationLogo(){
   if(!data?.object_path)return;
   activeOrgLogoPath=data.object_path;
   const {data:publicData}=db.storage.from("logos-establecimientos").getPublicUrl(data.object_path);
-  img.src=publicData.publicUrl;img.style.display="block";$("orgLogoRemove").hidden=false;
+  img.src=publicData.publicUrl;img.style.display="block";$("orgLogoRemove").hidden=false;$("orgLogoButton").textContent="Cambiar logo";
   img.onerror=()=>{img.style.display="none";$("orgLogoRemove").hidden=true};
  }catch(e){console.warn("No se pudo cargar el logo del establecimiento. Verificá que la migración de logos esté aplicada.",e)}
 }
