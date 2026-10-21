@@ -297,6 +297,94 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 @media(max-width:900px){.risk-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.risk-workspace{grid-template-columns:1fr}}
 @media(max-width:560px){.risk-hero{padding:18px}.risk-hero h3{font-size:20px}.risk-hero-mark{width:54px;height:54px;font-size:27px}.risk-metrics{gap:8px}.risk-metric{padding:12px}.risk-metric-value{font-size:23px}.risk-form-grid{grid-template-columns:1fr}.risk-form-grid>div:has(.hazard-reference){grid-column:auto}.risk-catalog-callout{align-items:flex-start;flex-wrap:wrap}.risk-catalog-callout .btn{margin-left:0;width:100%}}
 
+
+/* Rediseño integral de Gestión de riesgos: tablero de trabajo */
+.risk-dashboard{color:var(--text);display:grid;gap:18px}
+.risk-topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:4px}
+.risk-topbar h2{margin:0 0 5px;font-size:25px;letter-spacing:-.5px}
+.risk-topbar p{margin:0;color:var(--muted);font-size:13px}
+.risk-top-actions{display:flex;gap:9px;flex-wrap:wrap}
+.risk-primary-action{background:#2563eb;color:#fff;border:0;border-radius:9px;padding:11px 15px;font-weight:750;box-shadow:0 5px 12px #2563eb22}
+.risk-primary-action:hover{background:#1d4ed8}
+.risk-hero{background:linear-gradient(115deg,#10243a 0%,#153e5a 62%,#2563eb 100%);color:#fff;border-radius:15px;padding:23px 25px;position:relative;overflow:hidden;box-shadow:0 9px 22px #0f274012}
+.risk-hero:after{content:"";position:absolute;width:235px;height:235px;border:1px solid #ffffff20;border-radius:50%;right:-60px;top:-130px;box-shadow:0 0 0 30px #ffffff08,0 0 0 60px #ffffff06}
+.risk-hero-content{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.risk-eyebrow{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#bfdbfe;font-weight:800;margin:0 0 8px}
+.risk-hero h3{font-size:23px;margin:0 0 8px;color:#fff}
+.risk-hero p{max-width:760px;margin:0;color:#dbeafe;line-height:1.6;font-size:13px}
+.risk-hero-mark{height:66px;width:66px;border-radius:18px;background:#ffffff16;border:1px solid #ffffff30;display:grid;place-items:center;font-size:33px;flex-shrink:0}
+.risk-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:0}
+.risk-metric{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0;box-shadow:0 3px 10px #0f274006}
+.risk-metric-top{display:flex;justify-content:space-between;gap:8px;align-items:center;color:var(--muted);font-size:11px;font-weight:750}
+.risk-metric-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:#eff6ff;font-size:17px}
+.risk-metric-value{font-size:28px;line-height:1.2;font-weight:850;letter-spacing:-.8px;margin:11px 0 5px;color:#142b45}
+.risk-metric-foot{font-size:11px;color:var(--muted)}
+.risk-analysis-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr);gap:15px;align-items:stretch}
+.risk-widget{background:#fff;border:1px solid var(--line);border-radius:13px;padding:18px;min-width:0}
+.risk-widget-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
+.risk-widget-head h3{font-size:15px;margin:0 0 5px;color:#172b43}
+.risk-widget-head p{font-size:11px;line-height:1.5;color:var(--muted);margin:0}
+.risk-matrix{border-collapse:separate;border-spacing:4px;width:100%;font-size:11px;background:transparent}
+.risk-matrix th{position:static;background:transparent;color:var(--muted);font-size:10px;text-align:center;padding:5px 2px;border:0}
+.risk-matrix td{padding:10px 3px;text-align:center;border:0;border-radius:6px;font-weight:800;max-width:none;white-space:nowrap}
+.risk-low{background:#dcfce7;color:#166534}.risk-medium{background:#fef3c7;color:#92400e}.risk-high{background:#fed7aa;color:#9a3412}.risk-critical{background:#fee2e2;color:#991b1b}
+.risk-legend{display:flex;gap:9px 13px;flex-wrap:wrap;margin-top:12px;color:var(--muted);font-size:10px}
+.risk-legend-item{display:flex;align-items:center;gap:5px}.risk-legend-dot{width:9px;height:9px;border-radius:3px}
+.risk-distribution{display:grid;gap:17px;padding:3px 0 2px}
+.risk-distribution-row{display:grid;grid-template-columns:98px minmax(60px,1fr) 28px;gap:10px;align-items:center;font-size:11px}
+.risk-distribution-label{color:#475569;font-weight:700}
+.risk-distribution-track{height:9px;border-radius:20px;background:#edf2f7;overflow:hidden}
+.risk-distribution-bar{height:100%;border-radius:20px;min-width:0}
+.risk-distribution-count{text-align:right;font-weight:800;color:#334155}
+.risk-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}
+.risk-shortcut{display:flex;gap:10px;align-items:center;padding:11px;border:1px solid var(--line);border-radius:10px;background:#fbfdff}
+.risk-shortcut-icon{width:34px;height:34px;display:grid;place-items:center;background:#eff6ff;border-radius:9px;flex-shrink:0}
+.risk-shortcut b{display:block;font-size:11px;margin-bottom:3px;color:#1e293b}
+.risk-shortcut span{font-size:10px;color:var(--muted);line-height:1.4}
+.risk-catalog-status{display:flex;align-items:flex-start;gap:12px;background:#f8fafc;border:1px solid var(--line);padding:13px 14px;border-radius:11px;margin-top:14px}
+.risk-catalog-status-icon{font-size:20px}
+.risk-catalog-status strong{display:block;font-size:12px;color:#24364b;margin-bottom:4px}
+.risk-catalog-status p{font-size:11px;line-height:1.5;color:var(--muted);margin:0}
+.risk-catalog-status .btn{margin-left:auto;flex-shrink:0}
+.risk-list-panel{padding:0;overflow:hidden}
+.risk-list-head{padding:19px 20px 14px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.risk-list-head h3{margin:0 0 5px;font-size:16px}
+.risk-list-head p{margin:0;font-size:11px;color:var(--muted)}
+.risk-filterbar{display:flex;gap:9px;flex-wrap:wrap;padding:0 20px 15px}
+.risk-filterbar input,.risk-filterbar select{margin:0;max-width:none;min-width:150px;font-size:12px}
+.risk-filterbar input{flex:1;min-width:190px}
+.risk-table-wrap{border-top:1px solid var(--line);overflow:auto}
+.risk-table{width:100%;border-collapse:collapse;font-size:12px}
+.risk-table th{position:static;text-align:left;background:#f8fafc;color:#64748b;padding:12px 14px;font-size:10px;text-transform:uppercase;letter-spacing:.45px;border-bottom:1px solid var(--line);white-space:nowrap}
+.risk-table td{padding:13px 14px;border-bottom:1px solid #edf1f5;vertical-align:middle;max-width:260px}
+.risk-table tr:last-child td{border-bottom:0}
+.risk-main-cell{font-weight:750;color:#1e293b;display:block;margin-bottom:4px}
+.risk-sub-cell{font-size:10px;color:var(--muted);display:block;line-height:1.4}
+.risk-score{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:30px;padding:0 8px;border-radius:8px;font-weight:850}
+.risk-level-pill{display:inline-flex;align-items:center;gap:5px;border-radius:30px;padding:5px 8px;font-size:10px;font-weight:800;white-space:nowrap}
+.risk-level-pill:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.risk-level-low{background:#dcfce7;color:#166534}.risk-level-medium{background:#fef3c7;color:#92400e}.risk-level-high{background:#ffedd5;color:#c2410c}.risk-level-critical{background:#fee2e2;color:#b91c1c}
+.risk-status-active{background:#dcfce7;color:#166534}.risk-status-inactive{background:#f1f5f9;color:#64748b}
+.risk-row-actions{display:flex;gap:5px;white-space:nowrap}
+.risk-row-actions .btn{padding:6px 8px;font-size:10px}
+.risk-empty{padding:32px 18px;text-align:center;color:var(--muted);font-size:12px}
+.risk-form-panel{border:1px solid #cbdcfb;border-top:4px solid #2563eb;box-shadow:0 10px 24px #0f27400a}
+.risk-form-panel h3{margin:0 0 7px;font-size:18px}
+.risk-form-subtitle{font-size:12px;color:var(--muted);margin:0 0 18px;line-height:1.5}
+.risk-form-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 22px}
+.risk-form-grid>div:has(.hazard-reference){grid-column:1/-1}
+.risk-form-panel .hazard-reference{padding:16px;border:1px solid #dbeafe;border-radius:12px;background:#f8fbff}
+.risk-form-panel .hazard-filter-row{gap:12px}
+.risk-form-panel .hazard-note{background:#fff;border-color:#dbeafe}
+.risk-form-grid>div:has(#f_nivel_riesgo){background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:14px}
+.risk-form-grid>div:has(#f_nivel_riesgo) input{margin-bottom:0}
+.risk-form-grid #f_nivel_riesgo{font-size:18px;font-weight:800}
+.risk-form-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.risk-hidden-form{display:none}
+.risk-table-count{font-size:11px;color:var(--muted);padding:12px 20px;border-top:1px solid var(--line)}
+@media(max-width:900px){.risk-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.risk-analysis-grid{grid-template-columns:1fr}}
+@media(max-width:560px){.risk-hero{padding:18px}.risk-hero h3{font-size:19px}.risk-hero-mark{width:52px;height:52px;font-size:26px}.risk-metrics{gap:8px}.risk-metric{padding:12px}.risk-metric-value{font-size:23px}.risk-form-grid{grid-template-columns:1fr}.risk-form-grid>div:has(.hazard-reference){grid-column:auto}.risk-shortcuts{grid-template-columns:1fr}.risk-list-head{padding:16px}.risk-filterbar{padding:0 16px 14px}.risk-filterbar input{min-width:100%}.risk-table td,.risk-table th{padding:10px}.risk-topbar h2{font-size:21px}}
+
 </style>
 </head>
 <body>
@@ -915,72 +1003,91 @@ async function bulkConfirmImport(){
 }
 
 
+
+function riskScore(row){const explicit=Number(row?.nivel_riesgo);if(Number.isFinite(explicit)&&explicit>0)return explicit;const p=Number(row?.Probabilidad),s=Number(row?.consecuencia);return p>0&&s>0?p*s:0}
+function riskBand(score){if(score>=15)return {label:"Crítico",cls:"critical",color:"#dc2626"};if(score>=10)return {label:"Alto",cls:"high",color:"#f97316"};if(score>=5)return {label:"Moderado",cls:"medium",color:"#eab308"};if(score>0)return {label:"Bajo",cls:"low",color:"#22c55e"};return {label:"Sin valorar",cls:"medium",color:"#94a3b8"}}
 function riskManagementIntro(){
  const rows=moduleCache.riesgos||[],hazards=moduleCache.peligros||[];
  const active=rows.filter(r=>r.activo!==false&&String(r.activo)!=="false").length;
- const high=rows.filter(r=>{const n=Number(r.nivel_riesgo)||Number(r.Probabilidad)*Number(r.consecuencia);return n>=15}).length;
- const matrix=Array.from({length:5},(_,i)=>{const p=5-i;return '<tr><th>'+p+'</th>'+Array.from({length:5},(_,j)=>{const score=p*(j+1),cls=score<=4?'risk-low':score<=9?'risk-medium':score<=14?'risk-high':'risk-critical';return '<td class="'+cls+'" title="Probabilidad '+p+' × consecuencia '+(j+1)+' = '+score+'">'+score+'</td>'}).join('')+'</tr>'}).join('');
- return '<section class="risk-hero"><div class="risk-hero-content"><div><div class="risk-eyebrow">Sistema de prevención · Evaluación de riesgos</div><h3>Gestión de riesgos laborales</h3><p>Identificá los peligros por puesto, evaluá la probabilidad y la consecuencia, priorizá las medidas preventivas y dejá trazabilidad de cada evaluación.</p></div><div class="risk-hero-mark" aria-hidden="true">🛡️</div></div></section>'+
- '<section class="risk-metrics" aria-label="Indicadores de gestión de riesgos">'+
- '<article class="risk-metric"><div class="risk-metric-top"><span>Evaluaciones registradas</span><span class="risk-metric-icon">▤</span></div><div class="risk-metric-value" id="riskMetricTotal">'+rows.length+'</div><div class="risk-metric-foot">Registros en el sistema</div></article>'+
- '<article class="risk-metric"><div class="risk-metric-top"><span>Peligros del catálogo</span><span class="risk-metric-icon">⚠️</span></div><div class="risk-metric-value" id="riskMetricHazards">'+hazards.length+'</div><div class="risk-metric-foot">Referencias para evaluar</div></article>'+
- '<article class="risk-metric"><div class="risk-metric-top"><span>Evaluaciones activas</span><span class="risk-metric-icon">✓</span></div><div class="risk-metric-value" id="riskMetricActive">'+active+'</div><div class="risk-metric-foot">Seguimiento preventivo</div></article>'+
- '<article class="risk-metric"><div class="risk-metric-top"><span>Prioridad alta/crítica</span><span class="risk-metric-icon">⏱</span></div><div class="risk-metric-value" id="riskMetricHigh">'+high+'</div><div class="risk-metric-foot">Puntaje igual o superior a 15</div></article></section>'+
- '<section class="risk-workspace"><div class="risk-matrix-card"><div class="risk-card-heading"><div><h3>Matriz de valoración</h3><p>Probabilidad × consecuencia · Referencia visual de prioridad</p></div><span class="badge">1–25</span></div><table class="risk-matrix" aria-label="Matriz de riesgo de probabilidad por consecuencia"><thead><tr><th>Prob. ↓ / Cons. →</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead><tbody>'+matrix+'</tbody></table><div class="risk-matrix-legend"><span class="risk-legend-item"><i class="risk-legend-dot risk-low"></i>Bajo (1–4)</span><span class="risk-legend-item"><i class="risk-legend-dot risk-medium"></i>Moderado (5–9)</span><span class="risk-legend-item"><i class="risk-legend-dot risk-high"></i>Alto (10–14)</span><span class="risk-legend-item"><i class="risk-legend-dot risk-critical"></i>Crítico (15–25)</span></div></div>'+
- '<aside class="risk-guidance-card"><div class="risk-card-heading"><div><h3>Flujo de evaluación</h3><p>Una evaluación útil termina en acciones verificables.</p></div></div><div class="risk-guidance-list"><div class="risk-guidance-item"><span class="risk-guidance-icon">1</span><div><b>Identificar</b>Seleccioná puesto, categoría y peligro asociado.</div></div><div class="risk-guidance-item"><span class="risk-guidance-icon">2</span><div><b>Valorar</b>Asigná probabilidad y consecuencia según los criterios de la organización.</div></div><div class="risk-guidance-item"><span class="risk-guidance-icon">3</span><div><b>Controlar</b>Registrá las medidas existentes y las acciones propuestas con responsable y fecha.</div></div></div></aside></section>';
+ const high=rows.filter(r=>riskScore(r)>=10).length;
+ const critical=rows.filter(r=>riskScore(r)>=15).length;
+ const matrix=Array.from({length:5},(_,i)=>{const p=5-i;return '<tr><th>'+p+'</th>'+Array.from({length:5},(_,j)=>{const score=p*(j+1),band=riskBand(score);return '<td class="risk-'+band.cls+'" title="Probabilidad '+p+' × consecuencia '+(j+1)+' = '+score+'">'+score+'</td>'}).join('')+'</tr>'}).join('');
+ const bands=[{key:"critical",label:"Crítico",min:15,max:25,color:"#dc2626"},{key:"high",label:"Alto",min:10,max:14,color:"#f97316"},{key:"medium",label:"Moderado",min:5,max:9,color:"#eab308"},{key:"low",label:"Bajo",min:1,max:4,color:"#22c55e"}];
+ const distribution=bands.map(b=>{const n=rows.filter(r=>riskScore(r)>=b.min&&riskScore(r)<=b.max).length,percent=rows.length?Math.round(n/rows.length*100):0;return '<div class="risk-distribution-row"><span class="risk-distribution-label">'+b.label+'</span><div class="risk-distribution-track"><div class="risk-distribution-bar" style="width:'+percent+'%;background:'+b.color+'"></div></div><span class="risk-distribution-count">'+n+'</span></div>'}).join('');
+ return '<div class="risk-dashboard">'+
+ '<div class="risk-topbar"><div><h2>Gestión de riesgos</h2><p>Regimiento de Infantería 1 «Patricios» · Identificación, evaluación y control preventivo</p></div><div class="risk-top-actions"><button class="btn btn-light" id="reloadModule" type="button">↻ Actualizar</button><button class="risk-primary-action" id="riskNewAssessment" type="button">＋ Nueva evaluación</button></div></div>'+
+ '<section class="risk-hero"><div class="risk-hero-content"><div><div class="risk-eyebrow">Higiene y seguridad · Tablero preventivo</div><h3>Evaluar para prevenir</h3><p>Centralizá los peligros por puesto de trabajo, priorizá los riesgos según su valoración y documentá las medidas de control, los responsables y el seguimiento.</p></div><div class="risk-hero-mark" aria-hidden="true">🛡️</div></div></section>'+
+ '<section class="risk-metrics" aria-label="Indicadores de gestión">'+
+ '<article class="risk-metric"><div class="risk-metric-top"><span>Evaluaciones registradas</span><span class="risk-metric-icon">▤</span></div><div class="risk-metric-value" id="riskMetricTotal">'+rows.length+'</div><div class="risk-metric-foot">Total en el sistema</div></article>'+
+ '<article class="risk-metric"><div class="risk-metric-top"><span>Peligros catalogados</span><span class="risk-metric-icon">⚠</span></div><div class="risk-metric-value" id="riskMetricHazards">'+hazards.length+'</div><div class="risk-metric-foot">Referencias disponibles</div></article>'+
+ '<article class="risk-metric"><div class="risk-metric-top"><span>Evaluaciones activas</span><span class="risk-metric-icon">✓</span></div><div class="risk-metric-value" id="riskMetricActive">'+active+'</div><div class="risk-metric-foot">Registros vigentes</div></article>'+
+ '<article class="risk-metric"><div class="risk-metric-top"><span>Riesgos altos o críticos</span><span class="risk-metric-icon">⌁</span></div><div class="risk-metric-value" id="riskMetricHigh">'+high+'</div><div class="risk-metric-foot"><span id="riskMetricCritical">'+critical+'</span> críticos · Puntaje ≥ 15</div></article></section>'+
+ '<section class="risk-analysis-grid"><article class="risk-widget"><div class="risk-widget-head"><div><h3>Matriz de evaluación</h3><p>Probabilidad × consecuencia · Escala de valoración de 1 a 5</p></div><span class="badge">1–25</span></div><table class="risk-matrix" aria-label="Matriz de valoración de riesgos"><thead><tr><th>Prob. ↓ / Cons. →</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead><tbody>'+matrix+'</tbody></table><div class="risk-legend"><span class="risk-legend-item"><i class="risk-legend-dot risk-low"></i>Bajo (1–4)</span><span class="risk-legend-item"><i class="risk-legend-dot risk-medium"></i>Moderado (5–9)</span><span class="risk-legend-item"><i class="risk-legend-dot risk-high"></i>Alto (10–14)</span><span class="risk-legend-item"><i class="risk-legend-dot risk-critical"></i>Crítico (15–25)</span></div></article>'+
+ '<article class="risk-widget"><div class="risk-widget-head"><div><h3>Distribución por nivel</h3><p>Clasificación de las evaluaciones registradas</p></div><span class="badge">'+rows.length+' total</span></div><div class="risk-distribution" id="riskDistribution">'+distribution+'</div><div class="risk-shortcuts"><div class="risk-shortcut"><span class="risk-shortcut-icon">🎯</span><div><b>Identificar</b><span>Vincular puesto, peligro y riesgo.</span></div></div><div class="risk-shortcut"><span class="risk-shortcut-icon">🧰</span><div><b>Controlar</b><span>Definir medidas, responsables y fechas.</span></div></div></div><div id="riskCatalogStatus" class="risk-catalog-status"><span class="risk-catalog-status-icon">'+(hazards.length?'📚':'⚠️')+'</span><div><strong>'+(hazards.length?'Catálogo disponible':'Catálogo de peligros vacío')+'</strong><p>'+(hazards.length?hazards.length+' peligros disponibles para asociar a las evaluaciones.':'Cargá el catálogo maestro para habilitar la selección de peligros y riesgos relacionados.')+'</p></div>'+(hazards.length?'':'<button type="button" class="btn btn-blue" id="importRiskCatalogFromForm" onclick="importAssociatedRiskCatalog()">Cargar catálogo</button>')+'</div></article></section>'+
+ '<section class="panel risk-form-panel risk-hidden-form" id="riskFormPanel"><div class="risk-widget-head"><div><h3 id="formTitle">＋ Nueva evaluación de riesgo</h3><p class="risk-form-subtitle">Completá la identificación, valoración y controles. Los campos marcados con * son obligatorios.</p></div><button class="btn btn-light" id="cancelEdit" type="button">Cerrar</button></div><form id="recordForm"><div id="formFields" class="form-grid risk-form-grid"></div><div class="risk-form-actions"><button class="risk-primary-action" type="submit" id="saveRecord">Guardar evaluación</button><button class="btn btn-light" id="cancelEditBottom" type="button">Cancelar</button></div><div id="formStatus" class="status" role="status"></div></form></section>'+
+ '<section class="panel risk-list-panel"><div class="risk-list-head"><div><h3>Evaluaciones de riesgo</h3><p>Consultá los registros, revisá la prioridad y administrá cada evaluación.</p></div><span class="badge" id="riskRowsBadge">'+rows.length+' registros</span></div><div class="risk-filterbar"><input id="tableSearch" placeholder="Buscar puesto, peligro, riesgo o responsable…" aria-label="Buscar evaluaciones"><select id="riskLevelFilter" aria-label="Filtrar por nivel"><option value="">Todos los niveles</option><option value="critical">Crítico</option><option value="high">Alto</option><option value="medium">Moderado</option><option value="low">Bajo</option><option value="none">Sin valorar</option></select><select id="riskActiveFilter" aria-label="Filtrar por estado"><option value="">Todos los estados</option><option value="active">Activo</option><option value="inactive">Inactivo</option></select></div><div class="risk-table-wrap"><table class="risk-table"><thead id="tableHead"></thead><tbody id="tableBody"><tr><td colspan="7" class="risk-empty">Cargando evaluaciones…</td></tr></tbody></table></div><div class="risk-table-count" id="rowCount">Cargando registros…</div><div id="tableStatus" class="status" role="status" style="margin:0 20px 12px"></div></section></div>';
 }
 function updateRiskOverview(){
  const rows=moduleCache.riesgos||[],hazards=moduleCache.peligros||[];
  const active=rows.filter(r=>r.activo!==false&&String(r.activo)!=="false").length;
- const high=rows.filter(r=>{const n=Number(r.nivel_riesgo)||Number(r.Probabilidad)*Number(r.consecuencia);return n>=15}).length;
- [['riskMetricTotal',rows.length],['riskMetricHazards',hazards.length],['riskMetricActive',active],['riskMetricHigh',high]].forEach(([id,value])=>{const el=$(id);if(el)el.textContent=String(value)});
+ const high=rows.filter(r=>riskScore(r)>=10).length,critical=rows.filter(r=>riskScore(r)>=15).length;
+ [['riskMetricTotal',rows.length],['riskMetricHazards',hazards.length],['riskMetricActive',active],['riskMetricHigh',high],['riskMetricCritical',critical],['riskRowsBadge',rows.length+' registros']].forEach(([id,value])=>{const el=$(id);if(el)el.textContent=String(value)});
+ const bands=[{label:"Crítico",min:15,max:25,color:"#dc2626"},{label:"Alto",min:10,max:14,color:"#f97316"},{label:"Moderado",min:5,max:9,color:"#eab308"},{label:"Bajo",min:1,max:4,color:"#22c55e"}],max=Math.max(1,rows.length);
+ const d=$("riskDistribution");if(d)d.innerHTML=bands.map(b=>{const n=rows.filter(r=>riskScore(r)>=b.min&&riskScore(r)<=b.max).length;return '<div class="risk-distribution-row"><span class="risk-distribution-label">'+b.label+'</span><div class="risk-distribution-track"><div class="risk-distribution-bar" style="width:'+(n/max*100)+'%;background:'+b.color+'"></div></div><span class="risk-distribution-count">'+n+'</span></div>'}).join('');
+ const status=$("riskCatalogStatus");if(status)status.innerHTML='<span class="risk-catalog-status-icon">'+(hazards.length?'📚':'⚠️')+'</span><div><strong>'+(hazards.length?'Catálogo disponible':'Catálogo de peligros vacío')+'</strong><p>'+(hazards.length?hazards.length+' peligros disponibles para asociar a las evaluaciones.':'Cargá el catálogo maestro para habilitar la selección de peligros y riesgos relacionados.')+'</p></div>'+(hazards.length?'':'<button type="button" class="btn btn-blue" id="importRiskCatalogFromForm" onclick="importAssociatedRiskCatalog()">Cargar catálogo</button>');
 }
-
+function renderRiskTable(){
+ const rows=moduleCache.riesgos||[],search=($("tableSearch")?.value||"").trim().toLocaleLowerCase("es"),level=$("riskLevelFilter")?.value||"",active= $("riskActiveFilter")?.value||"";
+ const hazards=moduleCache.peligros||[],posts=moduleCache.puestos||[];
+ const filtered=rows.filter(r=>{
+  const hazard=hazards.find(h=>String(h.id)===String(r.peligro_id)),post=posts.find(p=>String(p.id)===String(r.puesto_id));
+  const text=[hazard?.nombre,post?.Nombre,r.descripcion,r.responsable,r.medidas_propuestas].filter(Boolean).join(" ").toLocaleLowerCase("es");
+  const score=riskScore(r),band=riskBand(score),isActive=r.activo!==false&&String(r.activo)!=="false";
+  return (!search||text.includes(search))&&(!level||(level==="none"?!score:band.cls===level))&&(!active||(active==="active"?isActive:!isActive));
+ });
+ const th=$("tableHead"),tb=$("tableBody");if(!th||!tb)return;
+ th.innerHTML='<tr><th>Puesto / peligro</th><th>Descripción del riesgo</th><th>Valoración</th><th>Responsable</th><th>Evaluación</th><th>Estado</th><th>Acciones</th></tr>';
+ tb.replaceChildren();
+ if(!filtered.length){tb.innerHTML='<tr><td colspan="7" class="risk-empty">'+(rows.length?'No hay evaluaciones que coincidan con los filtros.':'Todavía no hay evaluaciones registradas. Usá «Nueva evaluación» para comenzar.')+'</td></tr>'}
+ filtered.forEach(row=>{
+  const hazard=hazards.find(h=>String(h.id)===String(row.peligro_id)),post=posts.find(p=>String(p.id)===String(row.puesto_id)),score=riskScore(row),band=riskBand(score),isActive=row.activo!==false&&String(row.activo)!=="false";
+  const tr=document.createElement("tr");
+  const cell=(html)=>{const td=document.createElement("td");td.innerHTML=html;tr.appendChild(td)};
+  cell('<span class="risk-main-cell">'+escapeHtml(post?.Nombre||'Puesto no encontrado')+'</span><span class="risk-sub-cell">'+escapeHtml(hazard?.nombre||'Peligro no encontrado')+(hazard?.tipo?' · '+escapeHtml(hazard.tipo):'')+'</span>');
+  cell('<span class="risk-main-cell">'+escapeHtml(row.descripcion||'Sin descripción')+'</span><span class="risk-sub-cell">'+escapeHtml(row.medidas_propuestas||'Sin medidas propuestas')+'</span>');
+  cell('<span class="risk-score risk-'+band.cls+'">'+(score||'—')+'</span><br><span class="risk-level-pill risk-level-'+band.cls+'" style="margin-top:5px">'+band.label+'</span>');
+  cell('<span class="risk-main-cell">'+escapeHtml(row.responsable||'Sin asignar')+'</span>');
+  cell('<span class="risk-sub-cell">'+escapeHtml(row.fecha_evaluacion?formatDateDMY(row.fecha_evaluacion):'Sin fecha')+'</span>');
+  cell('<span class="risk-level-pill '+(isActive?'risk-status-active':'risk-status-inactive')+'">'+(isActive?'Activo':'Inactivo')+'</span>');
+  const td=document.createElement("td"),actions=document.createElement("div");actions.className="risk-row-actions";actions.append(makeButton("Editar","btn btn-light btn-sm",()=>startEdit("riesgos",row)),makeButton("Eliminar","btn btn-red btn-sm",()=>deleteRecord("riesgos",row)));td.appendChild(actions);tr.appendChild(td);tb.appendChild(tr);
+ });
+ const count=$("rowCount");if(count)count.textContent='Mostrando '+filtered.length+' de '+rows.length+' evaluación(es)';
+ const badge=$("riskRowsBadge");if(badge)badge.textContent=rows.length+' registros';
+}
 async function renderCrud(id){
-  const cfg=configs[id];editing=null;
-  $("view").innerHTML=`<div class="page-title ${id==="riesgos"?"risk-page-heading":""}"><div><h2>${escapeHtml(cfg.title)}</h2><p>Registros de ${escapeHtml(getOrgName())}. Los permisos se aplican mediante Supabase.</p></div><button class="btn btn-blue" id="reloadModule" type="button">↻ Actualizar listado</button></div>
-  ${id==="riesgos"?riskManagementIntro():""}
-  ${id==="personas"?`<div class="panel" id="bulkPeoplePanel">
-  <h3>Alta masiva desde Excel</h3>
-  <p class="muted">Importá varias personas a la vez. Primero descargá la plantilla, elegí el establecimiento, cargá el archivo y validá las filas. No se guardará nada hasta que confirmes.</p>
-  <div class="form-grid">
-    <div><label for="bulkEstablishment">Establecimiento de destino *</label><select id="bulkEstablishment" required><option value="">Cargando establecimientos...</option></select></div>
-    <div><label for="bulkFile">Archivo Excel (.xlsx)</label><input id="bulkFile" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"></div>
-  </div>
-  <div class="actions">
-    <button class="btn btn-light" type="button" id="bulkTemplate">Descargar plantilla Excel</button>
-    <button class="btn btn-blue" type="button" id="bulkValidate">Validar archivo</button>
-    <button class="btn btn-green" type="button" id="bulkConfirm" disabled>Confirmar alta masiva</button>
-  </div>
-  <div id="bulkStatus" class="status" role="status"></div>
-  <div id="bulkSummary"></div>
-  <div id="bulkPreview" class="table-wrap" style="margin-top:12px"></div>
-</div>`:""}
-  ${id==="peligros"?hazardCategoryCards():""}
-  <div class="panel ${id==="riesgos"?"risk-form-panel":""}"><h3 id="formTitle">${id==="riesgos"?"＋ Nueva evaluación de riesgo":"Registrar "+escapeHtml(cfg.title.toLowerCase())}</h3>${id==="riesgos"?'<p class="risk-form-subtitle">Completá la identificación, valoración y controles. Los campos marcados con * son obligatorios.</p>':""}<form id="recordForm"><div id="formFields" class="form-grid ${id==="riesgos"?"risk-form-grid":""}"></div><div class="actions"><button class="btn btn-green" type="submit" id="saveRecord">Guardar registro</button><button class="btn btn-light hidden" id="cancelEdit" type="button">Cancelar edición</button></div><div id="formStatus" class="status" role="status"></div></form></div>
-  <div class="panel ${id==="riesgos"?"risk-list-panel":""}"><h3>${id==="riesgos"?"▤ Evaluaciones registradas":"Listado"}</h3><div class="toolbar"><input id="tableSearch" placeholder="Buscar en los registros..." aria-label="Buscar"><span id="rowCount" class="muted"></span>${id==="personas"?`<label for="peoplePageSize" class="muted">Mostrar</label><select id="peoplePageSize" aria-label="Cantidad de personas por página"><option value="5">5</option><option value="10" selected>10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select><span class="muted">por página</span>`:""}</div><div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"><tr><td class="empty">Cargando...</td></tr></tbody></table></div><div id="tableStatus" class="status" role="status"></div>${id==="personas"?`<div id="peoplePagination" class="toolbar" style="justify-content:flex-end;align-items:center;gap:8px;margin-top:12px"></div>`:""}</div>`;
+ const cfg=configs[id];editing=null;
+ if(id==="riesgos"){
+  $("view").innerHTML=riskManagementIntro();
   for(const f of cfg.fields)$("formFields").insertAdjacentHTML("beforeend",await renderField(f,f[2]==="checkbox"?true:"",id));
-  if(id==="peligros")setupHazardCategoryCards();
-  if(id==="riesgos")setupRiskDangerSelector();
-  if(id==="sectores"||id==="puestos"){
-    const codeKey=id==="sectores"?"codigo":"Codigo",parentKey=id==="sectores"?"establecimiento_id":"sector_id";
-    const parentInput=$("f_"+parentKey),codeInput=$("f_"+codeKey);
-    if(codeInput){codeInput.readOnly=true;codeInput.setAttribute("aria-readonly","true");codeInput.title="El sistema asigna automáticamente el código correlativo";}
-    if(parentInput&&!editing)parentInput.addEventListener("change",async()=>{try{codeInput.value=await getNextCode(id)}catch(e){codeInput.value="";codeInput.placeholder=e.message}});
-    try{if(codeInput&&!editing)codeInput.value=await getNextCode(id)}catch(e){if(codeInput)codeInput.value=""}
-  }
-  if(id==="personas"){
-    const legajoInput=$("f_Legajo");
-    if(legajoInput){legajoInput.readOnly=true;legajoInput.setAttribute("aria-readonly","true");legajoInput.title="El sistema asigna automáticamente el siguiente legajo";}
-    try{if(legajoInput)legajoInput.value=formatLegajo(await getNextLegajo())}catch(e){console.error(e);if(legajoInput)legajoInput.placeholder="No se pudo calcular; se verificará al guardar"}
-  }
+  setupRiskDangerSelector();
   $("recordForm").onsubmit=e=>saveRecord(e,id);
-  if(id==="personas")await initPeopleBulkImport();
+  const closeForm=()=>{editing=null;$("riskFormPanel")?.classList.add("risk-hidden-form");$("formStatus").textContent="";$("cancelEdit").classList.add("hidden");$("saveRecord").textContent="Guardar evaluación"};
+  $("cancelEdit").onclick=closeForm;$("cancelEditBottom").onclick=closeForm;
+  $("riskNewAssessment").onclick=()=>{editing=null;$("recordForm").reset();$("formTitle").textContent="＋ Nueva evaluación de riesgo";$("saveRecord").textContent="Guardar evaluación";$("cancelEdit").classList.remove("hidden");$("riskFormPanel").classList.remove("risk-hidden-form");setupRiskDangerSelector();$("riskFormPanel").scrollIntoView({behavior:"smooth",block:"start"})};
   $("reloadModule").onclick=()=>loadModuleRows(id);
-  $("cancelEdit").onclick=()=>renderCrud(id);
-  $("tableSearch").oninput=e=>{searchText=e.target.value;if(id==="personas")peoplePage=1;renderTable(id)};
-  if(id==="personas"){$("peoplePageSize").value=String(peoplePageSize);$("peoplePageSize").onchange=e=>{peoplePageSize=Number(e.target.value)||10;peoplePage=1;renderTable(id)}}
-  await loadModuleRows(id);
+  $("tableSearch").oninput=renderRiskTable;$("riskLevelFilter").onchange=renderRiskTable;$("riskActiveFilter").onchange=renderRiskTable;
+  await loadModuleRows(id);return;
+ }
+ $("view").innerHTML=`<div class="page-title"><div><h2>${escapeHtml(cfg.title)}</h2><p>Registros de ${escapeHtml(getOrgName())}. Los permisos se aplican mediante Supabase.</p></div><button class="btn btn-blue" id="reloadModule" type="button">↻ Actualizar listado</button></div>
+ ${id==="personas"?`<div class="panel" id="bulkPeoplePanel"><h3>Alta masiva desde Excel</h3><p class="muted">Importá varias personas a la vez. Primero descargá la plantilla, elegí el establecimiento, cargá el archivo y validá las filas. No se guardará nada hasta que confirmes.</p><div class="form-grid"><div><label for="bulkEstablishment">Establecimiento de destino *</label><select id="bulkEstablishment" required><option value="">Cargando establecimientos...</option></select></div><div><label for="bulkFile">Archivo Excel (.xlsx)</label><input id="bulkFile" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"></div></div><div class="actions"><button class="btn btn-light" type="button" id="bulkTemplate">Descargar plantilla Excel</button><button class="btn btn-blue" type="button" id="bulkValidate">Validar archivo</button><button class="btn btn-green" type="button" id="bulkConfirm" disabled>Confirmar alta masiva</button></div><div id="bulkStatus" class="status" role="status"></div><div id="bulkSummary"></div><div id="bulkPreview" class="table-wrap" style="margin-top:12px"></div></div>`:""}
+ ${id==="peligros"?hazardCategoryCards():""}
+ <div class="panel"><h3 id="formTitle">Registrar ${escapeHtml(cfg.title.toLowerCase())}</h3><form id="recordForm"><div id="formFields" class="form-grid"></div><div class="actions"><button class="btn btn-green" type="submit" id="saveRecord">Guardar registro</button><button class="btn btn-light hidden" id="cancelEdit" type="button">Cancelar edición</button></div><div id="formStatus" class="status" role="status"></div></form></div>
+ <div class="panel"><h3>Listado</h3><div class="toolbar"><input id="tableSearch" placeholder="Buscar en los registros..." aria-label="Buscar"><span id="rowCount" class="muted"></span>${id==="personas"?`<label for="peoplePageSize" class="muted">Mostrar</label><select id="peoplePageSize" aria-label="Cantidad de personas por página"><option value="5">5</option><option value="10" selected>10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select><span class="muted">por página</span>`:""}</div><div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"><tr><td class="empty">Cargando...</td></tr></tbody></table></div><div id="tableStatus" class="status" role="status"></div>${id==="personas"?`<div id="peoplePagination" class="toolbar" style="justify-content:flex-end;align-items:center;gap:8px;margin-top:12px"></div>`:""}</div>`;
+ for(const f of cfg.fields)$("formFields").insertAdjacentHTML("beforeend",await renderField(f,f[2]==="checkbox"?true:"",id));
+ if(id==="peligros")setupHazardCategoryCards();
+ if(id==="sectores"||id==="puestos"){const codeKey=id==="sectores"?"codigo":"Codigo",parentKey=id==="sectores"?"establecimiento_id":"sector_id",parentInput=$("f_"+parentKey),codeInput=$("f_"+codeKey);if(codeInput){codeInput.readOnly=true;codeInput.setAttribute("aria-readonly","true");codeInput.title="El sistema asigna automáticamente el código correlativo"}if(parentInput&&!editing)parentInput.addEventListener("change",async()=>{try{codeInput.value=await getNextCode(id)}catch(e){codeInput.value="";codeInput.placeholder=e.message}});try{if(codeInput&&!editing)codeInput.value=await getNextCode(id)}catch(e){if(codeInput)codeInput.value=""}}
+ if(id==="personas"){const legajoInput=$("f_Legajo");if(legajoInput){legajoInput.readOnly=true;legajoInput.setAttribute("aria-readonly","true");legajoInput.title="El sistema asigna automáticamente el siguiente legajo"}try{if(legajoInput)legajoInput.value=formatLegajo(await getNextLegajo())}catch(e){console.error(e);if(legajoInput)legajoInput.placeholder="No se pudo calcular; se verificará al guardar"}}
+ $("recordForm").onsubmit=e=>saveRecord(e,id);if(id==="personas")await initPeopleBulkImport();$("reloadModule").onclick=()=>loadModuleRows(id);$("cancelEdit").onclick=()=>renderCrud(id);$("tableSearch").oninput=e=>{searchText=e.target.value;if(id==="personas")peoplePage=1;renderTable(id)};if(id==="personas"){$("peoplePageSize").value=String(peoplePageSize);$("peoplePageSize").onchange=e=>{peoplePageSize=Number(e.target.value)||10;peoplePage=1;renderTable(id)}}await loadModuleRows(id);
 }
 async function loadModuleRows(id){
   try{
@@ -988,7 +1095,7 @@ async function loadModuleRows(id){
     moduleCache[id]=rows;
     const refTables=[...new Set(configs[id].fields.filter(f=>String(f[2]).startsWith("ref:")).map(f=>f[2].slice(4)))];
     await Promise.all(refTables.map(async table=>{moduleCache[table]=await fetchRows(table)}));
-    if(id==="riesgos"){setupRiskDangerSelector($("f_peligro_id")?.value);updateRiskOverview()}
+    if(id==="riesgos"){setupRiskDangerSelector($("f_peligro_id")?.value);updateRiskOverview();renderRiskTable();return}
     $("tableStatus").textContent=`Se encontraron ${rows.length} registro(s).`;
     renderTable(id);if(id==="peligros"){$("view").querySelector(".hazard-category-panel")?.remove();$("view").querySelector(".page-title")?.insertAdjacentHTML("afterend",hazardCategoryCards());setupHazardCategoryCards()}
   }catch(e){console.error(e);$("tableStatus").textContent="No se pudo consultar: "+e.message;$("tableBody").innerHTML='<tr><td class="empty">No se pudieron cargar los datos. Verificá la conexión y RLS.</td></tr>'}
@@ -1050,7 +1157,7 @@ async function startEdit(id,row){
   await renderCrud(id);editing=row;$("formTitle").textContent="Editar registro";$("saveRecord").textContent="Guardar cambios";$("cancelEdit").classList.remove("hidden");
   for(const f of configs[id].fields){const el=$("f_"+f[0].replace(/[^a-zA-Z0-9_-]/g,"_"));if(!el)continue;if(f[2]==="checkbox")el.checked=row[f[0]]!==false;else el.value=row[f[0]]??""}
   if(id==="peligros")setupHazardCategoryCards();
-  if(id==="riesgos")setupRiskDangerSelector(row.peligro_id);
+  if(id==="riesgos"){setupRiskDangerSelector(row.peligro_id);$("riskFormPanel")?.classList.remove("risk-hidden-form");$("formTitle").textContent="Editar evaluación de riesgo";$("saveRecord").textContent="Guardar cambios";$("cancelEdit").classList.remove("hidden");$("riskFormPanel")?.scrollIntoView({behavior:"smooth",block:"start")}}
   if(id==="personas"){const legajoInput=$("f_Legajo");if(legajoInput){legajoInput.readOnly=true;legajoInput.title="El legajo asignado no se puede editar";}}
   if(id==="sectores"||id==="puestos"){const codeInput=$(id==="sectores"?"f_codigo":"f_Codigo");if(codeInput){codeInput.readOnly=true;codeInput.title="El código asignado no se puede editar";}}
 }
