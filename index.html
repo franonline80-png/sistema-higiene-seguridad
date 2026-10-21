@@ -249,13 +249,6 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 @media(max-width:600px){.report-grid{grid-template-columns:1fr}.report-card{min-height:120px}.report-card img{width:78px;height:96px;flex-basis:78px}.reports-filters{grid-template-columns:1fr}.report-actions{grid-template-columns:1fr}.report-paper{padding:14px 11px}.report-preview-wrap{padding:8px}}
 @media print{body *{visibility:hidden!important}#reportPrintRoot,#reportPrintRoot *{visibility:visible!important}#reportPrintRoot{position:absolute;left:0;top:0;width:100%;background:#fff!important}.report-paper{border:0;box-shadow:none;padding:10mm;min-height:0;font-size:10pt}.paper-title{print-color-adjust:exact;-webkit-print-color-adjust:exact}.paper-table th,.paper-title{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
 
-
-.org-logo-wrap{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.org-logo-preview{display:none;width:42px;height:42px;object-fit:contain;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:3px}
-.org-logo-button{font-size:12px;padding:8px 10px}
-#orgLogoInput{display:none}
-@media(max-width:650px){.org-logo-wrap{width:100%}.org-logo-button{flex:1}.org-select{min-width:0;max-width:100%;flex:1}}
-
 </style>
 </head>
 <body>
@@ -302,7 +295,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
       <div><h1>Francisco Sánchez</h1><p>Licenciado en Seguridad e Higiene</p><span class="brand-system-name">Sistema de Higiene y Seguridad</span></div>
     </div>
     <div class="top-actions">
-      <div class="org-logo-wrap" aria-label="Identidad del establecimiento"><img id="orgLogoPreview" class="org-logo-preview" alt="Logo del establecimiento activo"><input id="orgLogoInput" type="file" accept="image/png,image/jpeg,image/webp"><button id="orgLogoButton" class="btn btn-light org-logo-button" type="button">Cargar logo</button><button id="orgLogoRemove" class="btn btn-light org-logo-button" type="button" hidden>Quitar</button></div><select id="orgSelect" class="org-select" aria-label="Organización activa"></select>
+      <select id="orgSelect" class="org-select" aria-label="Organización activa"></select>
       <button id="refreshAll" class="btn btn-light" type="button">↻ Actualizar</button>
       <button id="logoutButton" class="btn btn-red" type="button">Cerrar sesión</button>
     </div>
@@ -552,55 +545,6 @@ function showLogin(message=""){$("app").style.display="none";$("loginScreen").st
 function showApp(){$("loginScreen").style.display="none";$("app").style.display="block"}
 function getOrgIds(){return organizations.map(o=>o.id)}
 function getOrgName(){return organizations.find(o=>o.id===activeOrg)?.nombre||"Organización"}
-let activeOrgLogoPath=null;
-function clearOrgLogoPreview(){
- const img=$("orgLogoPreview");img.removeAttribute("src");img.style.display="none";
- $("orgLogoRemove").hidden=true;activeOrgLogoPath=null;$("orgLogoButton").textContent="Cargar logo";
-}
-async function loadOrganizationLogo(){
- clearOrgLogoPreview();
- const img=$("orgLogoPreview");
- try{
-  const {data,error}=await db.from("organizacion_logos").select("object_path").eq("organizacion_id",activeOrg).maybeSingle();
-  if(error)throw error;
-  if(!data?.object_path)return;
-  activeOrgLogoPath=data.object_path;
-  const {data:publicData}=db.storage.from("logos-establecimientos").getPublicUrl(data.object_path);
-  img.src=publicData.publicUrl;img.style.display="block";$("orgLogoRemove").hidden=false;$("orgLogoButton").textContent="Cambiar logo";
-  img.onerror=()=>{img.style.display="none";$("orgLogoRemove").hidden=true};
- }catch(e){console.warn("No se pudo cargar el logo del establecimiento. Verificá que la migración de logos esté aplicada.",e)}
-}
-$("orgLogoButton").addEventListener("click",()=>{$("orgLogoInput").click()});
-$("orgLogoInput").addEventListener("change",async()=>{
- const file=$("orgLogoInput").files?.[0];if(!file)return;
- const allowed=["image/png","image/jpeg","image/webp"];
- if(!allowed.includes(file.type)){alert("Formato no admitido. Usá PNG, JPG o WebP.");$("orgLogoInput").value="";return}
- if(file.size>2*1024*1024){alert("La imagen supera el límite de 2 MB.");$("orgLogoInput").value="";return}
- const button=$("orgLogoButton");button.disabled=true;button.textContent="Subiendo...";
- try{
-  const ext=file.type==="image/png"?"png":file.type==="image/webp"?"webp":"jpg";
-  const path=activeOrg+"/"+Date.now()+"."+ext;
-  const {error:uploadError}=await db.storage.from("logos-establecimientos").upload(path,file,{upsert:false,contentType:file.type});
-  if(uploadError)throw uploadError;
-  const {data:old}=await db.from("organizacion_logos").select("object_path").eq("organizacion_id",activeOrg).maybeSingle();
-  const {error:saveError}=await db.from("organizacion_logos").upsert({organizacion_id:activeOrg,object_path:path,updated_at:new Date().toISOString()},{onConflict:"organizacion_id"});
-  if(saveError){await db.storage.from("logos-establecimientos").remove([path]);throw saveError}
-  if(old?.object_path&&old.object_path!==path)await db.storage.from("logos-establecimientos").remove([old.object_path]);
-  await loadOrganizationLogo();alert("Logo guardado para "+getOrgName()+".");
- }catch(e){console.error(e);alert("No se pudo guardar el logo. Verificá que esté aplicada la migración de logos y que tu usuario tenga una membresía activa. Detalle: "+(e.message||e))}
- finally{button.disabled=false;button.textContent="Cambiar logo";$("orgLogoInput").value=""}
-});
-$("orgLogoRemove").addEventListener("click",async()=>{
- if(!confirm("¿Quitar el logo de "+getOrgName()+"?"))return;
- const button=$("orgLogoRemove");button.disabled=true;
- try{
-  const path=activeOrgLogoPath;
-  const {error}=await db.from("organizacion_logos").delete().eq("organizacion_id",activeOrg);if(error)throw error;
-  if(path){const {error:removeError}=await db.storage.from("logos-establecimientos").remove([path]);if(removeError)console.warn("No se pudo eliminar el archivo anterior",removeError)}
-  clearOrgLogoPreview();$("orgLogoButton").textContent="Cargar logo";
- }catch(e){alert("No se pudo quitar el logo: "+(e.message||e))}
- finally{button.disabled=false}
-}
 function visibleModules(){return modules.filter(m=>m.id==="inicio"||m.id==="legislacion"||m.id==="sesiones"||m.id==="reportes"||configs[m.id])}
 function buildNav(){
   const nav=$("navTabs");nav.replaceChildren();
@@ -1274,9 +1218,8 @@ async function initialize(){
   const select=$("orgSelect");select.replaceChildren();
   organizations.forEach(o=>{const op=document.createElement("option");op.value=o.id;op.textContent=o.nombre||"Organización";select.appendChild(op)});
   select.value=activeOrg;
-  select.onchange=()=>{activeOrg=select.value;moduleCache={};loadOrganizationLogo();openModule(activeModule)};
-  $("orgLogoButton").textContent="Cargar logo";
-  showApp();buildNav();await loadOrganizationLogo();await renderHome();
+  select.onchange=()=>{activeOrg=select.value;moduleCache={};openModule(activeModule)};
+  showApp();buildNav();await renderHome();
 }
 $("loginForm").addEventListener("submit",async e=>{
   e.preventDefault();const b=$("loginButton");b.disabled=true;b.textContent="Ingresando...";$("loginMessage").textContent="";
