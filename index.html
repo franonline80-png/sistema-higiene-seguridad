@@ -471,7 +471,7 @@ const SUPABASE_ANON_KEY="sb_publishable_NIV3CQpZcbvnOBfY7-_a7g_PtYfNIsG";
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 const $=id=>document.getElementById(id);
 
-let user=null,organizations=[],activeOrg="",activeModule="inicio",editing=null,moduleCache={},searchText="";
+let user=null,organizations=[],activeOrg="",activeModule="inicio",editing=null,moduleCache={},searchText="",loginAttemptInProgress=false;
 
 const modules=[
 {id:"inicio",label:"Inicio",icon:"⌂"},
@@ -1429,10 +1429,19 @@ async function initialize(){
   showApp();buildNav();await renderHome();
 }
 $("loginForm").addEventListener("submit",async e=>{
-  e.preventDefault();const b=$("loginButton");b.disabled=true;b.textContent="Ingresando...";$("loginMessage").textContent="";
-  try{const {error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)throw error;await initialize()}
-  catch(e){console.error(e);showLogin("No se pudo iniciar sesión: "+e.message)}
-  finally{b.disabled=false;b.textContent="Ingresar"}
+  e.preventDefault();if(loginAttemptInProgress)return;loginAttemptInProgress=true;
+  const b=$("loginButton");b.disabled=true;b.textContent="Verificando acceso...";$("loginMessage").className="status";$("loginMessage").textContent="Validando credenciales y permisos de la cuenta…";
+  try{
+    const {error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});
+    if(error)throw error;
+    $("loginMessage").textContent="Credenciales verificadas. Cargando organizaciones y permisos…";
+    await initialize();
+  }catch(e){
+    console.error("Error durante el ingreso o la inicialización:",e);
+    showLogin("No se pudo completar el ingreso. "+(e&&e.message?e.message:"Error inesperado. Revisá la conexión e intentá nuevamente."));
+  }finally{
+    loginAttemptInProgress=false;b.disabled=false;b.textContent="Ingresar";
+  }
 });
 $("logoutButton").addEventListener("click",async()=>{
   try{await closeCurrentSession()}catch(e){alert("No se pudo registrar el cierre de sesión: "+e.message);return}
@@ -1441,8 +1450,11 @@ $("logoutButton").addEventListener("click",async()=>{
 });
 $("refreshAll").addEventListener("click",()=>{moduleCache={};openModule(activeModule)});
 db.auth.getSession().then(async({data,error})=>{
-  if(error){showLogin("No se pudo verificar la sesión.");return}
-  if(data.session){try{await initialize()}catch(e){console.error(e);showLogin("No se pudo iniciar la aplicación: "+e.message)}}else showLogin();
+  // Evita que la consulta inicial de sesión pise un ingreso que el usuario acaba de iniciar.
+  if(loginAttemptInProgress)return;
+  if(error){showLogin("No se pudo verificar la sesión. "+(error.message||"Intentá nuevamente."));return}
+  if(data.session){try{await initialize()}catch(e){console.error("No se pudo inicializar la aplicación:",e);showLogin("No se pudo iniciar la aplicación: "+(e.message||"Error inesperado."))}}
+  else if(!loginAttemptInProgress)showLogin();
 });
 db.auth.onAuthStateChange(event=>{if(event==="SIGNED_OUT")showLogin()});
 </script>
