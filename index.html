@@ -461,6 +461,32 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 @media(max-width:900px){.risk-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.risk-analysis-grid{grid-template-columns:1fr}}
 @media(max-width:560px){.risk-hero{padding:18px}.risk-hero h3{font-size:19px}.risk-hero-mark{width:52px;height:52px;font-size:26px}.risk-metrics{gap:8px}.risk-metric{padding:12px}.risk-metric-value{font-size:23px}.risk-form-grid{grid-template-columns:1fr}.risk-form-grid>div:has(.hazard-reference){grid-column:auto}.risk-shortcuts{grid-template-columns:1fr}.risk-list-head{padding:16px}.risk-filterbar{padding:0 16px 14px}.risk-filterbar input{min-width:100%}.risk-table td,.risk-table th{padding:10px}.risk-topbar h2{font-size:21px}}
 
+
+/* Evaluación de riesgos laborales — vista de trabajo inspirada en la referencia */
+.risk-prototype-layout{max-width:1600px;margin:0 auto;gap:14px;color:#152b4f}
+.risk-page-heading{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 2px 12px}
+.risk-page-heading>div:first-child{flex:1;min-width:260px}
+.risk-page-heading h2{font-size:clamp(23px,2.2vw,32px);font-weight:800;letter-spacing:-.5px;margin:4px 0;color:#142746}
+.risk-page-heading p{margin:0;color:#64748b;font-size:13px}
+.risk-eyebrow-dark{font-size:10px;font-weight:800;letter-spacing:1.1px;color:#2563a6}
+.risk-prototype-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 2px;padding:12px;background:#f5f8fc;border:1px solid #dbe5f1;border-radius:12px}
+.risk-prototype-step{display:flex;align-items:center;gap:9px;min-width:0;padding:9px 10px;border-radius:9px;color:#526783}
+.risk-prototype-step>span{display:grid;place-items:center;flex:0 0 30px;height:30px;border:2px solid #b9cce2;border-radius:50%;font-weight:800;background:#fff;color:#4975a9}
+.risk-prototype-step b,.risk-prototype-step small{display:block;line-height:1.35}.risk-prototype-step b{font-size:12px}.risk-prototype-step small{font-size:10px;color:#71839b;margin-top:2px}
+.risk-prototype-step.is-current{background:#174eae;color:white;clip-path:polygon(0 0,calc(100% - 15px) 0,100% 50%,calc(100% - 15px) 100%,0 100%,8px 50%);border-radius:6px}
+.risk-prototype-step.is-current>span{border-color:#d9e8ff;color:#174eae}.risk-prototype-step.is-current small{color:#dbeafe}
+.risk-prototype-panel{background:#fff;border:1px solid #dce5ef;border-radius:12px;box-shadow:0 2px 8px #10294a08;overflow:hidden}
+.risk-prototype-panel-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid #e8eef5;background:#fbfdff}
+.risk-prototype-panel-head h3{margin:0;font-size:15px;font-weight:800;color:#16345c}.risk-prototype-panel-head p{margin:3px 0 0;color:#687d98;font-size:11px}
+.risk-panel-symbol{display:grid;place-items:center;flex:0 0 34px;height:34px;border-radius:9px;background:#e7efff;color:#174eae;font-size:18px;font-weight:800}
+.risk-panel-symbol-blue{background:#e8f1ff;color:#1d5ab5}.risk-panel-symbol-amber{background:#fff3d9;color:#a66b00}
+.risk-required-note{margin-left:auto;font-size:11px;color:#6b7e95;white-space:nowrap}
+.risk-context-note{display:flex;gap:10px;padding:12px 16px;color:#2e5f91;background:#f2f7fd;border-top:1px solid #e2ebf6}.risk-context-note>span{font-size:18px}.risk-context-note strong{font-size:12px}.risk-context-note p{font-size:11px;margin:3px 0 0;color:#58708e}
+.risk-form-panel form{padding:14px 16px}.risk-form-grid{gap:12px}.risk-form-grid label,.hazard-reference label{font-size:11px;font-weight:700;color:#344c6a}.risk-form-grid input,.risk-form-grid select,.risk-form-grid textarea,.hazard-reference input,.hazard-reference select{border:1px solid #cbd8e7;border-radius:7px;background:#fff;min-height:38px;font-size:12px;color:#233b5b}.risk-form-grid textarea{min-height:74px}
+.risk-form-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;padding-top:14px;margin-top:8px;border-top:1px solid #e7edf4}.risk-primary-action{border:1px solid #164da8;border-radius:8px;padding:10px 15px;background:#1556b8;color:#fff;font-weight:750;font-size:12px;box-shadow:0 2px 5px #164da822;cursor:pointer}.risk-primary-action:hover{background:#10469b}
+.risk-list-panel .risk-prototype-panel-head{border-bottom:0}.risk-prototype-stats{padding:0 16px 14px;gap:10px}.risk-prototype-stats>div{border:1px solid #e1e9f2;border-radius:9px;padding:10px 12px;background:#fbfdff}.risk-prototype-stats span{font-size:11px;color:#667b96}.risk-prototype-stats strong{display:block;font-size:21px;color:#183b69;margin-top:3px}.risk-catalog-status{margin:0 16px 14px}.risk-filterbar{margin:0 16px 12px;display:flex;gap:8px;flex-wrap:wrap}.risk-filterbar input{flex:1;min-width:220px}.risk-filterbar input,.risk-filterbar select{border:1px solid #d1ddea;border-radius:7px;padding:9px 10px;background:white;font-size:12px}.risk-table-wrap{margin:0 16px;overflow:auto;border:1px solid #e0e8f1;border-radius:8px}.risk-table{width:100%;border-collapse:separate;border-spacing:0;font-size:11px}.risk-table th{background:#f0f5fb;color:#405875;font-size:10px;text-transform:none;white-space:nowrap;padding:11px 10px}.risk-table td{padding:10px;border-top:1px solid #e8eef5;color:#334b68;vertical-align:middle}.risk-table-count{padding:10px 16px;color:#71839a;font-size:11px}.risk-row-actions{display:flex;gap:5px}.risk-count-pill{margin-left:auto;padding:5px 9px;border-radius:20px;background:#eaf1fb;color:#24558e;font-size:11px;font-weight:700}
+@media(max-width:850px){.risk-prototype-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.risk-prototype-step.is-current{clip-path:none}.risk-page-heading{align-items:flex-start}.risk-prototype-panel-head{flex-wrap:wrap}}
+@media(max-width:520px){.risk-prototype-steps{grid-template-columns:1fr}.risk-form-panel form{padding:12px}.risk-prototype-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.risk-page-heading .risk-primary-action{width:100%}}
 </style>
 </head>
 <body>
@@ -1449,31 +1475,6 @@ function downloadReportPdf(){
  const w=window.open("","_blank");if(!w){$("reportStatus").textContent="El navegador bloqueó la ventana. Permití ventanas emergentes para guardar el PDF.";return}
  const css=[...document.querySelectorAll("style")].map(x=>x.textContent).join("\n");
  w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>'+reportEsc(def.title)+'</title><style>'+css+' body{background:#fff!important;padding:12mm!important}.report-paper{max-width:190mm;margin:auto;box-shadow:none;border:0;padding:0!important;font-size:10pt}@page{size:A4;margin:12mm}
-/* Evaluación de riesgos laborales — vista de trabajo inspirada en la referencia */
-.risk-prototype-layout{max-width:1600px;margin:0 auto;gap:14px;color:#152b4f}
-.risk-page-heading{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 2px 12px}
-.risk-page-heading>div:first-child{flex:1;min-width:260px}
-.risk-page-heading h2{font-size:clamp(23px,2.2vw,32px);font-weight:800;letter-spacing:-.5px;margin:4px 0;color:#142746}
-.risk-page-heading p{margin:0;color:#64748b;font-size:13px}
-.risk-eyebrow-dark{font-size:10px;font-weight:800;letter-spacing:1.1px;color:#2563a6}
-.risk-prototype-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 2px;padding:12px;background:#f5f8fc;border:1px solid #dbe5f1;border-radius:12px}
-.risk-prototype-step{display:flex;align-items:center;gap:9px;min-width:0;padding:9px 10px;border-radius:9px;color:#526783}
-.risk-prototype-step>span{display:grid;place-items:center;flex:0 0 30px;height:30px;border:2px solid #b9cce2;border-radius:50%;font-weight:800;background:#fff;color:#4975a9}
-.risk-prototype-step b,.risk-prototype-step small{display:block;line-height:1.35}.risk-prototype-step b{font-size:12px}.risk-prototype-step small{font-size:10px;color:#71839b;margin-top:2px}
-.risk-prototype-step.is-current{background:#174eae;color:white;clip-path:polygon(0 0,calc(100% - 15px) 0,100% 50%,calc(100% - 15px) 100%,0 100%,8px 50%);border-radius:6px}
-.risk-prototype-step.is-current>span{border-color:#d9e8ff;color:#174eae}.risk-prototype-step.is-current small{color:#dbeafe}
-.risk-prototype-panel{background:#fff;border:1px solid #dce5ef;border-radius:12px;box-shadow:0 2px 8px #10294a08;overflow:hidden}
-.risk-prototype-panel-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid #e8eef5;background:#fbfdff}
-.risk-prototype-panel-head h3{margin:0;font-size:15px;font-weight:800;color:#16345c}.risk-prototype-panel-head p{margin:3px 0 0;color:#687d98;font-size:11px}
-.risk-panel-symbol{display:grid;place-items:center;flex:0 0 34px;height:34px;border-radius:9px;background:#e7efff;color:#174eae;font-size:18px;font-weight:800}
-.risk-panel-symbol-blue{background:#e8f1ff;color:#1d5ab5}.risk-panel-symbol-amber{background:#fff3d9;color:#a66b00}
-.risk-required-note{margin-left:auto;font-size:11px;color:#6b7e95;white-space:nowrap}
-.risk-context-note{display:flex;gap:10px;padding:12px 16px;color:#2e5f91;background:#f2f7fd;border-top:1px solid #e2ebf6}.risk-context-note>span{font-size:18px}.risk-context-note strong{font-size:12px}.risk-context-note p{font-size:11px;margin:3px 0 0;color:#58708e}
-.risk-form-panel form{padding:14px 16px}.risk-form-grid{gap:12px}.risk-form-grid label,.hazard-reference label{font-size:11px;font-weight:700;color:#344c6a}.risk-form-grid input,.risk-form-grid select,.risk-form-grid textarea,.hazard-reference input,.hazard-reference select{border:1px solid #cbd8e7;border-radius:7px;background:#fff;min-height:38px;font-size:12px;color:#233b5b}.risk-form-grid textarea{min-height:74px}
-.risk-form-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;padding-top:14px;margin-top:8px;border-top:1px solid #e7edf4}.risk-primary-action{border:1px solid #164da8;border-radius:8px;padding:10px 15px;background:#1556b8;color:#fff;font-weight:750;font-size:12px;box-shadow:0 2px 5px #164da822;cursor:pointer}.risk-primary-action:hover{background:#10469b}
-.risk-list-panel .risk-prototype-panel-head{border-bottom:0}.risk-prototype-stats{padding:0 16px 14px;gap:10px}.risk-prototype-stats>div{border:1px solid #e1e9f2;border-radius:9px;padding:10px 12px;background:#fbfdff}.risk-prototype-stats span{font-size:11px;color:#667b96}.risk-prototype-stats strong{display:block;font-size:21px;color:#183b69;margin-top:3px}.risk-catalog-status{margin:0 16px 14px}.risk-filterbar{margin:0 16px 12px;display:flex;gap:8px;flex-wrap:wrap}.risk-filterbar input{flex:1;min-width:220px}.risk-filterbar input,.risk-filterbar select{border:1px solid #d1ddea;border-radius:7px;padding:9px 10px;background:white;font-size:12px}.risk-table-wrap{margin:0 16px;overflow:auto;border:1px solid #e0e8f1;border-radius:8px}.risk-table{width:100%;border-collapse:separate;border-spacing:0;font-size:11px}.risk-table th{background:#f0f5fb;color:#405875;font-size:10px;text-transform:none;white-space:nowrap;padding:11px 10px}.risk-table td{padding:10px;border-top:1px solid #e8eef5;color:#334b68;vertical-align:middle}.risk-table-count{padding:10px 16px;color:#71839a;font-size:11px}.risk-row-actions{display:flex;gap:5px}.risk-count-pill{margin-left:auto;padding:5px 9px;border-radius:20px;background:#eaf1fb;color:#24558e;font-size:11px;font-weight:700}
-@media(max-width:850px){.risk-prototype-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.risk-prototype-step.is-current{clip-path:none}.risk-page-heading{align-items:flex-start}.risk-prototype-panel-head{flex-wrap:wrap}}
-@media(max-width:520px){.risk-prototype-steps{grid-template-columns:1fr}.risk-form-panel form{padding:12px}.risk-prototype-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.risk-page-heading .risk-primary-action{width:100%}}
 </style></head><body><article class="report-paper">'+paper.innerHTML+'</article><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>');
  w.document.close();
 }
