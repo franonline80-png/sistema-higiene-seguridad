@@ -1629,6 +1629,8 @@ db.auth.getSession().then(async({data,error})=>{
   if(data.session){try{await initialize()}catch(e){console.error(e);showLogin("No se pudo iniciar la aplicación: "+e.message)}}else showLogin();
 });
 db.auth.onAuthStateChange(event=>{if(event==="SIGNED_OUT")showLogin()});
+
+const passwordToggle=$("togglePassword");if(passwordToggle)passwordToggle.addEventListener("click",()=>{const field=$("password");if(!field)return;const show=field.type==="password";field.type=show?"text":"password";passwordToggle.setAttribute("aria-label",show?"Ocultar contraseña":"Mostrar contraseña");passwordToggle.textContent=show?"◎":"◉"});
 </script>
 </body>
 </html>
