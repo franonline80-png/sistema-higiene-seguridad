@@ -1157,7 +1157,7 @@ async function startEdit(id,row){
   await renderCrud(id);editing=row;$("formTitle").textContent="Editar registro";$("saveRecord").textContent="Guardar cambios";$("cancelEdit").classList.remove("hidden");
   for(const f of configs[id].fields){const el=$("f_"+f[0].replace(/[^a-zA-Z0-9_-]/g,"_"));if(!el)continue;if(f[2]==="checkbox")el.checked=row[f[0]]!==false;else el.value=row[f[0]]??""}
   if(id==="peligros")setupHazardCategoryCards();
-  if(id==="riesgos"){setupRiskDangerSelector(row.peligro_id);$("riskFormPanel")?.classList.remove("risk-hidden-form");$("formTitle").textContent="Editar evaluación de riesgo";$("saveRecord").textContent="Guardar cambios";$("cancelEdit").classList.remove("hidden");$("riskFormPanel")?.scrollIntoView({behavior:"smooth",block:"start"})}}
+  if(id==="riesgos"){setupRiskDangerSelector(row.peligro_id);$("riskFormPanel")?.classList.remove("risk-hidden-form");$("formTitle").textContent="Editar evaluación de riesgo";$("saveRecord").textContent="Guardar cambios";$("cancelEdit").classList.remove("hidden");$("riskFormPanel")?.scrollIntoView({behavior:"smooth",block:"start"})}
   if(id==="personas"){const legajoInput=$("f_Legajo");if(legajoInput){legajoInput.readOnly=true;legajoInput.title="El legajo asignado no se puede editar";}}
   if(id==="sectores"||id==="puestos"){const codeInput=$(id==="sectores"?"f_codigo":"f_Codigo");if(codeInput){codeInput.readOnly=true;codeInput.title="El código asignado no se puede editar";}}
 }
