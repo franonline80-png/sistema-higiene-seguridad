@@ -1411,7 +1411,11 @@ function renderLegislation(){
   <div class="panel"><h3>Próxima etapa: matriz legal</h3><p class="muted">El registro de requisitos, la evaluación de aplicabilidad, las evidencias, las aprobaciones y el historial requieren tablas específicas y políticas RLS en Supabase.</p></div>`;
 }
 
+let loginInProgress=false;
+let initializationPromise=null;
 async function initialize(){
+  if(initializationPromise)return initializationPromise;
+  initializationPromise=(async()=>{
   const {data,error}=await db.auth.getUser();if(error)throw error;
   user=data.user;if(!user)throw new Error("No hay una sesión activa.");
   try{await startSessionTracking()}catch(sessionError){console.error("No se pudo registrar la sesión; la aplicación continuará disponible:",sessionError)}
@@ -1427,12 +1431,14 @@ async function initialize(){
   select.value=activeOrg;
   select.onchange=()=>{activeOrg=select.value;moduleCache={};openModule(activeModule)};
   showApp();buildNav();await renderHome();
+  })();
+  try{return await initializationPromise}finally{initializationPromise=null}
 }
 $("loginForm").addEventListener("submit",async e=>{
-  e.preventDefault();const b=$("loginButton");b.disabled=true;b.textContent="Ingresando...";$("loginMessage").textContent="";
+  e.preventDefault();loginInProgress=true;const b=$("loginButton");b.disabled=true;b.textContent="Ingresando...";$("loginMessage").textContent="";
   try{const {error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)throw error;await initialize()}
   catch(e){console.error(e);showLogin("No se pudo iniciar sesión: "+e.message)}
-  finally{b.disabled=false;b.textContent="Ingresar"}
+  finally{loginInProgress=false;b.disabled=false;b.textContent="Ingresar"}
 });
 $("logoutButton").addEventListener("click",async()=>{
   try{await closeCurrentSession()}catch(e){alert("No se pudo registrar el cierre de sesión: "+e.message);return}
@@ -1442,6 +1448,7 @@ $("logoutButton").addEventListener("click",async()=>{
 $("refreshAll").addEventListener("click",()=>{moduleCache={};openModule(activeModule)});
 db.auth.getSession().then(async({data,error})=>{
   if(error){showLogin("No se pudo verificar la sesión.");return}
+  if(loginInProgress)return;
   if(data.session){try{await initialize()}catch(e){console.error(e);showLogin("No se pudo iniciar la aplicación: "+e.message)}}else showLogin();
 });
 db.auth.onAuthStateChange(event=>{if(event==="SIGNED_OUT")showLogin()});
