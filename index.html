@@ -877,9 +877,17 @@ function setupRiskDangerSelector(selectedId){
  const selected=rows.find(r=>String(r.id)===String(selectedId||sel.value));if(selected?.tipo)cat.value=selected.tipo;
  const renderCatalog=(row,risks)=>{
    const out=$("riskCatalogResults"),note=$("riskCatalogFilterNote");if(!out)return;
-   const category=cat.value;const matching=row?catalog.filter(x=>String(x[0]).trim()===String(row.tipo||"").trim()&&String(x[1]).trim().toLocaleLowerCase("es")===String(row.nombre||"").trim().toLocaleLowerCase("es")):catalog.filter(x=>!category||String(x[0]).trim()===category);
-   if(note)note.textContent=row?"Catálogo filtrado por el peligro: "+(row.nombre||"")+". "+matching.length+" riesgo(s) asociado(s).":(category?"Catálogo filtrado por categoría: "+category+". ":"")+"Mostrando "+matching.length+" riesgo(s) del catálogo maestro.";
-   out.innerHTML=matching.length?'<div class="risk-catalog-result-count">'+matching.length+' riesgo(s)</div><div class="risk-catalog-result-list">'+matching.map(x=>'<button type="button" class="risk-catalog-result" data-risk-value="'+escapeHtml(x[2])+'"><span class="risk-catalog-result-hazard">'+escapeHtml(x[1])+'</span><strong>'+escapeHtml(x[2])+'</strong><small>'+escapeHtml(x[0])+'</small></button>').join("")+'</div>':'<div class="risk-catalog-empty">No hay riesgos asociados cargados para este peligro en el catálogo maestro.</div>';
+   if(!row){
+     const term=search.value.trim().toLocaleLowerCase("es");
+     const matching=rows.filter(r=>(!cat.value||String(r.tipo||"")===cat.value)&&(!term||String(r.nombre||"").toLocaleLowerCase("es").includes(term)||String(r.descripcion||"").toLocaleLowerCase("es").includes(term)));
+     if(note)note.textContent=(cat.value?"Categoría: "+cat.value+". ":"")+"Seleccioná un peligro para ver sus riesgos asociados y sus ilustraciones. "+matching.length+" peligro(s).";
+     out.innerHTML=matching.length?'<div class="risk-catalog-result-count">'+matching.length+' peligro(s)</div><div class="hazard-card-grid">'+matching.map(h=>'<button type="button" class="hazard-select-card '+(String(h.id)===String(sel.value)?"is-selected":"")+'" data-hazard-id="'+escapeHtml(h.id)+'"><span class="hazard-card-art">'+hazardSvgScene(h,"main")+'</span><span class="hazard-card-copy"><strong>'+escapeHtml(h.nombre||"Peligro sin nombre")+'</strong><small>'+escapeHtml(h.tipo||"Sin categoría")+'</small><span>'+escapeHtml(h.descripcion||"Seleccioná para consultar los riesgos asociados.")+'</span></span></button>').join("")+'</div>':'<div class="risk-catalog-empty">No hay peligros para los filtros seleccionados.</div>';
+     out.querySelectorAll("[data-hazard-id]").forEach(btn=>btn.addEventListener("click",()=>{sel.value=btn.getAttribute("data-hazard-id")||"";const chosen=rows.find(h=>String(h.id)===String(sel.value));if(chosen?.tipo)cat.value=chosen.tipo;showAssociated();}));
+     return;
+   }
+   const matching=catalog.filter(x=>String(x[0]).trim()===String(row.tipo||"").trim()&&String(x[1]).trim().toLocaleLowerCase("es")===String(row.nombre||"").trim().toLocaleLowerCase("es"));
+   if(note)note.textContent="Riesgos asociados a "+(row.nombre||"este peligro")+". Cada tarjeta incluye una ilustración orientativa.";
+   out.innerHTML=risks.length?'<div class="risk-catalog-result-count">'+risks.length+' riesgo(s) asociado(s)</div><div class="hazard-risk-card-grid">'+risks.map((risk,i)=>'<button type="button" class="hazard-risk-card" data-risk-value="'+escapeHtml(risk)+'"><span class="hazard-risk-art">'+hazardSvgScene({nombre:risk,tipo:row.tipo},"main")+'</span><span class="hazard-risk-copy"><strong>'+escapeHtml(risk)+'</strong><small>'+escapeHtml(row.tipo||"Categoría no indicada")+'</small><span>Riesgo relacionado con: '+escapeHtml(row.nombre||"peligro seleccionado")+'</span></span><span class="hazard-risk-arrow">›</span></button>').join("")+'</div>':'<div class="risk-catalog-empty">No hay riesgos asociados cargados para este peligro en el catálogo maestro.</div>';
    out.querySelectorAll("[data-risk-value]").forEach(btn=>btn.addEventListener("click",()=>{if(riskSel){riskSel.value=btn.getAttribute("data-risk-value")||"";riskSel.dispatchEvent(new Event("change",{bubbles:true}));$("riskTabSelect")?.click()}}));
  };
  const showAssociated=()=>{
@@ -1775,7 +1783,24 @@ function downloadReportPdf(){
  const def=reportDefinitions.find(d=>d.id===reportSelected)||reportDefinitions[0];
  const w=window.open("","_blank");if(!w){$("reportStatus").textContent="El navegador bloqueó la ventana. Permití ventanas emergentes para guardar el PDF.";return}
  const css=[...document.querySelectorAll("style")].map(x=>x.textContent).join("\n");
- w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>'+reportEsc(def.title)+'</title><style>'+css+' body{background:#fff!important;padding:12mm!important}.report-paper{max-width:190mm;margin:auto;box-shadow:none;border:0;padding:0!important;font-size:10pt}@page{size:A4;margin:12mm}</style></head><body><article class="report-paper">'+paper.innerHTML+'</article><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>');
+ w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>'+reportEsc(def.title)+'</title><style>'+css+' body{background:#fff!important;padding:12mm!important}.report-paper{max-width:190mm;margin:auto;box-shadow:none;border:0;padding:0!important;font-size:10pt}@page{size:A4;margin:12mm}
+/* Catálogo visual de peligros y riesgos asociados */
+.hazard-card-grid,.hazard-risk-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:10px 0}
+.hazard-select-card,.hazard-risk-card{display:flex;align-items:center;gap:10px;text-align:left;background:#fff;border:1px solid #dbe7f5;border-radius:11px;padding:10px;min-width:0;color:#183153;cursor:pointer;transition:border-color .15s,box-shadow .15s,background .15s}
+.hazard-select-card:hover,.hazard-risk-card:hover,.hazard-select-card.is-selected{border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 1px #bfdbfe}
+.hazard-card-art{display:flex;align-items:center;justify-content:center;flex:0 0 92px;height:76px;background:#f1f7ff;border-radius:8px;padding:5px;overflow:hidden}
+.hazard-card-art svg{width:100%;height:100%;max-height:70px}
+.hazard-card-copy,.hazard-risk-copy{display:flex;flex-direction:column;gap:4px;min-width:0}
+.hazard-card-copy strong,.hazard-risk-copy strong{font-size:13px;line-height:1.25;color:#15345d}
+.hazard-card-copy small,.hazard-risk-copy small{font-size:11px;color:#2563a6}
+.hazard-card-copy span,.hazard-risk-copy span{font-size:11px;line-height:1.35;color:#526780}
+.hazard-risk-card{position:relative}
+.hazard-risk-art{display:flex;align-items:center;justify-content:center;flex:0 0 76px;height:64px;background:#f3f7fb;border-radius:8px;padding:4px;overflow:hidden}
+.hazard-risk-art svg{width:100%;height:100%;max-height:60px}
+.hazard-risk-arrow{font-size:24px;color:#2563eb;margin-left:auto}
+@media(max-width:760px){.hazard-card-grid,.hazard-risk-card-grid{grid-template-columns:1fr}.hazard-card-art{flex-basis:82px}.hazard-select-card,.hazard-risk-card{padding:8px}.hazard-card-copy span,.hazard-risk-copy span{font-size:10px}}
+
+</style></head><body><article class="report-paper">'+paper.innerHTML+'</article><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>');
  w.document.close();
 }
 async function shareReport(){
