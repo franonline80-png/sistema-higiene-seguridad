@@ -1284,12 +1284,12 @@ async function renderCrud(id){
  ${id==="personas"?`<div class="people-summary" id="peopleSummary" aria-label="Resumen de personal"></div><div class="panel" id="bulkPeoplePanel"><h3>Alta masiva desde Excel</h3><p class="muted">Importá varias personas a la vez. Primero descargá la plantilla, elegí el establecimiento, cargá el archivo y validá las filas. No se guardará nada hasta que confirmes.</p><div class="form-grid"><div><label for="bulkEstablishment">Establecimiento de destino *</label><select id="bulkEstablishment" required><option value="">Cargando establecimientos...</option></select></div><div><label for="bulkFile">Archivo Excel (.xlsx)</label><input id="bulkFile" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"></div></div><div class="actions"><button class="btn btn-light" type="button" id="bulkTemplate">Descargar plantilla Excel</button><button class="btn btn-blue" type="button" id="bulkValidate">Validar archivo</button><button class="btn btn-green" type="button" id="bulkConfirm" disabled>Confirmar alta masiva</button></div><div id="bulkStatus" class="status" role="status"></div><div id="bulkSummary"></div><div id="bulkPreview" class="table-wrap" style="margin-top:12px"></div></div>`:""}
  ${id==="peligros"?hazardCategoryCards():""}
  <div class="panel"><h3 id="formTitle">Registrar ${escapeHtml(cfg.title.toLowerCase())}</h3><form id="recordForm"><div id="formFields" class="form-grid"></div><div class="actions"><button class="btn btn-green" type="submit" id="saveRecord">Guardar registro</button><button class="btn btn-light hidden" id="cancelEdit" type="button">Cancelar edición</button></div><div id="formStatus" class="status" role="status"></div></form></div>
- <div class="panel"><h3>Listado</h3><div class="toolbar"><input id="tableSearch" placeholder="Buscar en los registros..." aria-label="Buscar"><span id="rowCount" class="muted"></span>${id==="personas"?`<label for="peoplePageSize" class="muted">Mostrar</label><select id="peoplePageSize" aria-label="Cantidad de personas por página"><option value="5">5</option><option value="10" selected>10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select><span class="muted">por página</span>`:""}</div><div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"><tr><td class="empty">Cargando...</td></tr></tbody></table></div><div id="tableStatus" class="status" role="status"></div>${id==="personas"?`<div id="peoplePagination" class="toolbar" style="justify-content:flex-end;align-items:center;gap:8px;margin-top:12px"></div>`:""}</div>${id==="personas"?`<div id="peopleDetailModal" class="people-modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="peopleDetailTitle"><section class="people-modal"><header class="people-modal-header"><div><h3 id="peopleDetailTitle">Ficha de personal</h3><p id="peopleDetailSubtitle">Datos del registro seleccionado</p></div><button type="button" class="people-modal-close" id="peopleDetailClose">Cerrar ✕</button></header><nav class="people-modal-tabs" id="peopleDetailTabs" aria-label="Secciones de la ficha"><button type="button" class="people-modal-tab active" data-people-tab="personal">Datos personales</button><button type="button" class="people-modal-tab" data-people-tab="destino">Destino y situación</button><button type="button" class="people-modal-tab" data-people-tab="contacto">Domicilio y contacto</button><button type="button" class="people-modal-tab" data-people-tab="formacion">Formación</button></nav><div class="people-modal-content" id="peopleDetailContent"></div><footer class="people-modal-footer"><button type="button" class="btn btn-light" id="peopleDetailCloseBottom">Cerrar</button></footer></section></div>`:""}`;
+ <div class="panel"><h3>Listado</h3><div class="toolbar"><input id="tableSearch" placeholder="Buscar en los registros..." aria-label="Buscar"><span id="rowCount" class="muted"></span>${id==="personas"?`<label for="peopleStatusFilter" class="muted">Estado</label><select id="peopleStatusFilter" aria-label="Filtrar por estado"><option value="todos">Todos</option><option value="activos">Activos</option><option value="inactivos">Inactivos</option></select><label for="peoplePageSize" class="muted">Mostrar</label><select id="peoplePageSize" aria-label="Cantidad de personas por página"><option value="5">5</option><option value="10" selected>10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select><span class="muted">por página</span><button class="btn btn-light btn-sm" type="button" id="peopleExport">Exportar Excel</button>`:""}</div><div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"><tr><td class="empty">Cargando...</td></tr></tbody></table></div><div id="tableStatus" class="status" role="status"></div>${id==="personas"?`<div id="peoplePagination" class="toolbar" style="justify-content:flex-end;align-items:center;gap:8px;margin-top:12px"></div>`:""}</div>${id==="personas"?`<div id="peopleDetailModal" class="people-modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="peopleDetailTitle"><section class="people-modal"><header class="people-modal-header"><div><h3 id="peopleDetailTitle">Ficha de personal</h3><p id="peopleDetailSubtitle">Datos del registro seleccionado</p></div><button type="button" class="people-modal-close" id="peopleDetailClose">Cerrar ✕</button></header><nav class="people-modal-tabs" id="peopleDetailTabs" aria-label="Secciones de la ficha"><button type="button" class="people-modal-tab active" data-people-tab="personal">Datos personales</button><button type="button" class="people-modal-tab" data-people-tab="destino">Destino y situación</button><button type="button" class="people-modal-tab" data-people-tab="administrativo">Identificación y estado</button></nav><div class="people-modal-content" id="peopleDetailContent"></div><footer class="people-modal-footer"><button type="button" class="btn btn-light" id="peopleDetailCloseBottom">Cerrar</button></footer></section></div>`:""}`;
  for(const f of cfg.fields)$("formFields").insertAdjacentHTML("beforeend",await renderField(f,f[2]==="checkbox"?true:"",id));
  if(id==="peligros")setupHazardCategoryCards();
  if(id==="sectores"||id==="puestos"){const codeKey=id==="sectores"?"codigo":"Codigo",parentKey=id==="sectores"?"establecimiento_id":"sector_id",parentInput=$("f_"+parentKey),codeInput=$("f_"+codeKey);if(codeInput){codeInput.readOnly=true;codeInput.setAttribute("aria-readonly","true");codeInput.title="El sistema asigna automáticamente el código correlativo"}if(parentInput&&!editing)parentInput.addEventListener("change",async()=>{try{codeInput.value=await getNextCode(id)}catch(e){codeInput.value="";codeInput.placeholder=e.message}});try{if(codeInput&&!editing)codeInput.value=await getNextCode(id)}catch(e){if(codeInput)codeInput.value=""}}
  if(id==="personas"){const legajoInput=$("f_Legajo");if(legajoInput){legajoInput.readOnly=true;legajoInput.setAttribute("aria-readonly","true");legajoInput.title="El sistema asigna automáticamente el siguiente legajo"}try{if(legajoInput)legajoInput.value=formatLegajo(await getNextLegajo())}catch(e){console.error(e);if(legajoInput)legajoInput.placeholder="No se pudo calcular; se verificará al guardar"}}
- $("recordForm").onsubmit=e=>saveRecord(e,id);if(id==="personas")await initPeopleBulkImport();$("reloadModule").onclick=()=>loadModuleRows(id);$("cancelEdit").onclick=()=>renderCrud(id);$("tableSearch").oninput=e=>{searchText=e.target.value;if(id==="personas")peoplePage=1;renderTable(id)};if(id==="personas"){$("peoplePageSize").value=String(peoplePageSize);$("peoplePageSize").onchange=e=>{peoplePageSize=Number(e.target.value)||10;peoplePage=1;renderTable(id)};$("peopleDetailClose").onclick=closePeopleDetail;$("peopleDetailCloseBottom").onclick=closePeopleDetail;$("peopleDetailModal").addEventListener("click",e=>{if(e.target===$("peopleDetailModal"))closePeopleDetail()});$("peopleDetailTabs").querySelectorAll("[data-people-tab]").forEach(b=>b.onclick=()=>{const row=window.currentPeopleDetail;if(row)openPeopleDetail(row,b.dataset.peopleTab)});const originalOpenPeopleDetail=openPeopleDetail;}
+ $("recordForm").onsubmit=e=>saveRecord(e,id);if(id==="personas")await initPeopleBulkImport();$("reloadModule").onclick=()=>loadModuleRows(id);$("cancelEdit").onclick=()=>renderCrud(id);$("tableSearch").oninput=e=>{searchText=e.target.value;if(id==="personas")peoplePage=1;renderTable(id)};if(id==="personas"){$("peoplePageSize").value=String(peoplePageSize);$("peoplePageSize").onchange=e=>{peoplePageSize=Number(e.target.value)||10;peoplePage=1;renderTable(id)};$("peopleStatusFilter").onchange=()=>{peoplePage=1;renderTable(id)};$("peopleExport").onclick=exportPeopleExcel;$("peopleDetailClose").onclick=closePeopleDetail;$("peopleDetailCloseBottom").onclick=closePeopleDetail;$("peopleDetailModal").addEventListener("click",e=>{if(e.target===$("peopleDetailModal"))closePeopleDetail()});$("peopleDetailTabs").querySelectorAll("[data-people-tab]").forEach(b=>b.onclick=()=>{const row=window.currentPeopleDetail;if(row)openPeopleDetail(row,b.dataset.peopleTab)});}
 await loadModuleRows(id);
 }
 async function loadModuleRows(id){
@@ -1335,17 +1335,13 @@ function openPeopleDetail(row,tab="personal"){
  $("peopleDetailTitle").textContent=fullName;
  $("peopleDetailSubtitle").textContent="Legajo: "+(row.Legajo||"Sin asignar")+" · Ficha de personal";
  const groups={
-  personal:[["Legajo","Legajo"],["Apellido","Apellido"],["Nombre","Nombre"],["Documneto","Documento"]],
-  destino:[["Cargo","Cargo"],["puesto_id","Puesto"],["Fecha de Ingreso","Fecha de ingreso"],["Activo","Estado"]],
-  contacto:[],
-  formacion:[]
+  personal:[["Apellido","Apellido"],["Nombre","Nombre"],["Documneto","Documento"]],
+  destino:[["puesto_id","Puesto"],["Cargo","Cargo"],["Fecha de Ingreso","Fecha de ingreso"]],
+  administrativo:[["Legajo","Legajo"],["Activo","Estado"]]
  };
  const active=groups[tab]||groups.personal;
  const content=$("peopleDetailContent");
- if(tab==="contacto"||tab==="formacion"){
-  const label=tab==="contacto"?"Domicilio y datos de contacto":"Formación y capacitación";
-  content.innerHTML='<div class="empty" style="padding:26px;text-align:center"><strong>'+escapeHtml(label)+'</strong><p style="margin:10px 0 0">Esta sección está preparada visualmente, pero los campos correspondientes todavía no existen en la estructura actual de la base de datos. No se muestran ni guardan datos ficticios.</p></div>';
- }else{
+ {
   content.innerHTML='<div class="people-detail-grid">'+active.map(([key,label])=>{
    let value=key==="Activo"?(row.Activo===true?"Activo":row.Activo===false?"Inactivo":"Sin especificar"):displayCellValue("personas",row,key);
    if(key==="Fecha de Ingreso"&&value!=="—"){const d=new Date(value);if(!Number.isNaN(d.getTime()))value=d.toLocaleDateString("es-AR",{timeZone:"UTC"})}
@@ -1356,6 +1352,31 @@ function openPeopleDetail(row,tab="personal"){
  modal.classList.remove("hidden");document.body.style.overflow="hidden";
 }
 function closePeopleDetail(){const m=$("peopleDetailModal");if(m)m.classList.add("hidden");document.body.style.overflow=""}
+async function exportPeopleExcel(){
+ const button=$("peopleExport");if(button)button.disabled=true;
+ try{
+  const XLSX=await ensureXLSX();
+  const cfg=configs.personas,all=moduleCache.personas||[],filter=$("peopleStatusFilter")?.value||"todos";
+  const rows=all.filter(r=>filter==="todos"||(filter==="activos"&&r.Activo===true)||(filter==="inactivos"&&r.Activo===false))
+   .filter(r=>!searchText||cfg.columns.some(k=>displayCellValue("personas",r,k).toLowerCase().includes(searchText.toLowerCase())));
+  const data=rows.map(r=>({
+   "Legajo":r.Legajo??"",
+   "Apellido":r.Apellido??"",
+   "Nombre":r.Nombre??"",
+   "Documento":r.Documneto??"",
+   "Cargo":r.Cargo??"",
+   "Fecha de ingreso":r["Fecha de Ingreso"]??"",
+   "Puesto":displayCellValue("personas",r,"puesto_id"),
+   "Estado":r.Activo===true?"Activo":r.Activo===false?"Inactivo":"Sin especificar"
+  }));
+  const ws=XLSX.utils.json_to_sheet(data);
+  ws["!cols"]=[{wch:16},{wch:24},{wch:24},{wch:18},{wch:24},{wch:18},{wch:30},{wch:16}];
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Personal");
+  XLSX.writeFile(wb,"CONSULTOR_FS_Listado_Personal.xlsx");
+  const status=$("tableStatus");if(status)status.textContent="Exportación preparada: "+rows.length+" registro(s).";
+ }catch(e){console.error(e);const status=$("tableStatus");if(status)status.textContent="No se pudo exportar a Excel: "+e.message}
+ finally{if(button)button.disabled=false}
+}
 function updatePeopleSummary(){
  const el=$("peopleSummary");if(!el)return;
  const rows=moduleCache.personas||[];
@@ -1372,7 +1393,8 @@ function updatePeopleSummary(){
 }
 function renderTable(id){
   const cfg=configs[id],allRows=moduleCache[id]||[];
-  const rows=allRows.filter(r=>!searchText||cfg.columns.some(k=>displayCellValue(id,r,k).toLowerCase().includes(searchText.toLowerCase())));
+  const statusFilter=id==="personas"?($("peopleStatusFilter")?.value||"todos"):"todos";
+  const rows=allRows.filter(r=>(id!=="personas"||statusFilter==="todos"||(statusFilter==="activos"&&r.Activo===true)||(statusFilter==="inactivos"&&r.Activo===false))&&(!searchText||cfg.columns.some(k=>displayCellValue(id,r,k).toLowerCase().includes(searchText.toLowerCase()))));
   const pageCount=id==="personas"?Math.max(1,Math.ceil(rows.length/peoplePageSize)):1;
   if(id==="personas")peoplePage=Math.min(Math.max(1,peoplePage),pageCount);
   const visibleRows=id==="personas"?rows.slice((peoplePage-1)*peoplePageSize,peoplePage*peoplePageSize):rows;
