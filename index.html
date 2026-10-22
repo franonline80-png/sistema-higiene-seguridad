@@ -581,6 +581,25 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 .hazard-practice-card p{font-size:11px;line-height:1.5;color:#475569;padding:0 12px 12px;margin:0}
 .hazard-illustration-disclaimer{font-size:10px;color:#64748b;line-height:1.45;margin-top:10px}
 @media(max-width:650px){.hazard-visual-main{grid-template-columns:1fr}.hazard-visual-art{min-height:150px}.hazard-practice-grid{grid-template-columns:1fr}.hazard-practice-art{height:140px}}
+
+.hazard-visual-heading{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hazard-category-icon{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:#e0f2fe;font-size:20px;flex:0 0 auto}
+.hazard-visual-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.hazard-visual-actions button,.hazard-zoom-trigger{border:1px solid #cbd5e1;background:#fff;color:#1e3a5f;border-radius:8px;padding:7px 10px;font-size:11px;font-weight:700;cursor:pointer}
+.hazard-visual-actions button:hover,.hazard-zoom-trigger:hover{background:#eff6ff;border-color:#60a5fa}
+.hazard-practice-art{position:relative;cursor:zoom-in}
+.hazard-practice-art:after{content:"Ampliar";position:absolute;right:7px;bottom:7px;background:#ffffffdf;border:1px solid #cbd5e1;border-radius:6px;padding:3px 6px;font-size:10px;color:#334155}
+.hazard-illustration-modal{position:fixed;inset:0;z-index:99999;background:#0f172acc;display:none;align-items:center;justify-content:center;padding:18px}
+.hazard-illustration-modal.is-open{display:flex}
+.hazard-illustration-dialog{width:min(780px,100%);max-height:92vh;overflow:auto;background:white;border-radius:16px;padding:18px;box-shadow:0 25px 80px #0006}
+.hazard-illustration-dialog-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.hazard-illustration-dialog-header h3{font-size:16px;margin:0;color:#173e59}
+.hazard-illustration-close{border:0;border-radius:8px;background:#e2e8f0;padding:8px 11px;font-size:16px;cursor:pointer}
+.hazard-illustration-dialog-art{display:flex;justify-content:center;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px}
+.hazard-illustration-dialog-art svg{width:100%;max-width:620px;height:auto}
+.hazard-illustration-dialog-note{font-size:12px;line-height:1.5;color:#475569;margin:12px 0}
+@media print{body.hazard-illustration-printing>*:not(#hazardIllustrationModal){display:none!important}body.hazard-illustration-printing #hazardIllustrationModal{position:static;display:flex!important;background:white;padding:0}body.hazard-illustration-printing .hazard-illustration-dialog{box-shadow:none;width:100%;max-height:none;overflow:visible}body.hazard-illustration-printing .hazard-illustration-close,body.hazard-illustration-printing .hazard-visual-actions{display:none!important}}
+
 </style>
 </head>
 <body>
@@ -800,11 +819,48 @@ function hazardSvgScene(row,variant="main"){
  const marker=bad?'<path d="M250 22 l22 38 h-44z" fill="#dc2626"/><text x="250" y="50" text-anchor="middle" font-size="19" font-weight="bold" fill="white">!</text>':'<circle cx="250" cy="40" r="18" fill="#dcfce7" stroke="#15803d" stroke-width="3"/><path d="M240 40 l7 7 13 -15" fill="none" stroke="#15803d" stroke-width="4" stroke-linecap="round"/>';
  return '<svg viewBox="0 0 320 170" role="img" aria-label="Ilustración orientativa de peligro laboral"><rect width="320" height="170" rx="12" fill="'+bg+'"/><circle cx="272" cy="28" r="35" fill="'+(bad?"#fecaca":"#dbeafe")+'" opacity=".75"/><rect x="18" y="18" width="284" height="134" rx="12" fill="#ffffff" opacity=".55"/>'+object+marker+'<rect x="20" y="153" width="280" height="5" rx="2" fill="'+ground+'"/></svg>';
 }
+
+function hazardCategoryMeta(row){
+ const label=String((row?.nombre||"")+" "+(row?.tipo||"")).toLocaleLowerCase("es");
+ if(/ca[ií]d|resbal|tropiez|orden|limpieza/.test(label))return {icon:"🟠",name:"Caídas y orden"};
+ if(/electric|tensi[oó]n|cable|energ/.test(label))return {icon:"⚡",name:"Riesgo eléctrico"};
+ if(/incend|fuego|combust|explos/.test(label))return {icon:"🔥",name:"Incendio"};
+ if(/qu[ií]mic|sustancia|corros|t[oó]xic/.test(label))return {icon:"🧪",name:"Agentes químicos"};
+ if(/ruido|sonido/.test(label))return {icon:"🔊",name:"Ruido"};
+ if(/ergon|postura|levant|carga|movimiento repet/.test(label))return {icon:"🧍",name:"Ergonomía"};
+ if(/m[aá]quina|atrap|corte|herramient/.test(label))return {icon:"⚙️",name:"Máquinas y herramientas"};
+ return {icon:"🦺",name:"Seguridad laboral"};
+}
+function ensureHazardIllustrationModal(){
+ if(document.getElementById("hazardIllustrationModal"))return;
+ const el=document.createElement("div");el.id="hazardIllustrationModal";el.className="hazard-illustration-modal";el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");el.setAttribute("aria-label","Ilustración ampliada");
+ el.innerHTML='<div class="hazard-illustration-dialog"><div class="hazard-illustration-dialog-header"><h3 id="hazardIllustrationModalTitle">Ilustración de referencia</h3><button type="button" class="hazard-illustration-close" id="hazardIllustrationClose" aria-label="Cerrar">✕</button></div><div class="hazard-illustration-dialog-art" id="hazardIllustrationModalArt"></div><p class="hazard-illustration-dialog-note" id="hazardIllustrationModalNote"></p><div class="hazard-visual-actions"><button type="button" id="hazardIllustrationDownload">Descargar ilustración SVG</button><button type="button" id="hazardIllustrationPrint">Imprimir ficha ilustrada</button></div></div>';
+ document.body.appendChild(el);
+ const close=()=>{el.classList.remove("is-open");document.body.classList.remove("hazard-illustration-printing")};
+ el.addEventListener("click",e=>{if(e.target===el)close()});
+ el.querySelector("#hazardIllustrationClose").addEventListener("click",close);
+ document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
+ el.querySelector("#hazardIllustrationDownload").addEventListener("click",()=>{
+  const svg=el.querySelector("#hazardIllustrationModalArt svg");if(!svg)return;
+  const blob=new Blob([new XMLSerializer().serializeToString(svg)],{type:"image/svg+xml;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download="ilustracion-peligro-laboral.svg";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+ });
+ el.querySelector("#hazardIllustrationPrint").addEventListener("click",()=>{document.body.classList.add("hazard-illustration-printing");window.print();setTimeout(()=>document.body.classList.remove("hazard-illustration-printing"),500)});
+}
+function openHazardIllustration(title,svg,note){
+ ensureHazardIllustrationModal();const el=document.getElementById("hazardIllustrationModal");
+ el.querySelector("#hazardIllustrationModalTitle").textContent=title||"Ilustración de referencia";
+ el.querySelector("#hazardIllustrationModalArt").innerHTML=svg;
+ el.querySelector("#hazardIllustrationModalNote").textContent=note||"Ilustración genérica de referencia. Validar los controles según las condiciones reales del puesto.";
+ el.classList.add("is-open");
+}
+
+
 function renderHazardIllustrationPanel(row,risks){
- const title=escapeHtml(row.nombre||"Peligro seleccionado");
+ const title=escapeHtml(row.nombre||"Peligro seleccionado"),meta=hazardCategoryMeta(row);
  const riskList=risks.length?'<ul>'+risks.map(r=>'<li>'+escapeHtml(r)+'</li>').join("")+'</ul>':'<p class="muted" style="font-size:12px">Todavía no hay riesgos asociados cargados para este peligro.</p>';
  const example=risks[0]||"Identificar la condición peligrosa antes de iniciar la tarea.";
- return '<div class="hazard-visual-panel"><div><div class="hazard-visual-heading">Ilustración de referencia · '+title+'</div><p class="hazard-visual-subtitle">Representación gráfica orientativa para reconocer el peligro. No reemplaza la inspección del puesto ni la evaluación profesional.</p></div><div class="hazard-visual-main"><div class="hazard-visual-art">'+hazardSvgScene(row,"main")+'</div><div class="hazard-visual-risks"><strong>Riesgos asociados a este peligro</strong>'+riskList+'</div></div><div class="hazard-practice-grid"><article class="hazard-practice-card unsafe"><h4>⚠ Condición insegura · ejemplo</h4><div class="hazard-practice-art">'+hazardSvgScene(row,"unsafe")+'</div><p>'+escapeHtml(example)+'</p></article><article class="hazard-practice-card safe"><h4>✓ Práctica preventiva · ejemplo</h4><div class="hazard-practice-art">'+hazardSvgScene(row,"safe")+'</div><p>Aplicar controles adecuados, mantener el área segura y seguir el procedimiento preventivo correspondiente.</p></article></div><p class="hazard-illustration-disclaimer">Ilustraciones genéricas de referencia. Adaptar los ejemplos a las condiciones reales de cada establecimiento.</p></div>';
+ return '<div class="hazard-visual-panel"><div><div class="hazard-visual-heading"><span class="hazard-category-icon" aria-hidden="true">'+meta.icon+'</span><span>Ilustración de referencia · '+title+'</span></div><p class="hazard-visual-subtitle">Categoría visual: '+meta.name+'. Representación orientativa; no reemplaza la inspección del puesto ni la evaluación profesional.</p></div><div class="hazard-visual-main"><div><div class="hazard-visual-art hazard-zoom-trigger" role="button" tabindex="0" data-hazard-art="main" aria-label="Ampliar ilustración de '+title+'">'+hazardSvgScene(row,"main")+'</div><button type="button" class="hazard-zoom-trigger" data-hazard-open="main">🔍 Ampliar ilustración</button></div><div class="hazard-visual-risks"><strong>Riesgos asociados a este peligro</strong>'+riskList+'</div></div><div class="hazard-practice-grid"><article class="hazard-practice-card unsafe"><h4>⚠ Condición insegura · ejemplo</h4><div class="hazard-practice-art" role="button" tabindex="0" data-hazard-art="unsafe" aria-label="Ampliar ejemplo de condición insegura">'+hazardSvgScene(row,"unsafe")+'</div><p>'+escapeHtml(example)+'</p></article><article class="hazard-practice-card safe"><h4>✓ Práctica preventiva · ejemplo</h4><div class="hazard-practice-art" role="button" tabindex="0" data-hazard-art="safe" aria-label="Ampliar ejemplo de práctica preventiva">'+hazardSvgScene(row,"safe")+'</div><p>Aplicar controles adecuados, mantener el área segura y seguir el procedimiento preventivo correspondiente.</p></article></div><div class="hazard-visual-actions"><button type="button" data-hazard-open="main">Descargar / imprimir ilustración</button></div><p class="hazard-illustration-disclaimer">Ilustraciones genéricas de referencia. Adaptar los ejemplos a las condiciones reales de cada establecimiento.</p></div>';
 }
 
 function setupRiskDangerSelector(selectedId){
@@ -831,6 +887,7 @@ function setupRiskDangerSelector(selectedId){
    if(riskSel){const previous=riskSel.value;riskSel.innerHTML='<option value="">Seleccione un riesgo asociado...</option>'+risks.map(r=>'<option value="'+escapeHtml(r)+'">'+escapeHtml(r)+'</option>').join("");if(risks.includes(previous))riskSel.value=previous;riskSel.disabled=!row||!risks.length;const note=$("riskAssociatedNote");if(note)note.textContent=!row?"Primero seleccioná un peligro.":risks.length?risks.length+" riesgo(s) asociado(s) disponible(s).":"Este peligro todavía no tiene riesgos asociados en el catálogo."}
    const panel=$("riskAssociatedPanel");if(panel){panel.innerHTML=row?renderHazardIllustrationPanel(row,risks):"Seleccioná un peligro para ver sus riesgos asociados."}
    renderCatalog(row,risks);
+   if(panel&&!panel.dataset.illustrationEvents){panel.dataset.illustrationEvents="1";panel.addEventListener("click",e=>{const target=e.target.closest("[data-hazard-art],[data-hazard-open]");if(!target)return;const variant=target.getAttribute("data-hazard-art")||target.getAttribute("data-hazard-open")||"main";const current=rows.find(x=>String(x.id)===String(sel.value));if(!current)return;const svg=hazardSvgScene(current,variant);const label=variant==="unsafe"?"Condición insegura · ":variant==="safe"?"Práctica preventiva · ":"Peligro · ";openHazardIllustration(label+(current.nombre||""),svg,"Peligro: "+(current.nombre||"")+". Riesgos asociados: "+(getRisks(current).join("; ")||"sin riesgos asociados cargados")+". Ilustración genérica de referencia.");});panel.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches("[data-hazard-art]")){e.preventDefault();e.target.click()}})}
  };
  const filter=()=>{const term=search.value.trim().toLocaleLowerCase("es"),category=cat.value;let visible=0;Array.from(sel.options).forEach((o,i)=>{if(i===0){o.hidden=false;return}const row=rows.find(r=>String(r.id)===o.value);const ok=!!row&&(!category||String(row.tipo||"")===category)&&(!term||String(row.nombre||"").toLocaleLowerCase("es").includes(term)||String(row.descripcion||"").toLocaleLowerCase("es").includes(term));o.hidden=!ok;if(ok)visible++});if(sel.value&&sel.selectedOptions[0]?.hidden)sel.value="";const note=$("riskDangerNote");if(note)note.textContent?note.textContent=rows.length?visible+" peligro(s) disponible(s) con estos filtros.":"No hay peligros cargados en la base de datos.":null;showAssociated()};
  cat.onchange=filter;search.oninput=filter;sel.onchange=()=>{const row=rows.find(r=>String(r.id)===sel.value);if(row?.tipo)cat.value=row.tipo;showAssociated()};
