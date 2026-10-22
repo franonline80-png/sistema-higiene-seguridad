@@ -883,7 +883,7 @@ function renderHazardIllustrationPanel(row,risks){
 function setupRiskDangerSelector(selectedId){
  const cat=$("riskDangerCategory"),search=$("riskDangerSearch"),sel=$("f_peligro_id"),riskSel=$("riskAssociatedSelect"),desc=$("f_descripcion");
  if(!cat||!search||!sel)return;
- const rows=moduleCache.peligros||[];
+ const rows=(moduleCache.peligros||[]).map(r=>({...r,nombre:r.nombre||r.Nombre||"",tipo:r.tipo||r.Categoria||r.categoria||"",descripcion:r.descripcion||r.Descripcion||""}));
  const catalog=Array.isArray(ASSOCIATED_RISK_CATALOG)?ASSOCIATED_RISK_CATALOG:[];
  const getRisks=row=>{
    if(!row)return [];
