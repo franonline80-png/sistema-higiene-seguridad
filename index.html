@@ -1800,8 +1800,7 @@ function downloadReportPdf(){
  const def=reportDefinitions.find(d=>d.id===reportSelected)||reportDefinitions[0];
  const w=window.open("","_blank");if(!w){$("reportStatus").textContent="El navegador bloqueó la ventana. Permití ventanas emergentes para guardar el PDF.";return}
  const css=[...document.querySelectorAll("style")].map(x=>x.textContent).join("\n");
- w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>'+reportEsc(def.title)+'</title><style>'+css+' body{background:#fff!important;padding:12mm!important}.report-paper{max-width:190mm;margin:auto;box-shadow:none;border:0;padding:0!important;font-size:10pt}@page{size:A4;margin:12mm}
-</style></head><body><article class="report-paper">'+paper.innerHTML+'</article><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>');
+  w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>'+reportEsc(def.title)+'</title><style>'+css+' body{background:#fff!important;padding:12mm!important}.report-paper{max-width:190mm;margin:auto;box-shadow:none;border:0;padding:0!important;font-size:10pt}@page{size:A4;margin:12mm}</style></head><body><article class="report-paper">'+paper.innerHTML+'</article><script>window.onload=()=>setTimeout(()=>window.print(),250)<\\/script></body></html>');
  w.document.close();
 }
 async function shareReport(){
