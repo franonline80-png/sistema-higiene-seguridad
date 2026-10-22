@@ -1289,7 +1289,8 @@ async function renderCrud(id){
  if(id==="peligros")setupHazardCategoryCards();
  if(id==="sectores"||id==="puestos"){const codeKey=id==="sectores"?"codigo":"Codigo",parentKey=id==="sectores"?"establecimiento_id":"sector_id",parentInput=$("f_"+parentKey),codeInput=$("f_"+codeKey);if(codeInput){codeInput.readOnly=true;codeInput.setAttribute("aria-readonly","true");codeInput.title="El sistema asigna automáticamente el código correlativo"}if(parentInput&&!editing)parentInput.addEventListener("change",async()=>{try{codeInput.value=await getNextCode(id)}catch(e){codeInput.value="";codeInput.placeholder=e.message}});try{if(codeInput&&!editing)codeInput.value=await getNextCode(id)}catch(e){if(codeInput)codeInput.value=""}}
  if(id==="personas"){const legajoInput=$("f_Legajo");if(legajoInput){legajoInput.readOnly=true;legajoInput.setAttribute("aria-readonly","true");legajoInput.title="El sistema asigna automáticamente el siguiente legajo"}try{if(legajoInput)legajoInput.value=formatLegajo(await getNextLegajo())}catch(e){console.error(e);if(legajoInput)legajoInput.placeholder="No se pudo calcular; se verificará al guardar"}}
- $("recordForm").onsubmit=e=>saveRecord(e,id);if(id==="personas")await initPeopleBulkImport();$("reloadModule").onclick=()=>loadModuleRows(id);$("cancelEdit").onclick=()=>renderCrud(id);$("tableSearch").oninput=e=>{searchText=e.target.value;if(id==="personas")peoplePage=1;renderTable(id)};if(id==="personas"){$("peoplePageSize").value=String(peoplePageSize);$("peoplePageSize").onchange=e=>{peoplePageSize=Number(e.target.value)||10;peoplePage=1;renderTable(id)}}await loadModuleRows(id);
+ $("recordForm").onsubmit=e=>saveRecord(e,id);if(id==="personas")await initPeopleBulkImport();$("reloadModule").onclick=()=>loadModuleRows(id);$("cancelEdit").onclick=()=>renderCrud(id);$("tableSearch").oninput=e=>{searchText=e.target.value;if(id==="personas")peoplePage=1;renderTable(id)};if(id==="personas"){$("peoplePageSize").value=String(peoplePageSize);$("peoplePageSize").onchange=e=>{peoplePageSize=Number(e.target.value)||10;peoplePage=1;renderTable(id)};$("peopleDetailClose").onclick=closePeopleDetail;$("peopleDetailCloseBottom").onclick=closePeopleDetail;$("peopleDetailModal").addEventListener("click",e=>{if(e.target===$("peopleDetailModal"))closePeopleDetail()});$("peopleDetailTabs").querySelectorAll("[data-people-tab]").forEach(b=>b.onclick=()=>{const row=window.currentPeopleDetail;if(row)openPeopleDetail(row,b.dataset.peopleTab)});const originalOpenPeopleDetail=openPeopleDetail;}
+await loadModuleRows(id);
 }
 async function loadModuleRows(id){
   try{
@@ -1299,6 +1300,7 @@ async function loadModuleRows(id){
     await Promise.all(refTables.map(async table=>{moduleCache[table]=await fetchRows(table)}));
     if(id==="riesgos"){setupRiskDangerSelector($("f_peligro_id")?.value);updateRiskOverview();renderRiskTable();return}
     $("tableStatus").textContent=`Se encontraron ${rows.length} registro(s).`;
+    if(id==="personas")updatePeopleSummary();
     renderTable(id);if(id==="peligros"){$("view").querySelector(".hazard-category-panel")?.remove();$("view").querySelector(".page-title")?.insertAdjacentHTML("afterend",hazardCategoryCards());setupHazardCategoryCards()}
   }catch(e){console.error(e);$("tableStatus").textContent="No se pudo consultar: "+e.message;$("tableBody").innerHTML='<tr><td class="empty">No se pudieron cargar los datos. Verificá la conexión y RLS.</td></tr>'}
 }
@@ -1326,6 +1328,48 @@ function displayCellValue(moduleId,row,key){
   if(field&&field[2]==="date")return formatDateDMY(value);
   return String(value);
 }
+function openPeopleDetail(row,tab="personal"){
+ window.currentPeopleDetail=row;
+ const modal=$("peopleDetailModal");if(!modal)return;
+ const fullName=[row.Apellido,row.Nombre].filter(Boolean).join(", ")||"Persona sin nombre";
+ $("peopleDetailTitle").textContent=fullName;
+ $("peopleDetailSubtitle").textContent="Legajo: "+(row.Legajo||"Sin asignar")+" · Ficha de personal";
+ const groups={
+  personal:[["Legajo","Legajo"],["Apellido","Apellido"],["Nombre","Nombre"],["Documneto","Documento"]],
+  destino:[["Cargo","Cargo"],["puesto_id","Puesto"],["Fecha de Ingreso","Fecha de ingreso"],["Activo","Estado"]],
+  contacto:[],
+  formacion:[]
+ };
+ const active=groups[tab]||groups.personal;
+ const content=$("peopleDetailContent");
+ if(tab==="contacto"||tab==="formacion"){
+  const label=tab==="contacto"?"Domicilio y datos de contacto":"Formación y capacitación";
+  content.innerHTML='<div class="empty" style="padding:26px;text-align:center"><strong>'+escapeHtml(label)+'</strong><p style="margin:10px 0 0">Esta sección está preparada visualmente, pero los campos correspondientes todavía no existen en la estructura actual de la base de datos. No se muestran ni guardan datos ficticios.</p></div>';
+ }else{
+  content.innerHTML='<div class="people-detail-grid">'+active.map(([key,label])=>{
+   let value=key==="Activo"?(row.Activo===true?"Activo":row.Activo===false?"Inactivo":"Sin especificar"):displayCellValue("personas",row,key);
+   if(key==="Fecha de Ingreso"&&value!=="—"){const d=new Date(value);if(!Number.isNaN(d.getTime()))value=d.toLocaleDateString("es-AR",{timeZone:"UTC"})}
+   return '<div class="people-detail-item"><small>'+escapeHtml(label)+'</small><strong>'+escapeHtml(String(value??"—"))+'</strong></div>';
+  }).join("")+'</div>';
+ }
+ $("peopleDetailTabs").querySelectorAll("[data-people-tab]").forEach(b=>b.classList.toggle("active",b.dataset.peopleTab===tab));
+ modal.classList.remove("hidden");document.body.style.overflow="hidden";
+}
+function closePeopleDetail(){const m=$("peopleDetailModal");if(m)m.classList.add("hidden");document.body.style.overflow=""}
+function updatePeopleSummary(){
+ const el=$("peopleSummary");if(!el)return;
+ const rows=moduleCache.personas||[];
+ const active=rows.filter(r=>r.Activo===true).length;
+ const inactive=rows.filter(r=>r.Activo===false).length;
+ const withPost=rows.filter(r=>r.puesto_id).length;
+ const cards=[
+  ["♙","Total de personas",rows.length,"Todos los registros"],
+  ["✓","Activas",active,"Marcadas como activas"],
+  ["Ⅱ","Inactivas",inactive,"Marcadas como inactivas"],
+  ["▣","Con puesto asignado",withPost,"Vinculadas a un puesto"]
+ ];
+ el.innerHTML=cards.map(([icon,title,value,note])=>'<article class="people-stat"><div class="people-stat-icon">'+icon+'</div><div><strong>'+value+'</strong><span>'+escapeHtml(title)+'</span><span>'+escapeHtml(note)+'</span></div></article>').join("");
+}
 function renderTable(id){
   const cfg=configs[id],allRows=moduleCache[id]||[];
   const rows=allRows.filter(r=>!searchText||cfg.columns.some(k=>displayCellValue(id,r,k).toLowerCase().includes(searchText.toLowerCase())));
@@ -1345,7 +1389,7 @@ function renderTable(id){
       else td.textContent=displayCellValue(id,row,k);
       tr.appendChild(td);
     });
-    const td=document.createElement("td");td.append(makeButton("Editar","btn btn-light btn-sm",()=>startEdit(id,row)),makeButton("Eliminar","btn btn-red btn-sm",()=>deleteRecord(id,row)));tr.appendChild(td);tb.appendChild(tr);
+    const td=document.createElement("td");if(id==="personas")td.append(makeButton("Ver ficha","btn btn-blue btn-sm",()=>openPeopleDetail(row)));td.append(makeButton("Editar","btn btn-light btn-sm",()=>startEdit(id,row)),makeButton("Eliminar","btn btn-red btn-sm",()=>deleteRecord(id,row)));tr.appendChild(td);tb.appendChild(tr);
   });
   if(id==="personas"){
     const nav=$("peoplePagination");nav.replaceChildren();
