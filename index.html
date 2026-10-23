@@ -1658,6 +1658,21 @@ function prepareInspectionPayload(payload){
  if(bad&&payload.estado==="Cerrada"&&pending)throw new Error("No podés cerrar la inspección mientras haya puntos pendientes de verificar.");
  if(bad&&payload.estado==="Cerrada"&&vals.some(x=>x.state==="No conforme"&&(!x.finding||!x.action)))throw new Error("Para cerrar, completá hallazgos y medidas correctivas.");
 }
+function printInspectionReport(row){
+ const parsed=inspectionParse(row.observaciones),checks=parsed.checks||{};
+ const est=(moduleCache.establecimientos||[]).find(x=>String(x.id)===String(row.establecimiento_id));
+ const sec=(moduleCache.sectores||[]).find(x=>String(x.id)===String(row.sector_id));
+ const post=(moduleCache.puestos||[]).find(x=>String(x.id)===String(row.puesto_id));
+ const esc=v=>escapeHtml(String(v??"—"));
+ const groups=INSPECTION_CHECKS.map((g,gi)=>'<section><h3>'+esc(g.group)+'</h3><table><thead><tr><th style="width:43%">Condición verificada</th><th>Resultado</th><th>Hallazgo / evidencia</th><th>Medida propuesta</th></tr></thead><tbody>'+g.items.map((label,ii)=>{const x=checks[gi+"_"+ii]||{};return '<tr><td>'+esc(label)+'</td><td class="state">'+esc(x.state||"Pendiente")+'</td><td>'+esc(x.finding||"—")+'</td><td>'+esc(x.action||"—")+'</td></tr>'}).join("")+'</tbody></table></section>').join("");
+ const summary=Object.values(checks);
+ const count=state=>summary.filter(x=>x.state===state).length;
+ const w=window.open("","_blank");
+ if(!w){alert("El navegador bloqueó la ventana del informe. Permití ventanas emergentes para esta aplicación e intentá nuevamente.");return}
+ w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Informe de inspección</title><style>body{font:12px Arial,sans-serif;color:#172033;margin:18mm}h1{font-size:20px;text-align:center;margin:0 0 5px}h2{text-align:center;font-size:15px;margin:0 0 16px}h3{font-size:13px;background:#dceaf7;padding:7px;margin:14px 0 0}table{width:100%;border-collapse:collapse;margin:0 0 8px}th,td{border:1px solid #7c8795;padding:6px;text-align:left;vertical-align:top}th{background:#edf2f7}.meta{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:14px 0}.field{border:1px solid #9aa4b2;padding:8px}.summary{margin:12px 0;padding:8px;background:#f1f5f9}.state{font-weight:bold;white-space:nowrap}.signatures{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px}.sig{border-top:1px solid #334155;text-align:center;padding-top:7px;min-height:30px}.notes{border:1px solid #9aa4b2;padding:10px;min-height:40px;white-space:pre-wrap}.foot{margin-top:18px;font-size:10px;color:#475569}@media print{body{margin:10mm}button{display:none}section{break-inside:avoid}tr{break-inside:avoid}}</style></head><body><h1>FORMATO DE INSPECCIÓN</h1><h2>CONDICIONES DE SEGURIDAD — OFICINA / ÁREAS DE TRABAJO</h2><div class="meta"><div class="field"><b>N.º de inspección:</b> '+esc(row.id)+'</div><div class="field"><b>Fecha:</b> '+esc(formatDateDMY(row.fecha))+'</div><div class="field"><b>Tipo:</b> '+esc(row.tipo)+'</div><div class="field"><b>Estado:</b> '+esc(row.estado)+'</div><div class="field"><b>Establecimiento:</b> '+esc(est?.Nombre)+'</div><div class="field"><b>Sector:</b> '+esc(sec?.nombre)+'</div><div class="field"><b>Puesto:</b> '+esc(post?.Nombre)+'</div><div class="field"><b>Inspector:</b> '+esc(row.inspector)+'</div></div><div class="summary"><b>Resumen:</b> Conforme: '+count("Conforme")+' · No conforme: '+count("No conforme")+' · Pendiente: '+count("Pendiente")+' · No aplica: '+count("No aplica")+'</div>'+groups+'<h3>Observaciones generales</h3><div class="notes">'+esc(parsed.notes||"Sin observaciones")+'</div><div class="signatures"><div class="sig">Inspector / Responsable SST</div><div class="sig">Responsable del sector</div><div class="sig">Revisión / Aprobación</div></div><p class="foot">Documento generado desde el Sistema de Higiene y Seguridad. Verificar los datos y completar firmas según el procedimiento interno.</p><script>window.onload=()=>setTimeout(()=>window.print(),300)</script></body></html>');
+ w.document.close();
+}
+
 function renderInspectionTable(){
  const rows=moduleCache.inspecciones||[],search=($("tableSearch")?.value||"").trim().toLocaleLowerCase("es");
  const filtered=rows.filter(r=>{const est=(moduleCache.establecimientos||[]).find(x=>String(x.id)===String(r.establecimiento_id));const sec=(moduleCache.sectores||[]).find(x=>String(x.id)===String(r.sector_id));return !search||[r.tipo,r.fecha,r.inspector,r.estado,est?.Nombre,sec?.nombre,inspectionParse(r.observaciones).notes].filter(Boolean).join(" ").toLocaleLowerCase("es").includes(search)});
@@ -1671,7 +1686,7 @@ function renderInspectionTable(){
   add(formatDateDMY(row.fecha));add(row.tipo||"—");add((est?.Nombre||"—")+(sec?" / "+sec.nombre:""));add(row.inspector||"—");
   const result=document.createElement("td");result.innerHTML='<span class="inspection-count-pill bad">'+bad+' no conforme(s)</span> <span class="inspection-count-pill">'+pending+' pendiente(s)</span>';tr.appendChild(result);
   const st=document.createElement("td"),span=document.createElement("span");span.className="inspection-table-state";span.textContent=row.estado||"—";span.style.background=row.estado==="Cerrada"?"#dcfce7":row.estado==="En curso"?"#dbeafe":"#fef3c7";span.style.color=row.estado==="Cerrada"?"#166534":row.estado==="En curso"?"#1d4ed8":"#92400e";st.appendChild(span);tr.appendChild(st);
-  const actions=document.createElement("td");actions.append(makeButton("Editar","btn btn-light btn-sm",()=>startEdit("inspecciones",row)),makeButton("Eliminar","btn btn-red btn-sm",()=>deleteRecord("inspecciones",row)));tr.appendChild(actions);tb.appendChild(tr);
+  const actions=document.createElement("td");actions.append(makeButton("Informe / PDF","btn btn-light btn-sm",()=>printInspectionReport(row)),makeButton("Editar","btn btn-light btn-sm",()=>startEdit("inspecciones",row)),makeButton("Eliminar","btn btn-red btn-sm",()=>deleteRecord("inspecciones",row)));tr.appendChild(actions);tb.appendChild(tr);
  });
 }
 
