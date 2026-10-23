@@ -634,7 +634,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 
 .ergo-zones-panel{margin-top:14px;border:1px solid #b7e4d4;border-radius:14px;background:linear-gradient(145deg,#f0fdfa,#f8fafc);padding:15px;color:#163b35}.ergo-zones-panel[hidden]{display:none!important}.ergo-zones-heading{display:flex;align-items:center;gap:11px;margin-bottom:13px}.ergo-zones-icon{display:grid;place-items:center;flex:0 0 44px;height:44px;border-radius:12px;background:#ccfbf1;font-size:25px}.ergo-zones-heading strong{font-size:15px;color:#134e4a}.ergo-zones-heading p{font-size:12px;margin:4px 0 0;color:#466b66}.ergo-zones-content{display:grid;grid-template-columns:minmax(110px,.45fr) minmax(0,1.55fr);gap:12px;align-items:stretch}.ergo-reach-figure{position:relative;min-height:320px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:linear-gradient(to bottom,#fee2e2 0 18%,#ffedd5 18% 31%,#dcfce7 31% 58%,#ffedd5 58% 77%,#fee2e2 77% 100%);border:1px solid #dbe7e5;overflow:hidden}.ergo-person{font-size:clamp(52px,7vw,82px);filter:drop-shadow(0 2px 2px #33415522)}.ergo-height-scale{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:8px 5px;color:#334155;font-size:10px;font-weight:800;text-shadow:0 1px #fff}.ergo-height-scale span{background:#ffffffc9;width:max-content;border-radius:4px;padding:2px 4px}.ergo-zone-list{display:grid;gap:7px}.ergo-zone{display:flex;align-items:center;gap:9px;border-radius:9px;padding:9px 10px;border:1px solid transparent}.ergo-zone-icon{flex:0 0 32px;width:32px;height:32px;display:grid;place-items:center;border-radius:8px;background:#ffffffb8;font-size:19px}.ergo-zone strong{display:block;font-size:12px;line-height:1.35}.ergo-zone small{display:block;font-size:11px;line-height:1.4;margin-top:3px;color:#344054}.ergo-zone-critical{background:#fff0f0;border-color:#fecaca}.ergo-zone-critical strong{color:#b91c1c}.ergo-zone-caution,.ergo-zone-medium{background:#fff7ed;border-color:#fed7aa}.ergo-zone-caution strong,.ergo-zone-medium strong{color:#c2410c}.ergo-zone-optimal{background:#ecfdf5;border-color:#a7f3d0}.ergo-zone-optimal strong{color:#047857}.ergo-zones-footnote{font-size:10px;line-height:1.45;color:#526783;margin:11px 0 0;padding-top:9px;border-top:1px solid #d5e9e3}@media(max-width:620px){.ergo-zones-panel{padding:10px}.ergo-zones-content{grid-template-columns:1fr}.ergo-reach-figure{min-height:115px;flex-direction:row;background:linear-gradient(to right,#fee2e2 0 18%,#ffedd5 18% 31%,#dcfce7 31% 58%,#ffedd5 58% 77%,#fee2e2 77% 100%)}.ergo-height-scale{flex-direction:row;align-items:flex-start;inset:0;padding:4px;gap:3px}.ergo-height-scale span{font-size:9px}.ergo-person{font-size:58px;margin-top:22px}.ergo-zone{padding:8px}.ergo-zone strong{font-size:12px}}
 
-</style>
+\n.risk-measures-actions{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;margin:8px 0 14px}.risk-measures-actions .muted{font-size:12px;line-height:1.45;margin:4px 0;max-width:560px}\n</style>
 </head>
 <body>
 
@@ -1314,6 +1314,16 @@ function initRiskMatrixWidget(){
  };
  root.addEventListener("click",e=>{const option=e.target.closest("[data-risk-axis]"),cell=e.target.closest("[data-risk-cell-p]");if(option){(option.dataset.riskAxis==="probability"?p:c).value=option.dataset.riskValue;paint()}else if(cell){p.value=cell.dataset.riskCellP;c.value=cell.dataset.riskCellC;paint()}});
  p.addEventListener("change",paint);c.addEventListener("change",paint);
+ $("riskRegenerateMeasures")?.addEventListener("click",()=>{
+  const pv=Number(p.value),cv=Number(c.value),field=$("f_medidas_propuestas");
+  if(!pv||!cv){alert("Primero seleccioná la probabilidad y la consecuencia para determinar el nivel de riesgo.");return}
+  if(!field)return;
+  const hazard=$("f_peligro_id"),hazardLabel=hazard?.selectedOptions?.[0]?.textContent||"",description=$("f_descripcion")?.value||"";
+  const suggestion=proposedMeasuresForRisk(pv*cv,hazardLabel,description);
+  if(field.value.trim()&&field.value!==field.dataset.generatedSuggestion&&!confirm("Esto reemplazará el texto actual de medidas propuestas por nuevas sugerencias. ¿Querés continuar?"))return;
+  field.value=suggestion;field.dataset.generatedSuggestion=suggestion;
+  field.dispatchEvent(new Event("input",{bubbles:true}));
+ });
  $("f_peligro_id")?.addEventListener("change",paint);
  $("f_descripcion")?.addEventListener("input",()=>{if(!$("f_medidas_propuestas")?.value.trim()||$("f_medidas_propuestas").value===$("f_medidas_propuestas").dataset.generatedSuggestion)paint()});
  paint();
@@ -1339,7 +1349,8 @@ async function renderField(field,value,moduleId){
     control=`<select id="${id}" name="${escapeHtml(key)}" ${req}><option value="">Seleccione...</option>${opts.map(o=>`<option value="${escapeHtml(o.id)}" ${o.id===value?"selected":""}>${escapeHtml(o.label)}</option>`).join("")}</select>`;
   }else if(type.startsWith("select:")){
     control=`<select id="${id}" name="${escapeHtml(key)}" ${req}><option value="">Seleccione...</option>${type.slice(7).split(",").map(o=>`<option value="${escapeHtml(o)}" ${o===value?"selected":""}>${escapeHtml(o)}</option>`).join("")}</select>`;
-  }else if(type==="textarea")control=`<textarea id="${id}" name="${escapeHtml(key)}" rows="3" ${req}>${escapeHtml(value||"")}</textarea>`;
+  }else if(moduleId==="riesgos"&&key==="medidas_propuestas")control=`<textarea id="${id}" name="${escapeHtml(key)}" rows="5" ${req} placeholder="Las medidas se sugerirán automáticamente según la valoración. Podés revisarlas y editarlas.">${escapeHtml(value||"")}</textarea><div class="risk-measures-actions"><button type="button" class="btn btn-light" id="riskRegenerateMeasures">↻ Generar medidas según el nivel de riesgo</button><p class="muted">Las sugerencias son una base de trabajo y deben validarse según las condiciones reales del puesto.</p></div>`;
+  else if(type==="textarea")control=`<textarea id="${id}" name="${escapeHtml(key)}" rows="3" ${req}>${escapeHtml(value||"")}</textarea>`;
   else if(key==="Legajo"||((key==="codigo"||key==="Codigo")&&(moduleId==="sectores"||moduleId==="puestos")))control=`<input id="${id}" name="${escapeHtml(key)}" type="text" value="${escapeHtml(value??"")}" readonly aria-readonly="true" class="readonly-field" placeholder="Se asigna automáticamente">`;
   else if(key==="Documneto")control=`<input id="${id}" name="${escapeHtml(key)}" type="text" inputmode="numeric" pattern="[0-9]{1,8}" maxlength="8" minlength="1" value="${escapeHtml(value??"")}" ${req} placeholder="Hasta 8 dígitos">`;
   else control=`<input id="${id}" name="${escapeHtml(key)}" type="${escapeHtml(type)}" value="${escapeHtml(value??"")}" ${req} ${type==="number"?'step="any"':""}>`;
