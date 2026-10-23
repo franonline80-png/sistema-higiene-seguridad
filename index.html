@@ -27,11 +27,16 @@ async function renderInspectionsModule(){
  await loadInspectionOptions();await loadInspectionData();
 }
 async function loadInspectionOptions(){
- const [ests,secs,puestos]=await Promise.all([fetchRows("establecimientos"),fetchRows("sectores"),fetchRows("puestos")]);
- inspectionRows=inspectionRows||[];
+ const [estRows,secRows,puestoRows]=await Promise.all([fetchRows("establecimientos"),fetchRows("sectores"),fetchRows("puestos")]);
+ const ests=estRows.filter(r=>String(r.organizacion_id)===String(activeOrg));
+ const estIds=new Set(ests.map(r=>String(r.id)));
+ const secs=secRows.filter(r=>estIds.has(String(r.establecimiento_id)));
+ const secIds=new Set(secs.map(r=>String(r.id)));
+ const puestos=puestoRows.filter(r=>secIds.has(String(r.sector_id)));
+ moduleCache.establecimientos=ests;moduleCache.sectores=secs;moduleCache.puestos=puestos;
  $("inspEst").innerHTML=inspectionOptions(ests,r=>r.Nombre||r.nombre||"Establecimiento");
- $("inspSector").innerHTML=inspectionOptions(secs,r=>r.nombre||r.Nombre||"Sector");
- $("inspPuesto").innerHTML=inspectionOptions(puestos,r=>r.Nombre||r.nombre||"Puesto");
+ $("inspSector").innerHTML=inspectionOptions([],r=>r.nombre||r.Nombre||"Sector");
+ $("inspPuesto").innerHTML=inspectionOptions([],r=>r.Nombre||r.nombre||"Puesto");
  $("findingInspection").innerHTML=inspectionOptions(inspectionRows,r=>(r.tipo||"Inspección")+" · "+inspectionDate(r.fecha));
  $("inspEst").onchange=()=>populateInspectionParents();populateInspectionParents();
 }
