@@ -1272,17 +1272,50 @@ async function getNextCode(moduleId){
   rows.filter(r=>String(r[spec.parentColumn]||"")===String(parentId)).forEach(r=>{const n=Number(String(r[spec.column]??"").trim());if(Number.isSafeInteger(n)&&n>max)max=n});
   return String(max+1).padStart(3,"0");
 }
+function proposedMeasuresForRisk(score,hazardName="",riskDescription=""){
+ const band=riskBand(score).label,context=(String(hazardName)+" "+String(riskDescription)).toLocaleLowerCase("es");
+ const specific=[];
+ if(/ergon|postura|movimiento repetitivo|manipulaci[oó]n manual|carga f[ií]sica|levantamiento/.test(context))specific.push("Evaluar el puesto ergonómicamente; ajustar alturas y alcances, reducir pesos y repetición, incorporar ayudas mecánicas y organizar pausas/rotación cuando corresponda.");
+ if(/ruido|sonoro|auditiv/.test(context))specific.push("Medir la exposición al ruido; priorizar reducción en la fuente, mantenimiento, aislamiento acústico y delimitación de áreas. Seleccionar protección auditiva según la evaluación.");
+ if(/qu[ií]mic|solvente|vapor|polvo|humo|sustancia|producto peligroso/.test(context))specific.push("Revisar la ficha de datos de seguridad, sustitución del producto y ventilación/extracción; asegurar rotulado, almacenamiento compatible, procedimientos y EPP adecuado.");
+ if(/biol[oó]g|virus|bacteria|sangre|residuo patog[eé]nico|infecci/.test(context))specific.push("Aplicar medidas de bioseguridad: higiene de manos, limpieza/desinfección, manejo seguro de residuos y elementos cortopunzantes, capacitación y EPP según exposición.");
+ if(/ca[ií]da|altura|escalera|resbal|tropiez|superficie/.test(context))specific.push("Eliminar desniveles y obstáculos; mantener orden y limpieza, proteger bordes/aberturas, asegurar accesos y superficies antideslizantes y aplicar protección contra caídas cuando corresponda.");
+ if(/el[eé]ctric|electrocuci|energ[ií]a/.test(context))specific.push("Inspeccionar instalaciones y protecciones eléctricas; reparar defectos con personal habilitado, desenergizar y bloquear antes de intervenir, verificar puesta a tierra y evitar conexiones improvisadas.");
+ if(/incendio|explosi|inflamable|combustible/.test(context))specific.push("Controlar fuentes de ignición y combustibles, mantener equipos de detección/extinción accesibles, verificar vías de evacuación y entrenar al personal en respuesta ante emergencias.");
+ if(/m[aá]quina|equipo|atrapamiento|corte|herramienta/.test(context))specific.push("Verificar resguardos y dispositivos de seguridad; prohibir anulaciones, aplicar bloqueo/etiquetado de energías para mantenimiento e inspeccionar herramientas y equipos antes del uso.");
+ const measures={
+  "Bajo":["Mantener las medidas de control existentes y comprobar periódicamente que sigan siendo eficaces.","Informar al personal sobre el peligro y el procedimiento de trabajo seguro.","Registrar inspecciones y reevaluar si cambia la tarea, el equipo o las condiciones de trabajo."],
+  "Moderado":["Definir un plan de mejora con responsable y plazo; priorizar controles en la fuente y medidas de ingeniería antes de depender de procedimientos o EPP.","Revisar el procedimiento seguro, capacitar al personal expuesto y verificar el uso correcto de los controles y EPP aplicables.","Realizar inspecciones de seguimiento y reevaluar el riesgo después de implementar las medidas."],
+  "Alto":["Priorizar la intervención correctiva y establecer medidas provisorias inmediatas para reducir la exposición mientras se controla el peligro.","Analizar la eliminación o sustitución del peligro y aplicar controles de ingeniería; complementar con procedimientos, capacitación, señalización y EPP adecuado.","Asignar responsable y plazo prioritario, limitar el acceso o la exposición cuando corresponda y documentar la verificación de eficacia antes de normalizar la tarea."],
+  "Crítico":["Interrumpir la tarea o aislar el área cuando exista peligro grave e inminente; no reanudar hasta implementar y verificar controles eficaces.","Aplicar de inmediato controles de eliminación/aislamiento y medidas de ingeniería; solicitar evaluación del responsable competente de Higiene y Seguridad.","Registrar la acción correctiva urgente, responsable y autorización de reinicio; reevaluar el riesgo residual antes de volver a operar."]
+ };
+ const list=[...(measures[band]||[]),...specific];
+ return list.map((m,i)=>(i+1)+". "+m).join("\n");
+}
 function initRiskMatrixWidget(){
  const root=$("riskMatrixWidget"),p=$("f_Probabilidad"),c=$("f_consecuencia"),n=$("f_nivel_riesgo");if(!root||!p||!c||!n)return;
- const explain={"Bajo":"Riesgo bajo. Mantener controles y revisar periódicamente.","Medio":"Riesgo moderado. Planificar medidas de control para reducir el riesgo.","Alto":"Riesgo importante. Priorizar acciones correctivas y verificar su eficacia.","Muy alto":"Riesgo crítico. Requiere intervención urgente y controles antes de continuar."};
- const level=(a,b)=>{const v=a*b;return v>=16?"Muy alto":v>=10?"Alto":v>=5?"Medio":"Bajo"};
- const paint=()=>{const pv=Number(p.value),cv=Number(c.value),chosen=!!(pv&&cv),lv=chosen?level(pv,cv):"Sin valorar";
+ const explain={"Bajo":"Riesgo bajo. Mantener controles y revisar periódicamente.","Moderado":"Riesgo moderado. Planificar medidas de control para reducir el riesgo.","Alto":"Riesgo importante. Priorizar acciones correctivas y verificar su eficacia.","Crítico":"Riesgo crítico. Requiere intervención urgente; detener o aislar la tarea si existe peligro grave e inminente."};
+ const level=(a,b)=>{const v=a*b;return v>=15?"Crítico":v>=10?"Alto":v>=5?"Moderado":"Bajo"};
+ const paint=()=>{const pv=Number(p.value),cv=Number(c.value),chosen=!!(pv&&cv),score=chosen?pv*cv:0,lv=chosen?level(pv,cv):"Sin valorar";
  root.querySelectorAll('[data-risk-axis="probability"]').forEach(el=>el.classList.toggle("is-selected",Number(el.dataset.riskValue)===pv));
  root.querySelectorAll('[data-risk-axis="consequence"]').forEach(el=>el.classList.toggle("is-selected",Number(el.dataset.riskValue)===cv));
  root.querySelectorAll("[data-risk-cell-p]").forEach(el=>{const active=chosen&&Number(el.dataset.riskCellP)===pv&&Number(el.dataset.riskCellC)===cv;el.classList.toggle("is-current",active);el.setAttribute("aria-pressed",String(active))});
- const out=$("riskMatrixResult"),formula=$("riskMatrixFormula"),exp=$("riskMatrixExplanation");if(out){out.textContent=lv;out.className="risk-result-value "+(chosen?"risk-result-"+lv.toLowerCase().replace(" ","-"):"")}
- if(formula)formula.textContent=chosen?pv+" × "+cv+" = "+(pv*cv):"P × C = —";if(exp)exp.textContent=chosen?explain[lv]:"Seleccioná probabilidad y consecuencia.";n.value=chosen?String(pv*cv):""};
+ const out=$("riskMatrixResult"),formula=$("riskMatrixFormula"),exp=$("riskMatrixExplanation");if(out){out.textContent=lv;out.className="risk-result-value "+(chosen?"risk-result-"+(score>=15?"muy-alto":score>=10?"alto":score>=5?"medio":"bajo"):"")}
+ if(formula)formula.textContent=chosen?pv+" × "+cv+" = "+score:"P × C = —";if(exp)exp.textContent=chosen?explain[lv]:"Seleccioná probabilidad y consecuencia.";n.value=chosen?String(score):"";
+ const measures=$("f_medidas_propuestas");
+ if(measures){
+  const hazard=$("f_peligro_id"),hazardLabel=hazard?.selectedOptions?.[0]?.textContent||"",description=$("f_descripcion")?.value||"";
+  const previous=measures.dataset.generatedSuggestion||"";
+  if(!measures.value.trim()||measures.value===previous){
+   const suggestion=chosen?proposedMeasuresForRisk(score,hazardLabel,description):"";
+   measures.value=suggestion;measures.dataset.generatedSuggestion=suggestion;
+  }
+ }
+ };
  root.addEventListener("click",e=>{const option=e.target.closest("[data-risk-axis]"),cell=e.target.closest("[data-risk-cell-p]");if(option){(option.dataset.riskAxis==="probability"?p:c).value=option.dataset.riskValue;paint()}else if(cell){p.value=cell.dataset.riskCellP;c.value=cell.dataset.riskCellC;paint()}});
+ p.addEventListener("change",paint);c.addEventListener("change",paint);
+ $("f_peligro_id")?.addEventListener("change",paint);
+ $("f_descripcion")?.addEventListener("input",()=>{if(!$("f_medidas_propuestas")?.value.trim()||$("f_medidas_propuestas").value===$("f_medidas_propuestas").dataset.generatedSuggestion)paint()});
  paint();
 }
 async function renderField(field,value,moduleId){
@@ -1293,7 +1326,7 @@ async function renderField(field,value,moduleId){
     const probs=[[1,"Muy poco probable","Puede ocurrir excepcionalmente."],[2,"Poco probable","Podría ocurrir alguna vez."],[3,"Probable","Podría ocurrir varias veces."],[4,"Muy probable","Ocurrirá frecuentemente."],[5,"Casi seguro","Ocurrirá en la mayoría de las circunstancias."]];
     const cons=[[1,"Insignificante","Lesión sin tratamiento médico."],[2,"Menor","Lesión con tratamiento médico."],[3,"Moderada","Lesión con ausencia laboral."],[4,"Mayor","Lesión grave o incapacidad permanente."],[5,"Catastrófica","Muerte o múltiples víctimas."]];
     const opts=(arr,axis)=>arr.map(x=>'<button type="button" class="risk-level-option" data-risk-axis="'+axis+'" data-risk-value="'+x[0]+'"><span class="risk-level-dot"></span><span><b>'+x[1]+' ('+x[0]+')</b><small>'+x[2]+'</small></span></button>').join("");
-    const cell=(p,c)=>{const n=p*c,l=n>=16?"Muy alto":n>=10?"Alto":n>=5?"Medio":"Bajo";return '<td><button type="button" data-risk-cell-p="'+p+'" data-risk-cell-c="'+c+'" class="risk-cell risk-cell-'+l.toLowerCase().replace(" ","-")+'">'+l+'</button></td>'};
+    const cell=(p,c)=>{const n=p*c,l=n>=15?"Crítico":n>=10?"Alto":n>=5?"Moderado":"Bajo",css=n>=15?"muy-alto":n>=10?"alto":n>=5?"medio":"bajo";return '<td><button type="button" data-risk-cell-p="'+p+'" data-risk-cell-c="'+c+'" class="risk-cell risk-cell-'+css+'">'+l+'</button></td>'};
     control='<input type="hidden" id="'+id+'" name="'+escapeHtml(key)+'" value="'+escapeHtml(value??"")+'"><div class="risk-matrix-widget" id="riskMatrixWidget"><div class="risk-matrix-intro"><strong>Valoración interactiva del riesgo</strong><p>Elegí la probabilidad y la consecuencia, o seleccioná directamente una celda de la matriz. El nivel se calcula automáticamente.</p></div><div class="risk-matrix-layout"><div class="risk-level-pickers"><div><h4>1. Probabilidad de ocurrencia</h4><div class="risk-level-options">'+opts(probs,"probability")+'</div></div><div><h4>2. Consecuencia / severidad</h4><div class="risk-level-options">'+opts(cons,"consequence")+'</div></div></div><div class="risk-matrix-bottom"><div class="risk-matrix-wrap"><h4>3. Matriz de riesgo</h4><table class="risk-matrix-table"><thead><tr><th>Prob. ↓ / Cons. →</th>'+[1,2,3,4,5].map(n=>'<th>'+n+'</th>').join("")+'</tr></thead><tbody>'+[5,4,3,2,1].map(p=>'<tr><th>'+p+'</th>'+[1,2,3,4,5].map(c=>cell(p,c)).join("")+'</tr>').join("")+'</tbody></table></div><aside class="risk-result-card"><span>Nivel de riesgo resultante</span><strong id="riskMatrixResult" class="risk-result-value">Sin valorar</strong><p id="riskMatrixExplanation">Seleccioná probabilidad y consecuencia.</p><b id="riskMatrixFormula">P × C = —</b></aside></div></div></div>';
   }else if(moduleId==="riesgos"&&(key==="consecuencia"||key==="nivel_riesgo")){
     control='<input id="'+id+'" name="'+escapeHtml(key)+'" type="hidden" value="'+escapeHtml(value??"")+'">';
