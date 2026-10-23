@@ -6,7 +6,140 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#10243a">
 <title>Sistema de Higiene y Seguridad</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+/* Módulo de Inspecciones: formulario, hallazgos, seguimiento y reporte imprimible. */
+let inspectionEditingId=null, inspectionFindingEditingId=null, inspectionSelectedId=null, inspectionRows=[], inspectionFindingRows=[];
+const inspectionLogoSvg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 190" role="img" aria-label="Consultor F&S"><rect width="560" height="190" rx="12" fill="#fbfaf5"/><path d="M232 42 L280 8 L328 42" fill="none" stroke="#b8792c" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/><text x="280" y="101" text-anchor="middle" font-family="Georgia,serif" font-size="58" fill="#111827" letter-spacing="1">CONSULTOR</text><path d="M34 125 H83 M477 125 H526" stroke="#9ca3af" stroke-width="3"/><text x="280" y="132" text-anchor="middle" font-family="Georgia,serif" font-size="18" font-weight="bold" fill="#252525">Licenciado en Seguridad e Higiene</text><text x="280" y="166" text-anchor="middle" font-family="Georgia,serif" font-size="26" font-weight="bold" fill="#111827">F&amp;S</text></svg>';
+const inspectionEsc=v=>escapeHtml(String(v??""));
+const inspectionDate=v=>v?formatDateDMY(v):"—";
+function inspectionOptions(rows,labelFn,selected=""){return '<option value="">Seleccione...</option>'+(rows||[]).map(r=>'<option value="'+inspectionEsc(r.id)+'" '+(String(r.id)===String(selected)?"selected":"")+'>'+inspectionEsc(labelFn(r))+'</option>').join("")}
+async function renderInspectionsModule(){
+ inspectionEditingId=null;inspectionFindingEditingId=null;inspectionSelectedId=null;
+ $("view").innerHTML='<section class="inspection-hero"><div><p style="font-size:11px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase;margin-bottom:7px">Prevención · Verificación · Seguimiento</p><h2>Inspecciones de seguridad</h2><p>Registrá recorridas, documentá hallazgos, asigná responsables y controlá las acciones correctivas hasta su cierre.</p></div><button class="btn btn-light" id="inspReload" type="button">↻ Actualizar</button></section><section class="inspection-stats" id="inspStats"></section><div class="inspection-layout"><section class="panel" id="inspFormPanel"><div class="inspection-section-title"><h3 id="inspFormTitle">Nueva inspección</h3><button class="btn btn-light btn-sm" id="inspCancel" type="button">Cancelar edición</button></div><form id="inspForm"><div class="inspection-form-grid"><div><label for="inspEst">Establecimiento</label><select id="inspEst" required></select></div><div><label for="inspSector">Sector</label><select id="inspSector"></select></div><div><label for="inspPuesto">Puesto de trabajo</label><select id="inspPuesto"></select></div><div><label for="inspTipo">Tipo de inspección *</label><input id="inspTipo" required maxlength="140" placeholder="Ej.: Inspección general, orden y limpieza"></div><div><label for="inspFecha">Fecha *</label><input id="inspFecha" type="date" required></div><div><label for="inspInspector">Inspector</label><input id="inspInspector" maxlength="140" placeholder="Nombre del inspector"></div><div><label for="inspEstado">Estado *</label><select id="inspEstado" required><option>Programada</option><option selected>En curso</option><option>Cerrada</option></select></div><div class="wide"><label for="inspObservaciones">Observaciones generales</label><textarea id="inspObservaciones" rows="3" placeholder="Condiciones observadas, alcance y comentarios generales"></textarea></div></div><div class="actions"><button class="btn btn-green" id="inspSave" type="submit">Guardar inspección</button><button class="btn btn-light" id="inspReset" type="button">Nueva / limpiar</button></div><div class="status" id="inspStatus" role="status"></div></form></section><section class="panel" id="findingFormPanel"><div class="inspection-section-title"><h3 id="findingFormTitle">Registrar hallazgo</h3><span class="muted" id="findingParentLabel">Elegí una inspección del listado</span></div><form id="findingForm"><div class="inspection-form-grid"><div class="wide"><label for="findingInspection">Inspección asociada *</label><select id="findingInspection" required></select></div><div class="wide"><label for="findingDescription">Hallazgo / condición detectada *</label><textarea id="findingDescription" rows="3" required maxlength="3000" placeholder="Describí la condición insegura, evidencia y ubicación concreta"></textarea></div><div><label for="findingRisk">Nivel de riesgo *</label><select id="findingRisk" required><option>Bajo</option><option selected>Moderado</option><option>Alto</option><option>Crítico</option></select></div><div><label for="findingState">Estado de seguimiento *</label><select id="findingState" required><option>Pendiente</option><option>En curso</option><option>Verificación</option><option>Cerrado</option></select></div><div class="wide"><label for="findingAction">Acción correctiva / preventiva</label><textarea id="findingAction" rows="3" maxlength="3000" placeholder="Medida a implementar para eliminar o controlar la condición"></textarea></div><div><label for="findingResponsible">Responsable</label><input id="findingResponsible" maxlength="140"></div><div><label for="findingDue">Fecha compromiso</label><input id="findingDue" type="date"></div><div class="wide"><label for="findingFollowup">Seguimiento / evidencia de avance</label><textarea id="findingFollowup" rows="3" maxlength="3000" placeholder="Avances, evidencia verificada, observaciones y pendientes"></textarea></div><div><label for="findingCloseDate">Fecha de cierre</label><input id="findingCloseDate" type="date"></div></div><div class="actions"><button class="btn btn-green" id="findingSave" type="submit">Guardar hallazgo</button><button class="btn btn-light" id="findingReset" type="button">Limpiar hallazgo</button></div><div class="status" id="findingStatus" role="status"></div></form></section></div><section class="panel" style="margin-top:16px"><div class="inspection-section-title"><div><h3>Inspecciones registradas</h3><p class="muted" style="margin:4px 0 0">Cada inspección permite registrar varios hallazgos y hacer seguimiento individual.</p></div><input id="inspSearch" type="search" placeholder="Buscar por tipo, sector o inspector" aria-label="Buscar inspecciones" style="max-width:300px"></div><div id="inspList"></div></section><div id="inspectionPrintRoot" hidden></div>';
+ $("inspFecha").value=new Date().toISOString().slice(0,10);
+ $("inspReload").onclick=()=>loadInspectionData();
+ $("inspCancel").onclick=()=>resetInspectionForm();$("inspReset").onclick=()=>resetInspectionForm();
+ $("findingReset").onclick=()=>resetFindingForm();
+ $("inspEst").onchange=()=>populateInspectionParents();
+ $("findingInspection").onchange=()=>{inspectionSelectedId=$("findingInspection").value;const row=inspectionRows.find(r=>String(r.id)===String(inspectionSelectedId));$("findingParentLabel").textContent=row?((row.tipo||"Inspección")+" · "+inspectionDate(row.fecha)):"Elegí una inspección del listado"};
+ $("inspForm").onsubmit=saveInspectionForm;$("findingForm").onsubmit=saveInspectionFinding;
+ $("inspSearch").oninput=renderInspectionList;
+ await loadInspectionOptions();await loadInspectionData();
+}
+async function loadInspectionOptions(){
+ const [estRows,secRows,puestoRows]=await Promise.all([fetchRows("establecimientos"),fetchRows("sectores"),fetchRows("puestos")]);
+ const ests=estRows.filter(r=>String(r.organizacion_id)===String(activeOrg));
+ const estIds=new Set(ests.map(r=>String(r.id)));
+ const secs=secRows.filter(r=>estIds.has(String(r.establecimiento_id)));
+ const secIds=new Set(secs.map(r=>String(r.id)));
+ const puestos=puestoRows.filter(r=>secIds.has(String(r.sector_id)));
+ moduleCache.establecimientos=ests;moduleCache.sectores=secs;moduleCache.puestos=puestos;
+ $("inspEst").innerHTML=inspectionOptions(ests,r=>r.Nombre||r.nombre||"Establecimiento");
+ $("inspSector").innerHTML=inspectionOptions([],r=>r.nombre||r.Nombre||"Sector");
+ $("inspPuesto").innerHTML=inspectionOptions([],r=>r.Nombre||r.nombre||"Puesto");
+ $("findingInspection").innerHTML=inspectionOptions(inspectionRows,r=>(r.tipo||"Inspección")+" · "+inspectionDate(r.fecha));
+ $("inspEst").onchange=()=>populateInspectionParents();populateInspectionParents();
+}
+function populateInspectionParents(sectorId="",puestoId=""){
+ const estId=$("inspEst")?.value||"";
+ const secs=(moduleCache.sectores||[]).filter(r=>String(r.establecimiento_id)===String(estId));
+ const secSelect=$("inspSector");if(!secSelect)return;
+ secSelect.innerHTML=inspectionOptions(secs,r=>r.nombre||r.Nombre||"Sector",sectorId);
+ const ps=(moduleCache.puestos||[]).filter(r=>String(r.sector_id)===String(secSelect.value||sectorId));
+ $("inspPuesto").innerHTML=inspectionOptions(ps,r=>r.Nombre||r.nombre||"Puesto",puestoId);
+ secSelect.onchange=()=>{const filtered=(moduleCache.puestos||[]).filter(r=>String(r.sector_id)===String(secSelect.value));$("inspPuesto").innerHTML=inspectionOptions(filtered,r=>r.Nombre||r.nombre||"Puesto")};
+}
+async function loadInspectionData(){
+ const status=$("inspStatus");if(status)status.textContent="Cargando inspecciones y hallazgos…";
+ try{
+  const rows=await fetchRows("inspecciones",1000);inspectionRows=rows.filter(r=>String(r.organizacion_id)===String(activeOrg)).sort((a,b)=>String(b.fecha||"").localeCompare(String(a.fecha||"")));
+  const ids=inspectionRows.map(r=>r.id);
+  if(ids.length){const {data,error}=await db.from("inspeccion_hallazgos").select("*").in("inspeccion_id",ids).eq("organizacion_id",activeOrg).order("created_at",{ascending:false});if(error)throw error;inspectionFindingRows=data||[]}
+  else inspectionFindingRows=[];
+  $("findingInspection").innerHTML=inspectionOptions(inspectionRows,r=>(r.tipo||"Inspección")+" · "+inspectionDate(r.fecha));
+  const ests=moduleCache.establecimientos||[];const secs=moduleCache.sectores||[];const ps=moduleCache.puestos||[];
+  $("inspStats").innerHTML=[["Inspecciones",inspectionRows.length],["Hallazgos",inspectionFindingRows.length],["Pendientes",inspectionFindingRows.filter(r=>r.estado==="Pendiente").length],["Fuera de plazo",inspectionFindingRows.filter(r=>r.estado!=="Cerrado"&&r.fecha_compromiso&&r.fecha_compromiso<new Date().toISOString().slice(0,10)).length]].map(([l,n])=>'<article class="inspection-stat"><span>'+inspectionEsc(l)+'</span><strong>'+n+'</strong></article>').join("");
+  if(status)status.textContent="Datos actualizados · "+inspectionRows.length+" inspección(es), "+inspectionFindingRows.length+" hallazgo(s).";
+  renderInspectionList();
+ }catch(e){console.error(e);if(status)status.textContent="No se pudieron cargar inspecciones/hallazgos: "+e.message;if($("inspList"))$("inspList").innerHTML='<div class="inspection-empty">Verificá que la migración de hallazgos esté aplicada en Supabase y que tu usuario tenga permisos.</div>'}
+}
+function inspectionLookup(table,id){const r=(moduleCache[table]||[]).find(x=>String(x.id)===String(id));return r?(r.Nombre||r.nombre||r.Codigo||""): "—"}
+function renderInspectionList(){
+ const host=$("inspList");if(!host)return;
+ const q=($("inspSearch")?.value||"").trim().toLowerCase();
+ const rows=inspectionRows.filter(r=>[r.tipo,r.inspector,r.estado,r.observaciones,inspectionLookup("establecimientos",r.establecimiento_id),inspectionLookup("sectores",r.sector_id)].join(" ").toLowerCase().includes(q));
+ if(!rows.length){host.innerHTML='<div class="inspection-empty">No hay inspecciones que coincidan. Registrá una inspección nueva para comenzar.</div>';return}
+ host.innerHTML=rows.map(r=>{
+  const findings=inspectionFindingRows.filter(f=>String(f.inspeccion_id)===String(r.id));
+  const open=findings.filter(f=>f.estado!=="Cerrado").length;
+  const statusClass=r.estado==="Cerrada"?"closed":r.estado==="En curso"?"open":"pending";
+  const findRows=findings.length?'<div class="table-wrap"><table class="inspection-findings-table"><thead><tr><th>Hallazgo</th><th>Riesgo</th><th>Responsable / plazo</th><th>Seguimiento</th><th>Acciones</th></tr></thead><tbody>'+findings.map(f=>'<tr><td>'+inspectionEsc(f.descripcion)+'<div class="inspection-meta" style="margin-top:4px">Acción: '+inspectionEsc(f.accion_correctiva||"Sin definir")+'</div></td><td><span class="inspection-badge '+(f.nivel_riesgo==="Crítico"||f.nivel_riesgo==="Alto"?"pending":"")+'">'+inspectionEsc(f.nivel_riesgo)+'</span><div style="margin-top:5px"><span class="inspection-badge '+(f.estado==="Cerrado"?"closed":f.estado==="En curso"||f.estado==="Verificación"?"open":"pending")+'">'+inspectionEsc(f.estado)+'</span></div></td><td>'+inspectionEsc(f.responsable||"Sin asignar")+'<div class="inspection-meta" style="margin-top:4px">Plazo: '+inspectionEsc(inspectionDate(f.fecha_compromiso))+'</div></td><td>'+inspectionEsc(f.seguimiento||"Sin actualización")+(f.fecha_cierre?'<div class="inspection-meta">Cierre: '+inspectionEsc(inspectionDate(f.fecha_cierre))+'</div>':"")+'</td><td><button type="button" class="btn btn-light btn-sm" data-finding-edit="'+inspectionEsc(f.id)+'">Editar / seguimiento</button></td></tr>').join("")+'</tbody></table></div>':'<div class="inspection-empty" style="margin-top:10px">Esta inspección todavía no tiene hallazgos.</div>';
+  return '<article class="inspection-card"><div class="inspection-card-head"><div><h3>'+inspectionEsc(r.tipo||"Inspección")+'</h3><div class="inspection-meta"><span>'+inspectionEsc(inspectionDate(r.fecha))+'</span><span>Establecimiento: '+inspectionEsc(inspectionLookup("establecimientos",r.establecimiento_id))+'</span><span>Sector: '+inspectionEsc(inspectionLookup("sectores",r.sector_id))+'</span><span>Inspector: '+inspectionEsc(r.inspector||"No asignado")+'</span></div></div><div><span class="inspection-badge '+statusClass+'">'+inspectionEsc(r.estado||"Programada")+'</span><div class="inspection-meta" style="margin-top:6px">'+findings.length+' hallazgo(s) · '+open+' abierto(s)</div></div></div><p style="white-space:pre-wrap;margin:12px 0 0">'+inspectionEsc(r.observaciones||"Sin observaciones generales")+'</p><div class="inspection-actions"><button type="button" class="btn btn-light btn-sm" data-insp-edit="'+inspectionEsc(r.id)+'">Editar inspección</button><button type="button" class="btn btn-blue btn-sm" data-finding-add="'+inspectionEsc(r.id)+'">＋ Agregar hallazgo</button><button type="button" class="btn btn-light btn-sm" data-insp-pdf="'+inspectionEsc(r.id)+'">▤ Informe PDF</button><button type="button" class="btn btn-red btn-sm" data-insp-delete="'+inspectionEsc(r.id)+'">Eliminar</button></div><details class="inspection-findings" '+(findings.length?"open":"")+'><summary>Hallazgos y seguimiento ('+findings.length+')</summary>'+findRows+'</details></article>';
+ }).join("");
+ host.querySelectorAll("[data-insp-edit]").forEach(b=>b.onclick=()=>editInspection(b.dataset.inspEdit));
+ host.querySelectorAll("[data-finding-add]").forEach(b=>b.onclick=()=>{resetFindingForm();$("findingInspection").value=b.dataset.findingAdd;inspectionSelectedId=b.dataset.findingAdd;$("findingParentLabel").textContent="Hallazgo para "+(inspectionRows.find(r=>String(r.id)===String(inspectionSelectedId))?.tipo||"inspección");$("findingDescription").focus();$("findingFormPanel").scrollIntoView({behavior:"smooth",block:"start"})});
+ host.querySelectorAll("[data-finding-edit]").forEach(b=>b.onclick=()=>editInspectionFinding(b.dataset.findingEdit));
+ host.querySelectorAll("[data-insp-pdf]").forEach(b=>b.onclick=()=>printInspectionReport(b.dataset.inspPdf));
+ host.querySelectorAll("[data-insp-delete]").forEach(b=>b.onclick=()=>deleteInspection(b.dataset.inspDelete));
+}
+function resetInspectionForm(){
+ inspectionEditingId=null;$("inspForm").reset();$("inspFecha").value=new Date().toISOString().slice(0,10);$("inspEstado").value="En curso";$("inspFormTitle").textContent="Nueva inspección";$("inspSave").textContent="Guardar inspección";$("inspStatus").textContent="";populateInspectionParents();
+}
+function editInspection(id){
+ const r=inspectionRows.find(x=>String(x.id)===String(id));if(!r)return;inspectionEditingId=r.id;
+ $("inspEst").value=r.establecimiento_id||"";populateInspectionParents(r.sector_id||"",r.puesto_id||"");$("inspSector").value=r.sector_id||"";populateInspectionParents(r.sector_id||"",r.puesto_id||"");$("inspPuesto").value=r.puesto_id||"";
+ $("inspTipo").value=r.tipo||"";$("inspFecha").value=r.fecha||"";$("inspInspector").value=r.inspector||"";$("inspEstado").value=r.estado||"Programada";$("inspObservaciones").value=r.observaciones||"";
+ $("inspFormTitle").textContent="Editar inspección";$("inspSave").textContent="Guardar cambios";$("inspFormPanel").scrollIntoView({behavior:"smooth",block:"start"});
+}
+async function saveInspectionForm(ev){
+ ev.preventDefault();const b=$("inspSave");b.disabled=true;$("inspStatus").textContent="Guardando…";
+ try{
+  const payload={organizacion_id:activeOrg,establecimiento_id:$("inspEst").value||null,sector_id:$("inspSector").value||null,puesto_id:$("inspPuesto").value||null,tipo:$("inspTipo").value.trim(),fecha:$("inspFecha").value,inspector:$("inspInspector").value.trim()||null,estado:$("inspEstado").value,observaciones:$("inspObservaciones").value.trim()||null};
+  const q=inspectionEditingId?db.from("inspecciones").update(payload).eq("id",inspectionEditingId).eq("organizacion_id",activeOrg).select("id"):db.from("inspecciones").insert(payload).select("id");
+  const {data,error}=await q;if(error)throw error;if(!data?.length)throw new Error("Supabase no confirmó el guardado. Revisá permisos RLS.");
+  resetInspectionForm();await loadInspectionData();
+ }catch(e){console.error(e);$("inspStatus").textContent="No se pudo guardar la inspección: "+e.message}
+ finally{b.disabled=false}
+}
+function resetFindingForm(){
+ inspectionFindingEditingId=null;$("findingForm").reset();$("findingRisk").value="Moderado";$("findingState").value="Pendiente";$("findingFormTitle").textContent="Registrar hallazgo";$("findingSave").textContent="Guardar hallazgo";$("findingStatus").textContent="";
+ if(inspectionSelectedId)$("findingInspection").value=inspectionSelectedId;
+}
+function editInspectionFinding(id){
+ const f=inspectionFindingRows.find(x=>String(x.id)===String(id));if(!f)return;inspectionFindingEditingId=f.id;inspectionSelectedId=f.inspeccion_id;
+ $("findingInspection").value=f.inspeccion_id;$("findingDescription").value=f.descripcion||"";$("findingRisk").value=f.nivel_riesgo||"Moderado";$("findingState").value=f.estado||"Pendiente";$("findingAction").value=f.accion_correctiva||"";$("findingResponsible").value=f.responsable||"";$("findingDue").value=f.fecha_compromiso||"";$("findingFollowup").value=f.seguimiento||"";$("findingCloseDate").value=f.fecha_cierre||"";
+ $("findingFormTitle").textContent="Actualizar hallazgo y seguimiento";$("findingSave").textContent="Guardar seguimiento";$("findingParentLabel").textContent="Editando hallazgo";$("findingFormPanel").scrollIntoView({behavior:"smooth",block:"start"});
+}
+async function saveInspectionFinding(ev){
+ ev.preventDefault();const b=$("findingSave");b.disabled=true;$("findingStatus").textContent="Guardando…";
+ try{
+  const inspectionId=$("findingInspection").value,inspection=inspectionRows.find(r=>String(r.id)===String(inspectionId));if(!inspection)throw new Error("Seleccioná una inspección válida.");
+  const estado=$("findingState").value;
+  const payload={organizacion_id:activeOrg,inspeccion_id:inspectionId,descripcion:$("findingDescription").value.trim(),nivel_riesgo:$("findingRisk").value,accion_correctiva:$("findingAction").value.trim()||null,responsable:$("findingResponsible").value.trim()||null,fecha_compromiso:$("findingDue").value||null,estado,seguimiento:$("findingFollowup").value.trim()||null,fecha_cierre:$("findingCloseDate").value||(estado==="Cerrado"?new Date().toISOString().slice(0,10):null),updated_at:new Date().toISOString()};
+  const q=inspectionFindingEditingId?db.from("inspeccion_hallazgos").update(payload).eq("id",inspectionFindingEditingId).eq("organizacion_id",activeOrg).select("id"):db.from("inspeccion_hallazgos").insert(payload).select("id");
+  const {data,error}=await q;if(error)throw error;if(!data?.length)throw new Error("Supabase no confirmó el guardado. Verificá permisos RLS.");
+  inspectionSelectedId=inspectionId;resetFindingForm();await loadInspectionData();
+ }catch(e){console.error(e);$("findingStatus").textContent="No se pudo guardar el hallazgo: "+e.message}
+ finally{b.disabled=false}
+}
+async function deleteInspection(id){
+ const row=inspectionRows.find(r=>String(r.id)===String(id));if(!row||!confirm("¿Eliminar la inspección y sus hallazgos asociados? Esta acción no se puede deshacer."))return;
+ try{const {error}=await db.from("inspecciones").delete().eq("id",id).eq("organizacion_id",activeOrg);if(error)throw error;await loadInspectionData()}
+ catch(e){alert("No se pudo eliminar la inspección: "+e.message)}
+}
+function printInspectionReport(id){
+ const r=inspectionRows.find(x=>String(x.id)===String(id));if(!r)return;
+ const findings=inspectionFindingRows.filter(f=>String(f.inspeccion_id)===String(id));
+ const title=inspectionEsc(r.tipo||"Inspección");
+ const rows=findings.map(f=>'<tr><td>'+inspectionEsc(f.descripcion)+'</td><td>'+inspectionEsc(f.nivel_riesgo)+'</td><td>'+inspectionEsc(f.accion_correctiva||"—")+'</td><td>'+inspectionEsc(f.responsable||"—")+'</td><td>'+inspectionEsc(inspectionDate(f.fecha_compromiso))+'</td><td>'+inspectionEsc(f.estado)+'</td><td>'+inspectionEsc(f.seguimiento||"—")+'</td></tr>').join("")||'<tr><td colspan="7">Sin hallazgos registrados.</td></tr>';
+ const root=$("inspectionPrintRoot");root.hidden=false;root.innerHTML='<article class="inspection-print-paper"><header class="inspection-print-brand">'+inspectionLogoSvg+'<div style="text-align:right"><strong>INFORME DE INSPECCIÓN</strong><div>Emisión: '+inspectionEsc(inspectionDate(new Date().toISOString().slice(0,10)))+'</div><div>Organización: '+inspectionEsc(getOrgName())+'</div></div></header><h1>'+title+'</h1><table><tbody><tr><th>Fecha</th><td>'+inspectionEsc(inspectionDate(r.fecha))+'</td><th>Estado</th><td>'+inspectionEsc(r.estado||"—")+'</td></tr><tr><th>Establecimiento</th><td>'+inspectionEsc(inspectionLookup("establecimientos",r.establecimiento_id))+'</td><th>Sector</th><td>'+inspectionEsc(inspectionLookup("sectores",r.sector_id))+'</td></tr><tr><th>Puesto</th><td>'+inspectionEsc(inspectionLookup("puestos",r.puesto_id))+'</td><th>Inspector</th><td>'+inspectionEsc(r.inspector||"—")+'</td></tr></tbody></table><h2>Observaciones generales</h2><p class="inspection-print-note">'+inspectionEsc(r.observaciones||"Sin observaciones generales")+'</p><h2>Hallazgos y seguimiento</h2><table><thead><tr><th>Hallazgo</th><th>Riesgo</th><th>Acción correctiva</th><th>Responsable</th><th>Plazo</th><th>Estado</th><th>Seguimiento / evidencia</th></tr></thead><tbody>'+rows+'</tbody></table><div class="inspection-print-footer">Consultor F&amp;S · Higiene y Seguridad en el Trabajo · Documento generado desde el Sistema de Higiene y Seguridad.</div></article>';
+ document.body.classList.add("inspection-print-mode");
+ const cleanup=()=>{document.body.classList.remove("inspection-print-mode");root.hidden=true;window.removeEventListener("afterprint",cleanup)};
+ window.addEventListener("afterprint",cleanup);
+ setTimeout(()=>window.print(),100);
+}
+
+</script>
 <style>
 :root{--navy:#10243a;--navy2:#1d4d70;--blue:#2563eb;--bg:#f3f6fa;--text:#172033;--muted:#64748b;--line:#e2e8f0;--green:#15803d;--red:#b91c1c;--amber:#a16207}
 *{box-sizing:border-box}
@@ -634,7 +767,21 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 
 .ergo-zones-panel{margin-top:14px;border:1px solid #b7e4d4;border-radius:14px;background:linear-gradient(145deg,#f0fdfa,#f8fafc);padding:15px;color:#163b35}.ergo-zones-panel[hidden]{display:none!important}.ergo-zones-heading{display:flex;align-items:center;gap:11px;margin-bottom:13px}.ergo-zones-icon{display:grid;place-items:center;flex:0 0 44px;height:44px;border-radius:12px;background:#ccfbf1;font-size:25px}.ergo-zones-heading strong{font-size:15px;color:#134e4a}.ergo-zones-heading p{font-size:12px;margin:4px 0 0;color:#466b66}.ergo-zones-content{display:grid;grid-template-columns:minmax(110px,.45fr) minmax(0,1.55fr);gap:12px;align-items:stretch}.ergo-reach-figure{position:relative;min-height:320px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:linear-gradient(to bottom,#fee2e2 0 18%,#ffedd5 18% 31%,#dcfce7 31% 58%,#ffedd5 58% 77%,#fee2e2 77% 100%);border:1px solid #dbe7e5;overflow:hidden}.ergo-person{font-size:clamp(52px,7vw,82px);filter:drop-shadow(0 2px 2px #33415522)}.ergo-height-scale{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:8px 5px;color:#334155;font-size:10px;font-weight:800;text-shadow:0 1px #fff}.ergo-height-scale span{background:#ffffffc9;width:max-content;border-radius:4px;padding:2px 4px}.ergo-zone-list{display:grid;gap:7px}.ergo-zone{display:flex;align-items:center;gap:9px;border-radius:9px;padding:9px 10px;border:1px solid transparent}.ergo-zone-icon{flex:0 0 32px;width:32px;height:32px;display:grid;place-items:center;border-radius:8px;background:#ffffffb8;font-size:19px}.ergo-zone strong{display:block;font-size:12px;line-height:1.35}.ergo-zone small{display:block;font-size:11px;line-height:1.4;margin-top:3px;color:#344054}.ergo-zone-critical{background:#fff0f0;border-color:#fecaca}.ergo-zone-critical strong{color:#b91c1c}.ergo-zone-caution,.ergo-zone-medium{background:#fff7ed;border-color:#fed7aa}.ergo-zone-caution strong,.ergo-zone-medium strong{color:#c2410c}.ergo-zone-optimal{background:#ecfdf5;border-color:#a7f3d0}.ergo-zone-optimal strong{color:#047857}.ergo-zones-footnote{font-size:10px;line-height:1.45;color:#526783;margin:11px 0 0;padding-top:9px;border-top:1px solid #d5e9e3}@media(max-width:620px){.ergo-zones-panel{padding:10px}.ergo-zones-content{grid-template-columns:1fr}.ergo-reach-figure{min-height:115px;flex-direction:row;background:linear-gradient(to right,#fee2e2 0 18%,#ffedd5 18% 31%,#dcfce7 31% 58%,#ffedd5 58% 77%,#fee2e2 77% 100%)}.ergo-height-scale{flex-direction:row;align-items:flex-start;inset:0;padding:4px;gap:3px}.ergo-height-scale span{font-size:9px}.ergo-person{font-size:58px;margin-top:22px}.ergo-zone{padding:8px}.ergo-zone strong{font-size:12px}}
 
-\n.risk-measures-actions{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;margin:8px 0 14px}.risk-measures-actions .muted{font-size:12px;line-height:1.45;margin:4px 0;max-width:560px}\n</style>
+\n.risk-measures-actions{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;margin:8px 0 14px}.risk-measures-actions .muted{font-size:12px;line-height:1.45;margin:4px 0;max-width:560px}\n
+/* Inspecciones — interfaz modernizada aislada del CRUD general */
+.inspection-hero{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:22px;border-radius:16px;background:linear-gradient(120deg,#17324d,#176b70);color:white;margin-bottom:16px}
+.inspection-hero h2{color:white;margin:0 0 7px}.inspection-hero p{margin:0;color:#dbeafe;max-width:720px;line-height:1.5}
+.inspection-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.inspection-stat{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--panel,#fff)}.inspection-stat span{display:block;color:var(--muted);font-size:12px}.inspection-stat strong{display:block;font-size:25px;margin-top:5px}
+.inspection-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}.inspection-card{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--panel,#fff);margin-bottom:12px}
+.inspection-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}.inspection-card h3{margin:0 0 5px}.inspection-meta{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+.inspection-badge{display:inline-flex;align-items:center;border-radius:99px;padding:4px 9px;font-size:11px;font-weight:700;background:#e2e8f0;color:#334155}.inspection-badge.pending{background:#fef3c7;color:#92400e}.inspection-badge.open{background:#dbeafe;color:#1d4ed8}.inspection-badge.closed{background:#dcfce7;color:#166534}
+.inspection-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.inspection-findings{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}.inspection-findings summary{cursor:pointer;font-weight:700}.inspection-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.inspection-form-grid .wide{grid-column:1/-1}.inspection-form-grid label{display:block;font-size:12px;font-weight:700;margin-bottom:5px}.inspection-form-grid input,.inspection-form-grid select,.inspection-form-grid textarea{width:100%;min-width:0}.inspection-section-title{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}.inspection-section-title h3{margin:0}.inspection-empty{padding:18px;border:1px dashed var(--line);border-radius:12px;text-align:center;color:var(--muted)}
+.inspection-findings-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px}.inspection-findings-table th,.inspection-findings-table td{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top}.inspection-findings-table th{color:var(--muted);font-weight:700}
+@media(max-width:700px){.inspection-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.inspection-form-grid{grid-template-columns:1fr}.inspection-form-grid .wide{grid-column:auto}.inspection-findings{overflow-x:auto}.inspection-findings-table{min-width:620px}}
+@media print{body.inspection-print-mode *{visibility:hidden!important}body.inspection-print-mode #inspectionPrintRoot,body.inspection-print-mode #inspectionPrintRoot *{visibility:visible!important}body.inspection-print-mode #inspectionPrintRoot{position:absolute;left:0;top:0;width:100%;padding:0!important;margin:0!important}.inspection-print-paper{font:10pt Arial,sans-serif;color:#172033}.inspection-print-brand{display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #b8792c;padding-bottom:10px;margin-bottom:14px}.inspection-print-brand svg{width:155px;height:auto}.inspection-print-paper h1{font-size:17pt;margin:14px 0 8px}.inspection-print-paper h2{font-size:12pt;margin:16px 0 6px}.inspection-print-paper table{width:100%;border-collapse:collapse;font-size:9pt}.inspection-print-paper th,.inspection-print-paper td{border:1px solid #cbd5e1;padding:6px;text-align:left;vertical-align:top}.inspection-print-paper th{background:#f1f5f9!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}.inspection-print-note{white-space:pre-wrap;line-height:1.4}.inspection-print-footer{margin-top:24px;border-top:1px solid #cbd5e1;padding-top:7px;font-size:8pt;color:#64748b}}
+
+</style>
 </head>
 <body>
 
@@ -1221,7 +1368,7 @@ async function renderRiskMapModule(){
  }catch(e){console.error(e);status("No se pudieron cargar los datos del mapa: "+(e.message||""),true);$m("rmSavedList").innerHTML='<p class="muted">Revisá la conexión y los permisos de tu usuario.</p>'}
 }
 
-function openModule(id){activeModule=id;editing=null;searchText="";peoplePage=1;buildNav();if(id==="inicio")return renderHome();if(id==="legislacion")return renderLegislation();if(id==="capacitaciones")return renderTrainingModule();if(id==="sesiones")return renderSessionsModule();if(id==="reportes")return renderReportsModule();if(id==="mapa_riesgos")return renderRiskMapModule();if(configs[id])return renderCrud(id)}
+function openModule(id){activeModule=id;editing=null;searchText="";peoplePage=1;buildNav();if(id==="inspecciones")return renderInspectionsModule();if(id==="inicio")return renderHome();if(id==="legislacion")return renderLegislation();if(id==="capacitaciones")return renderTrainingModule();if(id==="sesiones")return renderSessionsModule();if(id==="reportes")return renderReportsModule();if(id==="mapa_riesgos")return renderRiskMapModule();if(configs[id])return renderCrud(id)}
 
 async function fetchRows(table,limit=500){
   let q=db.from(table).select("*").limit(limit);
