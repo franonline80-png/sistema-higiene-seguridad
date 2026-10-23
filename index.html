@@ -634,7 +634,23 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 
 .ergo-zones-panel{margin-top:14px;border:1px solid #b7e4d4;border-radius:14px;background:linear-gradient(145deg,#f0fdfa,#f8fafc);padding:15px;color:#163b35}.ergo-zones-panel[hidden]{display:none!important}.ergo-zones-heading{display:flex;align-items:center;gap:11px;margin-bottom:13px}.ergo-zones-icon{display:grid;place-items:center;flex:0 0 44px;height:44px;border-radius:12px;background:#ccfbf1;font-size:25px}.ergo-zones-heading strong{font-size:15px;color:#134e4a}.ergo-zones-heading p{font-size:12px;margin:4px 0 0;color:#466b66}.ergo-zones-content{display:grid;grid-template-columns:minmax(110px,.45fr) minmax(0,1.55fr);gap:12px;align-items:stretch}.ergo-reach-figure{position:relative;min-height:320px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:linear-gradient(to bottom,#fee2e2 0 18%,#ffedd5 18% 31%,#dcfce7 31% 58%,#ffedd5 58% 77%,#fee2e2 77% 100%);border:1px solid #dbe7e5;overflow:hidden}.ergo-person{font-size:clamp(52px,7vw,82px);filter:drop-shadow(0 2px 2px #33415522)}.ergo-height-scale{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:8px 5px;color:#334155;font-size:10px;font-weight:800;text-shadow:0 1px #fff}.ergo-height-scale span{background:#ffffffc9;width:max-content;border-radius:4px;padding:2px 4px}.ergo-zone-list{display:grid;gap:7px}.ergo-zone{display:flex;align-items:center;gap:9px;border-radius:9px;padding:9px 10px;border:1px solid transparent}.ergo-zone-icon{flex:0 0 32px;width:32px;height:32px;display:grid;place-items:center;border-radius:8px;background:#ffffffb8;font-size:19px}.ergo-zone strong{display:block;font-size:12px;line-height:1.35}.ergo-zone small{display:block;font-size:11px;line-height:1.4;margin-top:3px;color:#344054}.ergo-zone-critical{background:#fff0f0;border-color:#fecaca}.ergo-zone-critical strong{color:#b91c1c}.ergo-zone-caution,.ergo-zone-medium{background:#fff7ed;border-color:#fed7aa}.ergo-zone-caution strong,.ergo-zone-medium strong{color:#c2410c}.ergo-zone-optimal{background:#ecfdf5;border-color:#a7f3d0}.ergo-zone-optimal strong{color:#047857}.ergo-zones-footnote{font-size:10px;line-height:1.45;color:#526783;margin:11px 0 0;padding-top:9px;border-top:1px solid #d5e9e3}@media(max-width:620px){.ergo-zones-panel{padding:10px}.ergo-zones-content{grid-template-columns:1fr}.ergo-reach-figure{min-height:115px;flex-direction:row;background:linear-gradient(to right,#fee2e2 0 18%,#ffedd5 18% 31%,#dcfce7 31% 58%,#ffedd5 58% 77%,#fee2e2 77% 100%)}.ergo-height-scale{flex-direction:row;align-items:flex-start;inset:0;padding:4px;gap:3px}.ergo-height-scale span{font-size:9px}.ergo-person{font-size:58px;margin-top:22px}.ergo-zone{padding:8px}.ergo-zone strong{font-size:12px}}
 
-\n.risk-measures-actions{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;margin:8px 0 14px}.risk-measures-actions .muted{font-size:12px;line-height:1.45;margin:4px 0;max-width:560px}\n</style>
+\n.risk-measures-actions{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;margin:8px 0 14px}.risk-measures-actions .muted{font-size:12px;line-height:1.45;margin:4px 0;max-width:560px}\n
+/* Inspecciones: checklist operativo */
+.inspection-checklist{margin:14px 0 18px;padding:18px;border:1px solid var(--line);border-radius:14px;background:#fbfdff;grid-column:1/-1}
+.inspection-checklist h3{margin:0 0 5px;font-size:17px}.inspection-checklist>p{margin:0 0 14px;color:var(--muted);font-size:12px;line-height:1.5}
+.inspection-check-items{display:grid;gap:10px}
+.inspection-check-item{display:grid;grid-template-columns:minmax(0,1.2fr) 145px minmax(190px,1fr);gap:10px;align-items:start;padding:11px;background:#fff;border:1px solid #e2e8f0;border-radius:10px}
+.inspection-check-item label{font-size:12px;font-weight:650;color:var(--text);padding-top:8px}
+.inspection-check-item select,.inspection-check-item input,.inspection-check-item textarea{width:100%;min-width:0;margin:0;font-size:12px}
+.inspection-check-item textarea{min-height:58px}
+.inspection-check-item .inspection-item-detail{display:grid;gap:6px}
+.inspection-check-summary{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.inspection-count-pill{padding:6px 10px;border-radius:20px;font-size:11px;font-weight:750;background:#e2e8f0;color:#334155}
+.inspection-count-pill.bad{background:#fee2e2;color:#991b1b}.inspection-count-pill.good{background:#dcfce7;color:#166534}
+.inspection-table-state{display:inline-flex;padding:4px 8px;border-radius:20px;font-size:11px;font-weight:750}
+@media(max-width:850px){.inspection-check-item{grid-template-columns:1fr}.inspection-check-item label{padding-top:0}.inspection-checklist{padding:12px}}
+
+</style>
 </head>
 <body>
 
@@ -781,7 +797,7 @@ personas:{title:"Personas",table:"personas",org:true,fields:[
 riesgos:{title:"Gestión de riesgos",table:"riesgos",org:false,fields:[
 ["puesto_id","Puesto","ref:puestos",true],["peligro_id","Peligro","ref:peligros",true],["descripcion","Descripción del riesgo","textarea",true],["Probabilidad","Probabilidad (1–5)","select:1,2,3,4,5",false],["consecuencia","Consecuencia (1–5)","select:1,2,3,4,5",false],["nivel_riesgo","Nivel de riesgo","number",false],["medidas_existentes","Medidas existentes","textarea",false],["medidas_propuestas","Medidas propuestas","textarea",false],["responsable","Responsable","text",false],["fecha_evaluacion","Fecha de evaluación","date",false],["activo","Activo","checkbox",false]],columns:["puesto_id","peligro_id","descripcion","Probabilidad","consecuencia","nivel_riesgo","medidas_existentes","medidas_propuestas","responsable","fecha_evaluacion","activo"],order:"fecha_evaluacion"},
 inspecciones:{title:"Inspecciones",table:"inspecciones",org:true,fields:[
-["establecimiento_id","Establecimiento","ref:establecimientos",false],["sector_id","Sector","ref:sectores",false],["puesto_id","Puesto","ref:puestos",false],["tipo","Tipo de inspección","text",true],["fecha","Fecha","date",true],["inspector","Inspector","text",false],["estado","Estado","select:Programada,En curso,Cerrada",true],["observaciones","Observaciones","textarea",false]],columns:["establecimiento_id","sector_id","puesto_id","tipo","fecha","inspector","estado","observaciones"],order:"fecha"},
+["establecimiento_id","Establecimiento","ref:establecimientos",false],["sector_id","Sector","ref:sectores",false],["puesto_id","Puesto","ref:puestos",false],["tipo","Tipo de inspección","select:General,Orden y limpieza,Seguridad contra incendios,Instalaciones eléctricas,Ergonomía,Elementos de protección personal,Depósito y almacenamiento,Maquinaria y herramientas,Evacuación y emergencias,Inspección específica",true],["fecha","Fecha","date",true],["inspector","Inspector","text",false],["estado","Estado","select:Programada,En curso,Cerrada",true],["observaciones","Observaciones","textarea",false]],columns:["establecimiento_id","sector_id","puesto_id","tipo","fecha","inspector","estado","observaciones"],order:"fecha"},
 accidentes_incidentes:{title:"Accidentes e incidentes",table:"accidentes_incidentes",org:true,fields:[
 ["establecimiento_id","Establecimiento","ref:establecimientos",false],["sector_id","Sector","ref:sectores",false],["persona_id","Persona","ref:personas",false],["tipo","Tipo","select:Accidente,Incidente,Cuasi accidente",true],["fecha","Fecha","date",true],["hora","Hora","time",false],["lugar","Lugar","text",false],["descripcion","Descripción","textarea",true],["lesiones","Lesiones","textarea",false],["causas","Causas","textarea",false],["acciones_inmediatas","Acciones inmediatas","textarea",false],["dias_perdidos","Días perdidos","number",false],["estado","Estado","select:Abierto,En investigación,Cerrado",false],["observaciones","Observaciones","textarea",false]],columns:["tipo","fecha","hora","lugar","descripcion","lesiones","causas","acciones_inmediatas","dias_perdidos","estado","observaciones","establecimiento_id","sector_id","persona_id"],order:"fecha"},
 mediciones_ambientales:{title:"Mediciones ambientales",table:"mediciones_ambientales",org:true,fields:[
@@ -1583,6 +1599,82 @@ function renderRiskTable(){
  const count=$("rowCount");if(count)count.textContent='Mostrando '+filtered.length+' de '+rows.length+' evaluación(es)';
  const badge=$("riskRowsBadge");if(badge)badge.textContent=rows.length+' registros';
 }
+
+const INSPECTION_CHECKS=[
+ {group:"Condiciones generales y orden",items:["Pasillos, salidas y accesos libres de obstáculos","Pisos en buen estado, secos y sin riesgo de resbalones","Orden, limpieza y disposición segura de materiales"]},
+ {group:"Emergencias e incendio",items:["Extintores accesibles, señalizados y con control vigente","Salidas, rutas y señalización de evacuación despejadas","Tableros de emergencia, alarma y medios de respuesta accesibles"]},
+ {group:"Instalaciones y equipos",items:["Cables, enchufes y tableros sin daños visibles","Máquinas y herramientas con resguardos y condiciones seguras","Equipos, estanterías y elementos de almacenamiento estables"]},
+ {group:"Personas y exposición",items:["EPP requerido disponible, en buen estado y utilizado","Puestos, posturas y manipulación de cargas revisados","Señalización de riesgos y productos correctamente identificados"]}
+];
+function inspectionParse(value){
+ if(!value)return {notes:"",checks:{}};
+ try{const x=JSON.parse(value);if(x&&x.__inspection_v1===true)return {notes:x.notes||"",checks:x.checks||{}}}catch{}
+ return {notes:value,checks:{}};
+}
+function inspectionFormMarkup(){
+ return '<section id="inspectionChecklist" class="inspection-checklist"><h3>Lista de verificación</h3><p>Marcá cada punto según lo observado. Los puntos «No conforme» requieren describir el hallazgo y la medida correctiva propuesta antes de guardar.</p><div id="inspectionChecklistSummary" class="inspection-check-summary"></div><div id="inspectionChecklistItems" class="inspection-check-items"></div></section>';
+}
+function setupInspectionForm(row=null){
+ const notes=$("f_observaciones");if(!notes)return;
+ const parsed=inspectionParse(row?.observaciones??notes.value);
+ notes.value=parsed.notes;
+ let host=$("inspectionChecklist");if(!host){$("formFields").insertAdjacentHTML("afterend",inspectionFormMarkup());host=$("inspectionChecklist")}
+ const saved=parsed.checks||{};
+ $("inspectionChecklistItems").innerHTML=INSPECTION_CHECKS.map((group,gi)=>'<div><h4 style="font-size:13px;margin:12px 0 8px">'+escapeHtml(group.group)+'</h4>'+group.items.map((label,ii)=>{const key=gi+"_"+ii,old=saved[key]||{};return '<div class="inspection-check-item" data-inspection-key="'+key+'"><label for="insp_state_'+key+'">'+escapeHtml(label)+'</label><select id="insp_state_'+key+'" data-inspection-state><option value="Pendiente" '+((old.state||"Pendiente")==="Pendiente"?"selected":"")+'>Pendiente</option><option value="Conforme" '+(old.state==="Conforme"?"selected":"")+'>Conforme</option><option value="No conforme" '+(old.state==="No conforme"?"selected":"")+'>No conforme</option><option value="No aplica" '+(old.state==="No aplica"?"selected":"")+'>No aplica</option></select><div class="inspection-item-detail"><textarea data-inspection-finding placeholder="Hallazgo / evidencia observada" aria-label="Hallazgo: '+escapeHtml(label)+'">'+escapeHtml(old.finding||"")+'</textarea><textarea data-inspection-action placeholder="Medida correctiva propuesta" aria-label="Medida correctiva: '+escapeHtml(label)+'">'+escapeHtml(old.action||"")+'</textarea></div></div>'}).join("")+'</div>').join("");
+ const paint=()=>{
+  let good=0,bad=0,pending=0,na=0;
+  $("inspectionChecklistItems").querySelectorAll(".inspection-check-item").forEach(item=>{const state=item.querySelector("[data-inspection-state]").value;good+=state==="Conforme";bad+=state==="No conforme";pending+=state==="Pendiente";na+=state==="No aplica";item.style.borderColor=state==="No conforme"?"#fca5a5":state==="Conforme"?"#86efac":"#e2e8f0";const detail=item.querySelector(".inspection-item-detail");detail.querySelectorAll("textarea").forEach(el=>{el.required=state==="No conforme"})});
+  $("inspectionChecklistSummary").innerHTML='<span class="inspection-count-pill good">Conformes: '+good+'</span><span class="inspection-count-pill bad">No conformes: '+bad+'</span><span class="inspection-count-pill">Pendientes: '+pending+'</span><span class="inspection-count-pill">No aplica: '+na+'</span>';
+ };
+ $("inspectionChecklistItems").querySelectorAll("[data-inspection-state]").forEach(el=>el.addEventListener("change",paint));
+ const est=$("f_establecimiento_id"),sec=$("f_sector_id"),post=$("f_puesto_id");
+ const filterOptions=(select,table,parentField,parentId,defaultLabel)=>{
+  if(!select)return;
+  const prior=select.value,rows=moduleCache[table]||[];
+  const filtered=parentId?rows.filter(r=>String(r[parentField])===String(parentId)):rows;
+  select.innerHTML='<option value="">'+defaultLabel+'</option>'+filtered.map(r=>{const label=table==="establecimientos"?r.Nombre:table==="sectores"?r.nombre:r.Nombre;return '<option value="'+escapeHtml(r.id)+'">'+escapeHtml(label||"Sin nombre")+'</option>'}).join("");
+  if(filtered.some(r=>String(r.id)===String(prior)))select.value=prior;
+ };
+ if(est&&sec&&!est.dataset.inspectionBound){est.dataset.inspectionBound="1";est.addEventListener("change",()=>{filterOptions(sec,"sectores","establecimiento_id",est.value,"Seleccione sector...");filterOptions(post,"puestos","sector_id",sec.value,"Seleccione puesto...")})}
+ if(sec&&!sec.dataset.inspectionBound){sec.dataset.inspectionBound="1";sec.addEventListener("change",()=>filterOptions(post,"puestos","sector_id",sec.value,"Seleccione puesto..."))}
+ if(est)filterOptions(est,"establecimientos",null,null,"Seleccione establecimiento...");
+ if(sec)filterOptions(sec,"sectores","establecimiento_id",est?.value,"Seleccione sector...");
+ if(post)filterOptions(post,"puestos","sector_id",sec?.value,"Seleccione puesto...");
+ if($("f_fecha")&&!$("f_fecha").value&&!row)$("f_fecha").value=new Date().toLocaleDateString("en-CA");
+ paint();
+}
+function prepareInspectionPayload(payload){
+ const checks={};let invalid=null;
+ $("inspectionChecklistItems")?.querySelectorAll(".inspection-check-item").forEach(item=>{
+  const key=item.dataset.inspectionKey,state=item.querySelector("[data-inspection-state]").value;
+  const finding=item.querySelectorAll("textarea")[0].value.trim(),action=item.querySelectorAll("textarea")[1].value.trim();
+  if(state==="No conforme"&&(!finding||!action))invalid="Completá el hallazgo y la medida correctiva de cada punto marcado «No conforme».";
+  checks[key]={state,finding,action,label:item.querySelector("label")?.textContent||""};
+ });
+ if(invalid)throw new Error(invalid);
+ const notes=payload.observaciones||"";
+ payload.observaciones=JSON.stringify({__inspection_v1:true,notes,checks});
+ const vals=Object.values(checks),bad=vals.filter(x=>x.state==="No conforme").length,pending=vals.filter(x=>x.state==="Pendiente").length;
+ if(bad&&payload.estado==="Cerrada"&&pending)throw new Error("No podés cerrar la inspección mientras haya puntos pendientes de verificar.");
+ if(bad&&payload.estado==="Cerrada"&&vals.some(x=>x.state==="No conforme"&&(!x.finding||!x.action)))throw new Error("Para cerrar, completá hallazgos y medidas correctivas.");
+}
+function renderInspectionTable(){
+ const rows=moduleCache.inspecciones||[],search=($("tableSearch")?.value||"").trim().toLocaleLowerCase("es");
+ const filtered=rows.filter(r=>{const est=(moduleCache.establecimientos||[]).find(x=>String(x.id)===String(r.establecimiento_id));const sec=(moduleCache.sectores||[]).find(x=>String(x.id)===String(r.sector_id));return !search||[r.tipo,r.fecha,r.inspector,r.estado,est?.Nombre,sec?.nombre,inspectionParse(r.observaciones).notes].filter(Boolean).join(" ").toLocaleLowerCase("es").includes(search)});
+ $("rowCount").textContent=filtered.length+" inspección(es)";
+ $("tableHead").innerHTML='<tr><th>Fecha</th><th>Tipo</th><th>Establecimiento / sector</th><th>Inspector</th><th>Resultado</th><th>Estado</th><th>Acciones</th></tr>';
+ const tb=$("tableBody");tb.replaceChildren();
+ if(!filtered.length){tb.innerHTML='<tr><td colspan="7" class="empty">Todavía no hay inspecciones. Registrá una inspección y completá la lista de verificación.</td></tr>';return}
+ filtered.sort((a,b)=>String(b.fecha||"").localeCompare(String(a.fecha||""))).forEach(row=>{
+  const parsed=inspectionParse(row.observaciones),checks=Object.values(parsed.checks||{}),bad=checks.filter(x=>x.state==="No conforme").length,pending=checks.filter(x=>x.state==="Pendiente").length,est=(moduleCache.establecimientos||[]).find(x=>String(x.id)===String(row.establecimiento_id)),sec=(moduleCache.sectores||[]).find(x=>String(x.id)===String(row.sector_id));
+  const tr=document.createElement("tr"),add=(v)=>{const td=document.createElement("td");td.textContent=v;tr.appendChild(td)};
+  add(formatDateDMY(row.fecha));add(row.tipo||"—");add((est?.Nombre||"—")+(sec?" / "+sec.nombre:""));add(row.inspector||"—");
+  const result=document.createElement("td");result.innerHTML='<span class="inspection-count-pill bad">'+bad+' no conforme(s)</span> <span class="inspection-count-pill">'+pending+' pendiente(s)</span>';tr.appendChild(result);
+  const st=document.createElement("td"),span=document.createElement("span");span.className="inspection-table-state";span.textContent=row.estado||"—";span.style.background=row.estado==="Cerrada"?"#dcfce7":row.estado==="En curso"?"#dbeafe":"#fef3c7";span.style.color=row.estado==="Cerrada"?"#166534":row.estado==="En curso"?"#1d4ed8":"#92400e";st.appendChild(span);tr.appendChild(st);
+  const actions=document.createElement("td");actions.append(makeButton("Editar","btn btn-light btn-sm",()=>startEdit("inspecciones",row)),makeButton("Eliminar","btn btn-red btn-sm",()=>deleteRecord("inspecciones",row)));tr.appendChild(actions);tb.appendChild(tr);
+ });
+}
+
 async function renderCrud(id){
  const cfg=configs[id];editing=null;
  if(id==="riesgos"){
@@ -1603,10 +1695,11 @@ async function renderCrud(id){
  <div class="panel"><h3 id="formTitle">Registrar ${escapeHtml(cfg.title.toLowerCase())}</h3><form id="recordForm"><div id="formFields" class="form-grid"></div><div class="actions"><button class="btn btn-green" type="submit" id="saveRecord">Guardar registro</button><button class="btn btn-light hidden" id="cancelEdit" type="button">Cancelar edición</button></div><div id="formStatus" class="status" role="status"></div></form></div>
  <div class="panel"><h3>Listado</h3><div class="toolbar"><input id="tableSearch" placeholder="Buscar en los registros..." aria-label="Buscar"><span id="rowCount" class="muted"></span>${id==="personas"?`<label for="peopleStatusFilter" class="muted">Estado</label><select id="peopleStatusFilter" aria-label="Filtrar por estado"><option value="todos">Todos</option><option value="activos">Activos</option><option value="inactivos">Inactivos</option></select><label for="peoplePageSize" class="muted">Mostrar</label><select id="peoplePageSize" aria-label="Cantidad de personas por página"><option value="5">5</option><option value="10" selected>10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select><span class="muted">por página</span><button class="btn btn-light btn-sm" type="button" id="peopleExport">Exportar Excel</button>`:""}</div><div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"><tr><td class="empty">Cargando...</td></tr></tbody></table></div><div id="tableStatus" class="status" role="status"></div>${id==="personas"?`<div id="peoplePagination" class="toolbar" style="justify-content:flex-end;align-items:center;gap:8px;margin-top:12px"></div>`:""}</div>${id==="personas"?`<div id="peopleDetailModal" class="people-modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="peopleDetailTitle"><section class="people-modal"><header class="people-modal-header"><div><h3 id="peopleDetailTitle">Ficha de personal</h3><p id="peopleDetailSubtitle">Datos del registro seleccionado</p></div><button type="button" class="people-modal-close" id="peopleDetailClose">Cerrar ✕</button></header><nav class="people-modal-tabs" id="peopleDetailTabs" aria-label="Secciones de la ficha"><button type="button" class="people-modal-tab active" data-people-tab="personal">Datos personales</button><button type="button" class="people-modal-tab" data-people-tab="destino">Destino y situación</button><button type="button" class="people-modal-tab" data-people-tab="administrativo">Identificación y estado</button><button type="button" class="people-modal-tab" data-people-tab="fotografia">Fotografía</button></nav><div class="people-modal-content" id="peopleDetailContent"></div><footer class="people-modal-footer"><button type="button" class="btn btn-light" id="peopleDetailCloseBottom">Cerrar</button></footer></section></div>`:""}`;
  for(const f of cfg.fields)$("formFields").insertAdjacentHTML("beforeend",await renderField(f,f[2]==="checkbox"?true:"",id));
+ if(id==="inspecciones"){setupInspectionForm(null);$("recordForm").onsubmit=e=>{try{const payload={};for(const f of cfg.fields){const el=$("f_"+f[0].replace(/[^a-zA-Z0-9_-]/g,"_"));if(!el)continue;payload[f[0]]=f[2]==="checkbox"?el.checked:(el.value.trim()||null)}prepareInspectionPayload(payload);$("f_observaciones").value=payload.observaciones;saveRecord(e,id)}catch(err){e.preventDefault();$("formStatus").textContent=err.message;$("formStatus").className="status error"}}}
  if(id==="peligros")setupHazardCategoryCards();
  if(id==="sectores"||id==="puestos"){const codeKey=id==="sectores"?"codigo":"Codigo",parentKey=id==="sectores"?"establecimiento_id":"sector_id",parentInput=$("f_"+parentKey),codeInput=$("f_"+codeKey);if(codeInput){codeInput.readOnly=true;codeInput.setAttribute("aria-readonly","true");codeInput.title="El sistema asigna automáticamente el código correlativo"}if(parentInput&&!editing)parentInput.addEventListener("change",async()=>{try{codeInput.value=await getNextCode(id)}catch(e){codeInput.value="";codeInput.placeholder=e.message}});try{if(codeInput&&!editing)codeInput.value=await getNextCode(id)}catch(e){if(codeInput)codeInput.value=""}}
  if(id==="personas"){const legajoInput=$("f_Legajo");if(legajoInput){legajoInput.readOnly=true;legajoInput.setAttribute("aria-readonly","true");legajoInput.title="El sistema asigna automáticamente el siguiente legajo"}try{if(legajoInput)legajoInput.value=formatLegajo(await getNextLegajo())}catch(e){console.error(e);if(legajoInput)legajoInput.placeholder="No se pudo calcular; se verificará al guardar"}}
- $("recordForm").onsubmit=e=>saveRecord(e,id);if(id==="personas")await initPeopleBulkImport();$("reloadModule").onclick=()=>loadModuleRows(id);$("cancelEdit").onclick=()=>renderCrud(id);$("tableSearch").oninput=e=>{searchText=e.target.value;if(id==="personas")peoplePage=1;renderTable(id)};if(id==="personas"){$("peoplePageSize").value=String(peoplePageSize);$("peoplePageSize").onchange=e=>{peoplePageSize=Number(e.target.value)||10;peoplePage=1;renderTable(id)};$("peopleStatusFilter").onchange=()=>{peoplePage=1;renderTable(id)};$("peopleExport").onclick=exportPeopleExcel;$("peopleDetailClose").onclick=closePeopleDetail;$("peopleDetailCloseBottom").onclick=closePeopleDetail;$("peopleDetailModal").addEventListener("click",e=>{if(e.target===$("peopleDetailModal"))closePeopleDetail()});$("peopleDetailTabs").querySelectorAll("[data-people-tab]").forEach(b=>b.onclick=()=>{const row=window.currentPeopleDetail;if(row)openPeopleDetail(row,b.dataset.peopleTab)});}
+ $("recordForm").onsubmit=e=>saveRecord(e,id);if(id==="personas")await initPeopleBulkImport();$("reloadModule").onclick=()=>loadModuleRows(id);$("cancelEdit").onclick=()=>renderCrud(id);$("tableSearch").oninput=e=>{searchText=e.target.value;if(id==="personas")peoplePage=1;if(id==="inspecciones")renderInspectionTable();else renderTable(id)};if(id==="personas"){$("peoplePageSize").value=String(peoplePageSize);$("peoplePageSize").onchange=e=>{peoplePageSize=Number(e.target.value)||10;peoplePage=1;renderTable(id)};$("peopleStatusFilter").onchange=()=>{peoplePage=1;renderTable(id)};$("peopleExport").onclick=exportPeopleExcel;$("peopleDetailClose").onclick=closePeopleDetail;$("peopleDetailCloseBottom").onclick=closePeopleDetail;$("peopleDetailModal").addEventListener("click",e=>{if(e.target===$("peopleDetailModal"))closePeopleDetail()});$("peopleDetailTabs").querySelectorAll("[data-people-tab]").forEach(b=>b.onclick=()=>{const row=window.currentPeopleDetail;if(row)openPeopleDetail(row,b.dataset.peopleTab)});}
 await loadModuleRows(id);
 }
 async function loadModuleRows(id){
@@ -1616,6 +1709,7 @@ async function loadModuleRows(id){
     const refTables=[...new Set(configs[id].fields.filter(f=>String(f[2]).startsWith("ref:")).map(f=>f[2].slice(4)))];
     await Promise.all(refTables.map(async table=>{moduleCache[table]=await fetchRows(table)}));
     if(id==="riesgos"){setupRiskDangerSelector($("f_peligro_id")?.value);updateRiskOverview();renderRiskTable();return}
+    if(id==="inspecciones"){renderInspectionTable();$("tableStatus").textContent="Inspecciones cargadas.";return}
     $("tableStatus").textContent=`Se encontraron ${rows.length} registro(s).`;
     if(id==="personas")updatePeopleSummary();
     renderTable(id);if(id==="peligros"){$("view").querySelector(".hazard-category-panel")?.remove();$("view").querySelector(".page-title")?.insertAdjacentHTML("afterend",hazardCategoryCards());setupHazardCategoryCards()}
@@ -1767,6 +1861,7 @@ async function startEdit(id,row){
   await renderCrud(id);editing=row;$("formTitle").textContent="Editar registro";$("saveRecord").textContent="Guardar cambios";$("cancelEdit").classList.remove("hidden");
   for(const f of configs[id].fields){const el=$("f_"+f[0].replace(/[^a-zA-Z0-9_-]/g,"_"));if(!el)continue;if(f[2]==="checkbox")el.checked=row[f[0]]!==false;else el.value=row[f[0]]??""}
   if(id==="peligros")setupHazardCategoryCards();
+  if(id==="inspecciones"){setupInspectionForm(row);$("formTitle").textContent="Editar inspección";$("saveRecord").textContent="Guardar cambios";$("cancelEdit").classList.remove("hidden");$("inspectionChecklist")?.scrollIntoView({behavior:"smooth",block:"start"})}
   if(id==="riesgos"){setupRiskDangerSelector(row.peligro_id);$("riskFormPanel")?.classList.remove("risk-hidden-form");$("formTitle").textContent="Editar evaluación de riesgo";$("saveRecord").textContent="Guardar cambios";$("cancelEdit").classList.remove("hidden");$("riskFormPanel")?.scrollIntoView({behavior:"smooth",block:"start"})}
   if(id==="personas"){const legajoInput=$("f_Legajo");if(legajoInput){legajoInput.readOnly=true;legajoInput.title="El legajo asignado no se puede editar";}}
   if(id==="sectores"||id==="puestos"){const codeInput=$(id==="sectores"?"f_codigo":"f_Codigo");if(codeInput){codeInput.readOnly=true;codeInput.title="El código asignado no se puede editar";}}
@@ -1781,6 +1876,7 @@ async function saveRecord(ev,id){
       else{const v=el.value.trim();payload[f[0]]=v===""?null:((f[2]==="number"||(id==="riesgos"&&["Probabilidad","consecuencia","nivel_riesgo"].includes(f[0])))?Number(v):v)}
     }
     if(cfg.org&&!editing)payload.organizacion_id=activeOrg;
+    if(id==="inspecciones"){const raw=payload.observaciones||"";try{const obj=JSON.parse(raw);if(obj?.__inspection_v1===true)payload.observaciones=raw}catch{}}
     if(id==="personas")payload.Legajo=editing?editing.Legajo:formatLegajo(await getNextLegajo());
     if(id==="sectores")payload.codigo=editing?editing.codigo:await getNextCode(id);
     if(id==="puestos")payload.Codigo=editing?editing.Codigo:await getNextCode(id);
