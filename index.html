@@ -1202,7 +1202,7 @@ async function renderRiskMapModule(){
    if(result.error)throw result.error;currentId=result.data.id;await refreshMaps();
    if(planPath){const {data}=await db.storage.from("mapas-riesgos").createSignedUrl(planPath,3600);if(data?.signedUrl){if(objectUrl){URL.revokeObjectURL(objectUrl);objectUrl=null}planUrl=data.signedUrl;showPlan(planUrl,/\.pdf($|\?)/i.test(planPath));paintMarkers()}}
    status("Mapa guardado correctamente. "+markers.length+" símbolo(s) registrado(s).");
-  }catch(e){console.error("Error al guardar mapa de riesgos",e);status(/row-level security|permission denied|violates row-level security|RLS/i.test(e.message||"")?"No tenés permisos para guardar mapas. Solicitá el rol administrador de la organización.":"No se pudo guardar el mapa: "+(e.message||"Error desconocido"),true)}
+  }catch(e){console.error("Error al guardar mapa de riesgos",e);status(/row-level security|permission denied|violates row-level security|RLS/i.test(e.message||"")?"No tenés permisos para guardar mapas. Se requiere rol profesional de Higiene y Seguridad, administrador de la organización o administrador de plataforma.":"No se pudo guardar el mapa: "+(e.message||"Error desconocido"),true)}
   finally{$m("rmSave").disabled=false}
  };
  try{
@@ -1741,7 +1741,7 @@ async function saveRecord(ev,id){
     if(result.error)throw result.error;
     if(!result.data?.length)throw new Error("No se confirmó la operación. Verificá los permisos RLS.");
     editing=null;await renderCrud(id);
-  }catch(e){console.error(e);let msg=e.message||"Error desconocido";if(id==="riesgos"&&/row-level security|permission denied|violates row-level security|RLS/i.test(msg))msg="La evaluación no se guardó porque tu usuario no tiene permiso para crear evaluaciones de riesgo en este puesto. Se requiere rol administrador de la organización o administrador de plataforma.";$("formStatus").textContent="No se pudo guardar: "+msg;$("formStatus").className="status error"}
+  }catch(e){console.error(e);let msg=e.message||"Error desconocido";if(id==="riesgos"&&/row-level security|permission denied|violates row-level security|RLS/i.test(msg))msg="La evaluación no se guardó porque tu usuario no tiene permisos para este puesto. Se requiere rol profesional de Higiene y Seguridad, administrador de la organización o administrador de plataforma.";$("formStatus").textContent="No se pudo guardar: "+msg;$("formStatus").className="status error"}
   finally{b.disabled=false}
 }
 async function deleteRecord(id,row){
