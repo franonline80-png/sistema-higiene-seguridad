@@ -1636,7 +1636,7 @@ async function saveRecord(ev,id){
     for(const f of cfg.fields){
       const el=$("f_"+f[0].replace(/[^a-zA-Z0-9_-]/g,"_"));if(!el)continue;
       if(f[2]==="checkbox")payload[f[0]]=el.checked;
-      else{const v=el.value.trim();payload[f[0]]=v===""?null:(f[2]==="number"?Number(v):v)}
+      else{const v=el.value.trim();payload[f[0]]=v===""?null:((f[2]==="number"||(id==="riesgos"&&["Probabilidad","consecuencia","nivel_riesgo"].includes(f[0])))?Number(v):v)}
     }
     if(cfg.org&&!editing)payload.organizacion_id=activeOrg;
     if(id==="personas")payload.Legajo=editing?editing.Legajo:formatLegajo(await getNextLegajo());
