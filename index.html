@@ -634,7 +634,56 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 
 .ergo-zones-panel{margin-top:14px;border:1px solid #b7e4d4;border-radius:14px;background:linear-gradient(145deg,#f0fdfa,#f8fafc);padding:15px;color:#163b35}.ergo-zones-panel[hidden]{display:none!important}.ergo-zones-heading{display:flex;align-items:center;gap:11px;margin-bottom:13px}.ergo-zones-icon{display:grid;place-items:center;flex:0 0 44px;height:44px;border-radius:12px;background:#ccfbf1;font-size:25px}.ergo-zones-heading strong{font-size:15px;color:#134e4a}.ergo-zones-heading p{font-size:12px;margin:4px 0 0;color:#466b66}.ergo-zones-content{display:grid;grid-template-columns:minmax(110px,.45fr) minmax(0,1.55fr);gap:12px;align-items:stretch}.ergo-reach-figure{position:relative;min-height:320px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:linear-gradient(to bottom,#fee2e2 0 18%,#ffedd5 18% 31%,#dcfce7 31% 58%,#ffedd5 58% 77%,#fee2e2 77% 100%);border:1px solid #dbe7e5;overflow:hidden}.ergo-person{font-size:clamp(52px,7vw,82px);filter:drop-shadow(0 2px 2px #33415522)}.ergo-height-scale{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:8px 5px;color:#334155;font-size:10px;font-weight:800;text-shadow:0 1px #fff}.ergo-height-scale span{background:#ffffffc9;width:max-content;border-radius:4px;padding:2px 4px}.ergo-zone-list{display:grid;gap:7px}.ergo-zone{display:flex;align-items:center;gap:9px;border-radius:9px;padding:9px 10px;border:1px solid transparent}.ergo-zone-icon{flex:0 0 32px;width:32px;height:32px;display:grid;place-items:center;border-radius:8px;background:#ffffffb8;font-size:19px}.ergo-zone strong{display:block;font-size:12px;line-height:1.35}.ergo-zone small{display:block;font-size:11px;line-height:1.4;margin-top:3px;color:#344054}.ergo-zone-critical{background:#fff0f0;border-color:#fecaca}.ergo-zone-critical strong{color:#b91c1c}.ergo-zone-caution,.ergo-zone-medium{background:#fff7ed;border-color:#fed7aa}.ergo-zone-caution strong,.ergo-zone-medium strong{color:#c2410c}.ergo-zone-optimal{background:#ecfdf5;border-color:#a7f3d0}.ergo-zone-optimal strong{color:#047857}.ergo-zones-footnote{font-size:10px;line-height:1.45;color:#526783;margin:11px 0 0;padding-top:9px;border-top:1px solid #d5e9e3}@media(max-width:620px){.ergo-zones-panel{padding:10px}.ergo-zones-content{grid-template-columns:1fr}.ergo-reach-figure{min-height:115px;flex-direction:row;background:linear-gradient(to right,#fee2e2 0 18%,#ffedd5 18% 31%,#dcfce7 31% 58%,#ffedd5 58% 77%,#fee2e2 77% 100%)}.ergo-height-scale{flex-direction:row;align-items:flex-start;inset:0;padding:4px;gap:3px}.ergo-height-scale span{font-size:9px}.ergo-person{font-size:58px;margin-top:22px}.ergo-zone{padding:8px}.ergo-zone strong{font-size:12px}}
 
-\n.risk-measures-actions{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;margin:8px 0 14px}.risk-measures-actions .muted{font-size:12px;line-height:1.45;margin:4px 0;max-width:560px}\n</style>
+\n.risk-measures-actions{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;margin:8px 0 14px}.risk-measures-actions .muted{font-size:12px;line-height:1.45;margin:4px 0;max-width:560px}\n
+/* Inspecciones: matriz basada en la referencia suministrada */
+.inspection-head{display:grid;grid-template-columns:1fr 1.5fr 1fr;border:1px solid #64748b;background:#fff;margin-bottom:10px}
+.inspection-head>div{padding:10px;border-right:1px solid #64748b;display:flex;align-items:center;justify-content:center;text-align:center}
+.inspection-head>div:last-child{border-right:0}
+.inspection-brand{font-size:20px;font-weight:900;color:#087b55;line-height:1.05}
+.inspection-title{font-weight:800;text-transform:uppercase;font-size:15px}
+.inspection-meta{display:grid;grid-template-columns:1fr 1fr;font-size:11px;text-align:left}
+.inspection-meta span{padding:4px;border:1px solid #cbd5e1}
+.inspection-meta b{display:inline-block;min-width:65px}
+.inspection-data{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.inspection-data label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700}
+.inspection-data input,.inspection-data select,.inspection-data textarea{width:100%;min-width:0;padding:8px;border:1px solid #b8c6d6;border-radius:4px;background:white}
+.inspection-table-wrap{width:100%;overflow-x:auto;background:#fff;border:1px solid #64748b}
+.inspection-table{border-collapse:collapse;width:100%;min-width:900px;font-size:11px;color:#111827}
+.inspection-table th,.inspection-table td{border:1px solid #737d87;padding:3px 4px;vertical-align:middle}
+.inspection-table thead th,.inspection-table .inspection-section th{background:#cfe4f5;text-align:center;font-weight:800}
+.inspection-table .inspection-section th{padding:6px 4px;text-transform:uppercase}
+.inspection-table .inspection-instructions th{font-size:10px;background:#dbeafe}
+.inspection-table .inspection-item{width:44px;text-align:center;white-space:nowrap}
+.inspection-table .inspection-condition{min-width:290px}
+.inspection-table .inspection-choice{width:38px;text-align:center}
+.inspection-table .inspection-action{width:54px;text-align:center}
+.inspection-table .inspection-observation{min-width:220px;width:25%}
+.inspection-table select,.inspection-table input{width:100%;min-width:0;border:0;background:transparent;padding:4px 1px;font-size:11px}
+.inspection-table .inspection-observation input{font-style:italic;color:#253b77}
+.inspection-table .inspection-check{width:16px;height:16px;accent-color:#1d4ed8}
+.inspection-notes{width:100%;min-height:76px;border:1px solid #64748b;padding:8px;margin-top:8px;background:#fff}
+.inspection-participants{width:100%;border-collapse:collapse;margin-top:10px;background:#fff;font-size:12px}
+.inspection-participants th,.inspection-participants td{border:1px solid #64748b;padding:6px}
+.inspection-participants th{background:#cfe4f5}
+.inspection-participants input{width:100%;border:0;padding:5px;min-width:0}
+.inspection-signoff{display:grid;grid-template-columns:.6fr 1.2fr 1fr 1fr 1fr;margin-top:10px;background:#fff}
+.inspection-signoff>div{border:1px solid #64748b;padding:10px 6px;text-align:center;font-size:11px;min-width:0}
+.inspection-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.inspection-saved-list{margin-top:14px}
+@media(max-width:640px){.inspection-head{grid-template-columns:1fr}.inspection-head>div{border-right:0;border-bottom:1px solid #64748b}.inspection-meta{grid-template-columns:1fr 1fr}.inspection-data{grid-template-columns:1fr}.inspection-signoff{grid-template-columns:1fr 1fr}.inspection-title{font-size:13px}}
+@media print{
+ body.inspection-printing *{visibility:hidden!important}
+ body.inspection-printing #view,body.inspection-printing #view *{visibility:visible!important}
+ body.inspection-printing #view{position:absolute;left:0;top:0;width:100%;padding:0!important;margin:0!important;background:white!important}
+ body.inspection-printing #view .inspection-no-print{display:none!important}
+ body.inspection-printing .inspection-head{grid-template-columns:1fr 1.5fr 1fr}
+ body.inspection-printing .inspection-table{min-width:0;font-size:8px}
+ body.inspection-printing .inspection-table th,body.inspection-printing .inspection-table td{padding:2px}
+ body.inspection-printing .inspection-table input,body.inspection-printing .inspection-table select{font-size:8px}
+ body.inspection-printing .panel{box-shadow:none!important;border:0!important;padding:0!important}
+ @page{size:A4 landscape;margin:8mm}
+}
+</style>
 </head>
 <body>
 
@@ -2066,6 +2115,85 @@ db.auth.getSession().then(async({data,error})=>{
 db.auth.onAuthStateChange(event=>{if(event==="SIGNED_OUT")showLogin()});
 
 const passwordToggle=$("togglePassword");if(passwordToggle)passwordToggle.addEventListener("click",()=>{const field=$("password");if(!field)return;const show=field.type==="password";field.type=show?"text":"password";passwordToggle.setAttribute("aria-label",show?"Ocultar contraseña":"Mostrar contraseña");passwordToggle.textContent=show?"◎":"◉"});
+
+/* Módulo de inspecciones: formulario en matriz e informe imprimible */
+const INSPECTION_SECTIONS=[
+{title:"Condiciones generales",items:[["1.1","Políticas y reglamento interno de trabajo y PRHSI publicado en sitio visible."],["1.2","Rutas de evacuación debidamente señalizadas."],["1.3","Salidas de emergencia libres de obstáculos."],["1.4","Brigada de emergencia constituida y conocida por el personal."],["1.5","MEDEVAC publicado y actualizado."]]},
+{title:"Estructura",items:[["2.1","Iluminación adecuada y suficiente."],["2.2","Equipos eléctricos con conexión a tierra."],["2.3","Conexiones eléctricas en buen estado."],["2.4","Ventilación suficiente y adecuada."],["2.5","Pisos y rutas libres de obstrucción."],["2.6","Paredes, ventanas y puertas en buen estado."],["2.7","Drenajes pluviales en buen estado."]]},
+{title:"Área de puestos de trabajo",items:[["3.1","Espacio de trabajo adecuado."],["3.2","Mesas y sillas en buen estado, ajustables y de dimensiones adecuadas."],["3.3","Archivadores, escritorios en buen estado."],["3.4","Vías de movilización despejadas."],["3.5","Iluminación artificial - Natural suficiente."],["3.6","Ventilación adecuada."],["3.7","Recipientes para recolección de residuos sólidos."],["3.8","Limpieza, orden y aseo en el área de trabajo."]]},
+{title:"Servicios sanitarios",items:[["4.1","Baños en óptimas condiciones."],["4.2","Fugas en las conexiones sanitarias."],["4.3","Cantidad de baños acorde al número de personal."],["4.4","Buenas condiciones de orden y aseo."]]},
+{title:"Almacenamiento",items:[["5.1","Método de almacenamiento adecuado para no causar caída de objetos."],["5.2","Sustancias químicas rotuladas y con hojas de seguridad."],["5.3","Área debidamente señalizada."],["5.4","Orden y aseo en bodega."],["5.5","Otros."]]},
+{title:"Elementos de emergencia",items:[["6.1","Botiquín de primeros auxilios completo."],["6.2","Extintores con fecha de vencimiento vigente, señalizados y soportados."],["6.3","Camilla rígida - correas de amarre."],["6.4","Cuello ortopédico."],["6.5","Linterna con pilas y radio."],["6.6","Sistema de alarma en caso de emergencia."]]}
+];
+function inspectionEsc(v){return escapeHtml(String(v??""))}
+function inspectionRowHtml(sectionIndex,itemIndex,item){
+ const id=sectionIndex+"_"+itemIndex;
+ return '<tr data-inspection-row="'+id+'"><td class="inspection-item">'+item[0]+'</td><td class="inspection-condition">'+inspectionEsc(item[1])+'</td>'+
+ '<td class="inspection-choice"><input class="inspection-check" type="radio" name="insp_'+id+'" value="si" aria-label="Sí"></td>'+
+ '<td class="inspection-choice"><input class="inspection-check" type="radio" name="insp_'+id+'" value="no" aria-label="No"></td>'+
+ '<td class="inspection-choice"><input class="inspection-check" type="radio" name="insp_'+id+'" value="na" aria-label="No aplica"></td>'+
+ '<td class="inspection-action"><input class="inspection-check" type="checkbox" data-action="preventiva" aria-label="Acción preventiva"></td>'+
+ '<td class="inspection-action"><input class="inspection-check" type="checkbox" data-action="correctiva" aria-label="Acción correctiva"></td>'+
+ '<td class="inspection-observation"><input type="text" data-observation placeholder="Observación..."></td></tr>';
+}
+function inspectionCollect(){
+ const rows=[];
+ document.querySelectorAll("[data-inspection-row]").forEach(tr=>{
+  const checked=tr.querySelector('input[type="radio"]:checked');
+  rows.push({item:tr.cells[0].textContent,condicion:tr.cells[1].textContent,respuesta:checked?.value||"",preventiva:!!tr.querySelector('[data-action="preventiva"]').checked,correctiva:!!tr.querySelector('[data-action="correctiva"]').checked,observacion:tr.querySelector('[data-observation"]').value.trim()});
+ });
+ return rows;
+}
+async function renderInspectionModule(){
+ const view=$("view");
+ let establishments=[];
+ try{establishments=await fetchRows("establecimientos")}catch(e){console.warn("No se pudieron cargar establecimientos",e)}
+ const orgName=typeof getOrgName==="function"?getOrgName():"Organización";
+ view.innerHTML='<section class="panel">'+
+ '<div class="inspection-head"><div><div class="inspection-brand">'+inspectionEsc(orgName)+'</div><small>HIGIENE Y SEGURIDAD EN EL TRABAJO</small></div><div class="inspection-title">Formato de inspección<br>Condiciones de seguridad<br>Oficina / áreas administrativas</div><div class="inspection-meta"><span><b>CÓDIGO:</b> FT-SST-XXX</span><span><b>VERSIÓN:</b> 01</span><span><b>FECHA:</b> 20/10/2026</span><span><b>PÁGINA:</b> 1 de 2</span></div></div>'+
+ '<div class="inspection-data"><label>Fecha de inspección<input id="inspDate" type="date" value="'+new Date().toISOString().slice(0,10)+'" required></label><label>Inspección N.º<input id="inspNumber" value="" placeholder="Se asignará al guardar"></label><label>Frecuencia<select id="inspFrequency"><option>Mensual</option><option>Gerencial</option><option>Copasst/Vigía SST</option></select></label><label>Oficina inspeccionada<select id="inspEstablishment" required><option value="">Seleccionar establecimiento...</option>'+establishments.map(e=>'<option value="'+inspectionEsc(e.id)+'">'+inspectionEsc(e.Nombre||e.nombre||"Establecimiento")+'</option>').join("")+'</select></label><label>Sector / área<input id="inspArea" placeholder="Ej. Oficinas administrativas — primer piso"></label><label>Inspector responsable<input id="inspInspector" value="'+inspectionEsc(user?.email||"")+'" placeholder="Nombre y apellido"></label></div>'+
+ '<div class="inspection-table-wrap"><table class="inspection-table"><thead><tr class="inspection-instructions"><th colspan="8">MARQUE CON X SEGÚN CORRESPONDA. SÍ, NO, N/A (NO APLICA). INDIQUE EL TIPO DE ACCIÓN Y LAS OBSERVACIONES.</th></tr><tr><th>ÍTEM</th><th>CONDICIONES GENERALES / PUNTOS DE VERIFICACIÓN</th><th>SÍ</th><th>NO</th><th>N/A</th><th colspan="2">TIPO DE ACCIÓN A SEGUIR</th><th>OBSERVACIONES</th></tr><tr><th colspan="5"></th><th>PREV.</th><th>CORR.</th><th></th></tr></thead><tbody>'+INSPECTION_SECTIONS.map((sec,si)=>'<tr class="inspection-section"><th>ÍTEM</th><th colspan="7">'+inspectionEsc(sec.title)+'</th></tr>'+sec.items.map((it,ii)=>inspectionRowHtml(si,ii,it)).join("")).join("")+'</tbody></table></div>'+
+ '<label style="display:block;font-weight:800;margin-top:10px">OBSERVACIONES GENERALES<textarea id="inspGeneralNotes" class="inspection-notes" placeholder="Describa las condiciones generales, hallazgos y medidas requeridas..."></textarea></label>'+
+ '<table class="inspection-participants"><thead><tr><th colspan="4">PARTICIPANTES DE LA INSPECCIÓN</th></tr><tr><th>N.º</th><th>NOMBRES Y APELLIDOS</th><th>CARGO</th><th>FIRMA / CONSTANCIA</th></tr></thead><tbody>'+[1,2,3].map(n=>'<tr><td>'+n+'</td><td><input data-participant-name="'+n+'" placeholder="Nombre y apellido"></td><td><input data-participant-role="'+n+'" placeholder="Cargo"></td><td><input data-participant-sign="'+n+'" placeholder="Firma / nombre"></td></tr>').join("")+'</tbody></table>'+
+ '<div class="inspection-signoff"><div><b>OFICINA</b></div><div><b>ELABORÓ:</b><br><input id="inspPreparedBy" placeholder="Nombre y cargo"></div><div><b>REVISÓ:</b><br><input id="inspReviewedBy" placeholder="Nombre y cargo"></div><div><b>APROBÓ:</b><br><input id="inspApprovedBy" placeholder="Nombre y cargo"></div><div><b>ESTADO</b><br><span id="inspStatus">Borrador</span></div></div>'+
+ '<div class="inspection-actions inspection-no-print"><button class="btn btn-blue" id="inspSave" type="button">Guardar inspección</button><button class="btn btn-light" id="inspPrint" type="button">Imprimir / Guardar PDF</button><button class="btn btn-light" id="inspReset" type="button">Nueva inspección</button><span id="inspFeedback" role="status" class="muted"></span></div>'+
+ '<section class="inspection-saved-list inspection-no-print"><h3>Inspecciones guardadas</h3><div id="inspSavedRows" class="muted">Cargando registros...</div></section></section>';
+ $("inspPrint").onclick=()=>{document.body.classList.add("inspection-printing");window.print();setTimeout(()=>document.body.classList.remove("inspection-printing"),800)};
+ $("inspReset").onclick=()=>renderInspectionModule();
+ $("inspSave").onclick=saveInspectionRecord;
+ await loadInspectionSavedList();
+}
+async function saveInspectionRecord(){
+ const feedback=$("inspFeedback"),btn=$("inspSave");
+ if(!$("inspDate").value||!$("inspEstablishment").value){feedback.textContent="Completá la fecha y el establecimiento.";return}
+ const checklist=inspectionCollect();
+ const participants=[1,2,3].map(n=>({nombre:document.querySelector('[data-participant-name="'+n+'"]').value.trim(),cargo:document.querySelector('[data-participant-role="'+n+'"]').value.trim(),firma:document.querySelector('[data-participant-sign="'+n+'"]').value.trim()})).filter(p=>p.nombre||p.cargo||p.firma);
+ const payload={organizacion_id:activeOrg||null,establecimiento_id:$("inspEstablishment").value,sector_id:null,puesto_id:null,tipo:"Inspección de condiciones de seguridad — "+$("inspFrequency").value,fecha:$("inspDate").value,inspector:$("inspInspector").value.trim(),estado:checklist.some(r=>r.respuesta==="no")?"Con hallazgos":"Registrada",observaciones:JSON.stringify({numero:$("inspNumber").value.trim(),frecuencia:$("inspFrequency").value,area:$("inspArea").value.trim(),observaciones_generales:$("inspGeneralNotes").value.trim(),checklist,participantes,elaboro:$("inspPreparedBy").value.trim(),reviso:$("inspReviewedBy").value.trim(),aprobo:$("inspApprovedBy").value.trim()})};
+ btn.disabled=true;feedback.textContent="Guardando...";
+ try{
+  const {data,error}=await db.from("inspecciones").insert(payload).select("id").single();
+  if(error)throw error;
+  $("inspNumber").value=$("inspNumber").value||String(Date.now()).slice(-6);
+  feedback.textContent="Inspección guardada correctamente.";
+  $("inspStatus").textContent=payload.estado;
+  await loadInspectionSavedList();
+ }catch(e){console.error(e);feedback.textContent="No se pudo guardar: "+(e.message||"verificá los permisos de la organización");}
+ finally{btn.disabled=false}
+}
+async function loadInspectionSavedList(){
+ const host=$("inspSavedRows");if(!host)return;
+ try{
+  const rows=await fetchRows("inspecciones");
+  if(!rows.length){host.textContent="Todavía no hay inspecciones guardadas.";return}
+  host.innerHTML='<div class="inspection-table-wrap"><table class="inspection-table" style="min-width:560px"><thead><tr><th>Fecha</th><th>Tipo</th><th>Inspector</th><th>Estado</th></tr></thead><tbody>'+rows.slice().sort((a,b)=>String(b.fecha||"").localeCompare(String(a.fecha||""))).map(r=>'<tr><td>'+inspectionEsc(r.fecha||"—")+'</td><td>'+inspectionEsc(r.tipo||"Inspección")+'</td><td>'+inspectionEsc(r.inspector||"—")+'</td><td>'+inspectionEsc(r.estado||"—")+'</td></tr>').join("")+'</tbody></table></div>';
+ }catch(e){host.textContent="No se pudo consultar el listado: "+(e.message||"revisá permisos y conexión")}
+}
+const openModuleBeforeInspection=openModule;
+function openModule(id){
+ if(id==="inspecciones"){activeModule=id;editing=null;searchText="";peoplePage=1;buildNav();return renderInspectionModule()}
+ return openModuleBeforeInspection(id);
+}
+
 </script>
 </body>
 </html>
