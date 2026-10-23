@@ -1270,7 +1270,7 @@ async function renderRiskMapModule(){
  }catch(e){console.error(e);status("No se pudieron cargar los datos del mapa: "+(e.message||""),true);$m("rmSavedList").innerHTML='<p class="muted">Revisá la conexión y los permisos de tu usuario.</p>'}
 }
 
-function openModule(id){activeModule=id;editing=null;searchText="";peoplePage=1;buildNav();if(id==="inicio")return renderHome();if(id==="legislacion")return renderLegislation();if(id==="capacitaciones")return renderTrainingModule();if(id==="sesiones")return renderSessionsModule();if(id==="reportes")return renderReportsModule();if(id==="mapa_riesgos")return renderRiskMapModule();if(configs[id])return renderCrud(id)}
+function openModuleBase(id){activeModule=id;editing=null;searchText="";peoplePage=1;buildNav();if(id==="inicio")return renderHome();if(id==="legislacion")return renderLegislation();if(id==="capacitaciones")return renderTrainingModule();if(id==="sesiones")return renderSessionsModule();if(id==="reportes")return renderReportsModule();if(id==="mapa_riesgos")return renderRiskMapModule();if(configs[id])return renderCrud(id)}
 
 async function fetchRows(table,limit=500){
   let q=db.from(table).select("*").limit(limit);
@@ -2188,10 +2188,9 @@ async function loadInspectionSavedList(){
   host.innerHTML='<div class="inspection-table-wrap"><table class="inspection-table" style="min-width:560px"><thead><tr><th>Fecha</th><th>Tipo</th><th>Inspector</th><th>Estado</th></tr></thead><tbody>'+rows.slice().sort((a,b)=>String(b.fecha||"").localeCompare(String(a.fecha||""))).map(r=>'<tr><td>'+inspectionEsc(r.fecha||"—")+'</td><td>'+inspectionEsc(r.tipo||"Inspección")+'</td><td>'+inspectionEsc(r.inspector||"—")+'</td><td>'+inspectionEsc(r.estado||"—")+'</td></tr>').join("")+'</tbody></table></div>';
  }catch(e){host.textContent="No se pudo consultar el listado: "+(e.message||"revisá permisos y conexión")}
 }
-const openModuleBeforeInspection=openModule;
 function openModule(id){
  if(id==="inspecciones"){activeModule=id;editing=null;searchText="";peoplePage=1;buildNav();return renderInspectionModule()}
- return openModuleBeforeInspection(id);
+ return openModuleBase(id);
 }
 
 </script>
