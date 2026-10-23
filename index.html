@@ -1147,7 +1147,7 @@ async function renderRiskMapModule(){
   list.querySelectorAll("[data-remove-marker]").forEach(b=>b.onclick=()=>{markers.splice(Number(b.dataset.removeMarker),1);paintMarkers();paintList()});
  }
  function showPlan(url,isPdf=false){
-  const stage=$m("rmPlanStage");if(objectUrl){URL.revokeObjectURL(objectUrl);objectUrl=null}
+  const stage=$m("rmPlanStage");
   if(isPdf){stage.innerHTML='<div class="riskmap-pdf"><span>📄</span><strong>Plano PDF cargado</strong><p>El PDF se conservará con el mapa. Para colocar símbolos, cargá también una versión en imagen del plano.</p><a href="'+esc(url)+'" target="_blank" rel="noopener">Abrir plano PDF</a></div>';return}
   stage.innerHTML='<img alt="Plano del establecimiento" src="'+esc(url)+'"><div class="riskmap-stage-hint">Tocá el plano para colocar el símbolo seleccionado</div>';
   const image=stage.querySelector("img");image.onload=()=>paintMarkers();
@@ -1177,7 +1177,7 @@ async function renderRiskMapModule(){
  }
  $m("rmEstablishment").innerHTML='<option value="">Seleccionar establecimiento...</option>'+establishments.map(e=>'<option value="'+esc(e.id)+'">'+esc(e.Nombre)+'</option>').join("");
  $m("rmEstablishment").onchange=()=>{fillSectors();clearEditor()};
- $m("rmFile").onchange=()=>{const f=$m("rmFile").files[0];if(!f)return;if(f.size>10*1024*1024){status("El archivo supera los 10 MB.",true);$m("rmFile").value="";return}if(!/^image\/(png|jpeg|webp)$/.test(f.type)&&f.type!=="application/pdf"){status("Formato no admitido. Usá PNG, JPG, WEBP o PDF.",true);$m("rmFile").value="";return}objectUrl=URL.createObjectURL(f);planUrl=objectUrl;planPath=null;markers=[];paintList();showPlan(objectUrl,f.type==="application/pdf")};
+ $m("rmFile").onchange=()=>{const f=$m("rmFile").files[0];if(!f)return;if(objectUrl)URL.revokeObjectURL(objectUrl);if(f.size>10*1024*1024){status("El archivo supera los 10 MB.",true);$m("rmFile").value="";return}if(!/^image\/(png|jpeg|webp)$/.test(f.type)&&f.type!=="application/pdf"){status("Formato no admitido. Usá PNG, JPG, WEBP o PDF.",true);$m("rmFile").value="";return}objectUrl=URL.createObjectURL(f);planUrl=objectUrl;planPath=null;markers=[];paintList();showPlan(objectUrl,f.type==="application/pdf")};
  $m("rmRisk").innerHTML='<option value="">Sin vincular</option>'+risks.map(r=>'<option value="'+esc(r.id)+'">'+esc((r.descripcion||"Evaluación de riesgo").slice(0,100))+'</option>').join("");
  $m("rmNew").onclick=clearEditor;
  $m("riskMapPrint").onclick=()=>window.print();
@@ -1191,7 +1191,7 @@ async function renderRiskMapModule(){
    const payload={establecimiento_id:est,sector_id:$m("rmSector").value||null,titulo:title,plano_path:planPath,elementos:markers,activo:true,updated_at:new Date().toISOString()};
    let result;if(currentId)result=await db.from("mapas_riesgos").update(payload).eq("id",currentId).select().single();else result=await db.from("mapas_riesgos").insert(payload).select().single();
    if(result.error)throw result.error;currentId=result.data.id;await refreshMaps();
-   if(planPath){const {data}=await db.storage.from("mapas-riesgos").createSignedUrl(planPath,3600);if(data?.signedUrl){planUrl=data.signedUrl;showPlan(planUrl,/\.pdf($|\?)/i.test(planPath));paintMarkers()}}
+   if(planPath){const {data}=await db.storage.from("mapas-riesgos").createSignedUrl(planPath,3600);if(data?.signedUrl){if(objectUrl){URL.revokeObjectURL(objectUrl);objectUrl=null}planUrl=data.signedUrl;showPlan(planUrl,/\.pdf($|\?)/i.test(planPath));paintMarkers()}}
    status("Mapa guardado correctamente. "+markers.length+" símbolo(s) registrado(s).");
   }catch(e){console.error("Error al guardar mapa de riesgos",e);status(/row-level security|permission denied|violates row-level security|RLS/i.test(e.message||"")?"No tenés permisos para guardar mapas. Solicitá el rol administrador de la organización.":"No se pudo guardar el mapa: "+(e.message||"Error desconocido"),true)}
   finally{$m("rmSave").disabled=false}
