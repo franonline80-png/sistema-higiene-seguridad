@@ -1078,7 +1078,7 @@ function showLogin(message=""){$("app").style.display="none";$("loginScreen").st
 function showApp(){$("loginScreen").style.display="none";$("app").style.display="block"}
 function getOrgIds(){return organizations.map(o=>o.id)}
 function getOrgName(){return organizations.find(o=>o.id===activeOrg)?.nombre||"Organización"}
-function visibleModules(){return modules.filter(m=>m.id==="inicio"||m.id==="legislacion"||m.id==="sesiones"||m.id==="reportes"||configs[m.id])}
+function visibleModules(){return modules.filter(m=>m.id==="inicio"||m.id==="legislacion"||m.id==="sesiones"||m.id==="reportes"||m.id==="mapa_riesgos"||configs[m.id])}
 function buildNav(){
   const nav=$("navTabs");nav.replaceChildren();
   const all=visibleModules();
