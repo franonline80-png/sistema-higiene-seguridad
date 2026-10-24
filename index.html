@@ -1840,6 +1840,24 @@ const relatedRecordMap={
  capacitaciones:[["capacitaciones_personas","capacitacion_id","Participantes y asistencia"]],
  epp:[["epp_personas","epp_id","Entregas de este EPP"]]
 };
+/* Relaciones ascendentes: muestra el registro padre al que pertenece cada fila. */
+const relatedParentMap={
+ sectores:[["establecimientos","establecimiento_id","Establecimiento al que pertenece"]],
+ puestos:[["sectores","sector_id","Sector al que pertenece"]],
+ personas:[["organizaciones","organizacion_id","Organización"],["puestos","puesto_id","Puesto asignado"]],
+ riesgos:[["puestos","puesto_id","Puesto evaluado"],["peligros","peligro_id","Peligro asociado"]],
+ inspecciones:[["organizaciones","organizacion_id","Organización"],["establecimientos","establecimiento_id","Establecimiento"],["sectores","sector_id","Sector"],["puestos","puesto_id","Puesto"]],
+ accidentes_incidentes:[["organizaciones","organizacion_id","Organización"],["establecimientos","establecimiento_id","Establecimiento"],["sectores","sector_id","Sector"],["personas","persona_id","Persona involucrada"]],
+ mediciones_ambientales:[["organizaciones","organizacion_id","Organización"],["establecimientos","establecimiento_id","Establecimiento"],["sectores","sector_id","Sector"]],
+ equipos_instalaciones:[["organizaciones","organizacion_id","Organización"],["establecimientos","establecimiento_id","Establecimiento"],["sectores","sector_id","Sector"]],
+ documentacion:[["organizaciones","organizacion_id","Organización"],["establecimientos","establecimiento_id","Establecimiento"]],
+ vencimientos:[["organizaciones","organizacion_id","Organización"],["establecimientos","establecimiento_id","Establecimiento"]],
+ epp:[["organizaciones","organizacion_id","Organización"]],
+ capacitaciones:[["organizaciones","organizacion_id","Organización"]],
+ hallazgos:[["inspecciones","inspeccion_id","Inspección de origen"],["riesgos","riesgo_id","Riesgo asociado"]],
+ acciones_correctivas:[["hallazgos","hallazgo_id","Hallazgo de origen"],["personas","responsable_id","Persona responsable"]],
+ mapas_riesgos:[["establecimientos","establecimiento_id","Establecimiento"],["sectores","sector_id","Sector"]]
+};
 const relatedLabels={
  establecimientos:r=>r.Nombre||r.nombre||r.Codigo||r.id,
  sectores:r=>r.nombre||r.codigo||r.id,
@@ -1874,10 +1892,17 @@ async function openRelatedRecords(moduleId,row){
  $("relatedRecordsSubtitle").textContent=cfg.title+" · "+String(title);
  const body=$("relatedRecordsBody");body.replaceChildren();
  if(!relations.length){body.textContent="Este módulo todavía no tiene relaciones cruzadas configuradas en esta vista.";return}
- const results=await Promise.all(relations.map(async ([table,fk,label])=>{
+ const childResults=await Promise.all(relations.map(async ([table,fk,label])=>{
   try{const {data,error}=await db.from(table).select("*").eq(fk,row.id).limit(100);if(error)throw error;return {table,fk,label,rows:data||[],error:null}}
   catch(e){return {table,fk,label,rows:[],error:e}}
  }));
+ const parentRelations=relatedParentMap[cfg.table]||[];
+ const parentResults=await Promise.all(parentRelations.map(async ([table,fk,label])=>{
+  const parentId=row[fk];if(!parentId)return {table,fk,label,rows:[],error:null};
+  try{const {data,error}=await db.from(table).select("*").eq("id",parentId).limit(1);if(error)throw error;return {table,fk,label,rows:data||[],error:null}}
+  catch(e){return {table,fk,label,rows:[],error:e}}
+ }));
+ const results=[...parentResults,...childResults];
  body.replaceChildren();
  let shown=0;
  results.forEach(group=>{
