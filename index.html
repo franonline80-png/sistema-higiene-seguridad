@@ -1641,7 +1641,7 @@ function renderRiskTable(){
   cell('<span class="risk-main-cell">'+escapeHtml(row.responsable||'Sin asignar')+'</span>');
   cell('<span class="risk-sub-cell">'+escapeHtml(row.fecha_evaluacion?formatDateDMY(row.fecha_evaluacion):'Sin fecha')+'</span>');
   cell('<span class="risk-level-pill '+(isActive?'risk-status-active':'risk-status-inactive')+'">'+(isActive?'Activo':'Inactivo')+'</span>');
-  const td=document.createElement("td"),actions=document.createElement("div");actions.className="risk-row-actions";actions.append(makeButton("Editar","btn btn-light btn-sm",()=>startEdit("riesgos",row)),makeButton("Eliminar","btn btn-red btn-sm",()=>deleteRecord("riesgos",row)));td.appendChild(actions);tr.appendChild(td);tb.appendChild(tr);
+  const td=document.createElement("td"),actions=document.createElement("div");actions.className="risk-row-actions";actions.append(makeButton("Relacionados","btn btn-light btn-sm",()=>openRelatedRecords("riesgos",row)),makeButton("Editar","btn btn-light btn-sm",()=>startEdit("riesgos",row)),makeButton("Eliminar","btn btn-red btn-sm",()=>deleteRecord("riesgos",row)));td.appendChild(actions);tr.appendChild(td);tb.appendChild(tr);
  });
  const count=$("rowCount");if(count)count.textContent='Mostrando '+filtered.length+' de '+rows.length+' evaluación(es)';
  const badge=$("riskRowsBadge");if(badge)badge.textContent=rows.length+' registros';
