@@ -2127,7 +2127,7 @@ const INSPECTION_SECTIONS=[
 ];
 function inspectionEsc(v){return escapeHtml(String(v??""))}
 function inspectionToday(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
-function inspectionSequence(rows){let max=0;(rows||[]).forEach(r=>{let m={};try{m=typeof r.observaciones==="string"?JSON.parse(r.observaciones||"{}"):(r.observaciones||{})}catch(e){}const n=String(m.numero||"").match(/FT-SST-INS-(\d+)/i);if(n)max=Math.max(max,Number(n[1])||0)});return max+1}
+function inspectionSequence(rows){let max=0;(rows||[]).forEach(r=>{let m={};try{m=typeof r.observaciones==="string"?JSON.parse(r.observaciones||"{}"):(r.observaciones||{})}catch(e){}const n=String(m.numero||"").match(/FT-SST-INS-(\d+)/i);if(n)max=Math.max(max,Number(n[1])||0)});return Math.max(max,(rows||[]).length)+1}
 function inspectionCode(n){return "FT-SST-INS-"+String(n).padStart(4,"0")}
 function inspectionRowHtml(sectionIndex,itemIndex,item){
  const id=sectionIndex+"_"+itemIndex;
@@ -2190,7 +2190,7 @@ async function loadInspectionSavedList(){
  try{
   const rows=await fetchRows("inspecciones");
   if(!rows.length){host.textContent="Todavía no hay inspecciones guardadas.";return}
-  host.innerHTML='<div class="inspection-table-wrap"><table class="inspection-table" style="min-width:560px"><thead><tr><th>Fecha</th><th>Tipo</th><th>Inspector</th><th>Estado</th></tr></thead><tbody>'+rows.slice().sort((a,b)=>String(b.fecha||"").localeCompare(String(a.fecha||""))).map(r=>'<tr><td>'+inspectionEsc(r.fecha||"—")+'</td><td>'+inspectionEsc(r.tipo||"Inspección")+'</td><td>'+inspectionEsc(r.inspector||"—")+'</td><td>'+inspectionEsc(r.estado||"—")+'</td></tr>').join("")+'</tbody></table></div>';
+  host.innerHTML='<div class="inspection-table-wrap"><table class="inspection-table" style="min-width:560px"><thead><tr><th>Código</th><th>Fecha</th><th>Tipo</th><th>Inspector</th><th>Estado</th></tr></thead><tbody>'+rows.slice().sort((a,b)=>String(b.fecha||"").localeCompare(String(a.fecha||""))).map(r=>{let m={};try{m=typeof r.observaciones==="string"?JSON.parse(r.observaciones||"{}"):(r.observaciones||{})}catch(e){}return '<tr><td>'+inspectionEsc(m.numero||"—")+'</td><td>'+inspectionEsc(r.fecha||"—")+'</td><td>'+inspectionEsc(r.tipo||"Inspección")+'</td><td>'+inspectionEsc(r.inspector||"—")+'</td><td>'+inspectionEsc(r.estado||"—")+"</td></tr>";}).join("")+'</tbody></table></div>';
  }catch(e){host.textContent="No se pudo consultar el listado: "+(e.message||"revisá permisos y conexión")}
 }
 function openModule(id){
