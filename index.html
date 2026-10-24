@@ -677,11 +677,11 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
  body.inspection-printing #view{position:absolute;left:0;top:0;width:100%;padding:0!important;margin:0!important;background:white!important}
  body.inspection-printing #view .inspection-no-print{display:none!important}
  body.inspection-printing .inspection-head{grid-template-columns:1fr 1.5fr 1fr}
- body.inspection-printing .inspection-table{min-width:0;font-size:8px}
- body.inspection-printing .inspection-table th,body.inspection-printing .inspection-table td{padding:2px}
- body.inspection-printing .inspection-table input,body.inspection-printing .inspection-table select{font-size:8px}
+ body.inspection-printing .inspection-table{min-width:0!important;width:100%;table-layout:fixed;font-size:7.5px}
+ body.inspection-printing .inspection-table th,body.inspection-printing .inspection-table td{padding:1.5px;overflow-wrap:anywhere} body.inspection-printing .inspection-table .inspection-condition{min-width:0} body.inspection-printing .inspection-table .inspection-observation{min-width:0}
+ body.inspection-printing .inspection-table input,body.inspection-printing .inspection-table select{font-size:7px;padding:0;margin:0} body.inspection-printing .inspection-table .inspection-check{width:10px;height:10px} body.inspection-printing .inspection-table tr{break-inside:avoid}
  body.inspection-printing .panel{box-shadow:none!important;border:0!important;padding:0!important}
- @page{size:A4 landscape;margin:8mm}
+ @page{size:A4 landscape;margin:10mm 8mm 14mm;@bottom-right{content:"Página " counter(page) " de " counter(pages);font:9px Arial,sans-serif;color:#334155}}
 }
 </style>
 </head>
@@ -2126,6 +2126,9 @@ const INSPECTION_SECTIONS=[
 {title:"Elementos de emergencia",items:[["6.1","Botiquín de primeros auxilios completo."],["6.2","Extintores con fecha de vencimiento vigente, señalizados y soportados."],["6.3","Camilla rígida - correas de amarre."],["6.4","Cuello ortopédico."],["6.5","Linterna con pilas y radio."],["6.6","Sistema de alarma en caso de emergencia."]]}
 ];
 function inspectionEsc(v){return escapeHtml(String(v??""))}
+function inspectionToday(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function inspectionSequence(rows){let max=0;(rows||[]).forEach(r=>{let m={};try{m=typeof r.observaciones==="string"?JSON.parse(r.observaciones||"{}"):(r.observaciones||{})}catch(e){}const n=String(m.numero||"").match(/FT-SST-INS-(\d+)/i);if(n)max=Math.max(max,Number(n[1])||0)});return max+1}
+function inspectionCode(n){return "FT-SST-INS-"+String(n).padStart(4,"0")}
 function inspectionRowHtml(sectionIndex,itemIndex,item){
  const id=sectionIndex+"_"+itemIndex;
  return '<tr data-inspection-row="'+id+'"><td class="inspection-item">'+item[0]+'</td><td class="inspection-condition">'+inspectionEsc(item[1])+'</td>'+
@@ -2146,35 +2149,37 @@ function inspectionCollect(){
 }
 async function renderInspectionModule(){
  const view=$("view");
- let establishments=[];
- try{establishments=await fetchRows("establecimientos")}catch(e){console.warn("No se pudieron cargar establecimientos",e)}
- const orgName=typeof getOrgName==="function"?getOrgName():"Organización";
+ let establishments=[],sectors=[],saved=[];
+ try{[establishments,sectors,saved]=await Promise.all([fetchRows("establecimientos"),fetchRows("sectores"),fetchRows("inspecciones")])}catch(e){console.warn("No se pudieron cargar datos de inspecciones",e)}
+ establishments=establishments.filter(e=>e.Activo!==false&&e.activo!==false);sectors=sectors.filter(e=>e.activo!==false&&e.Activo!==false);
+ const orgName=typeof getOrgName==="function"?getOrgName():"Organización",today=inspectionToday(),code=inspectionCode(inspectionSequence(saved));
  view.innerHTML='<section class="panel">'+
- '<div class="inspection-head"><div><div class="inspection-brand">'+inspectionEsc(orgName)+'</div><small>HIGIENE Y SEGURIDAD EN EL TRABAJO</small></div><div class="inspection-title">Formato de inspección<br>Condiciones de seguridad<br>Oficina / áreas administrativas</div><div class="inspection-meta"><span><b>CÓDIGO:</b> FT-SST-XXX</span><span><b>VERSIÓN:</b> 01</span><span><b>FECHA:</b> 20/10/2026</span><span><b>PÁGINA:</b> 1 de 2</span></div></div>'+
- '<div class="inspection-data"><label>Fecha de inspección<input id="inspDate" type="date" value="'+new Date().toISOString().slice(0,10)+'" required></label><label>Inspección N.º<input id="inspNumber" value="" placeholder="Se asignará al guardar"></label><label>Frecuencia<select id="inspFrequency"><option>Mensual</option><option>Gerencial</option><option>Copasst/Vigía SST</option></select></label><label>Oficina inspeccionada<select id="inspEstablishment" required><option value="">Seleccionar establecimiento...</option>'+establishments.map(e=>'<option value="'+inspectionEsc(e.id)+'">'+inspectionEsc(e.Nombre||e.nombre||"Establecimiento")+'</option>').join("")+'</select></label><label>Sector / área<input id="inspArea" placeholder="Ej. Oficinas administrativas — primer piso"></label><label>Inspector responsable<input id="inspInspector" value="'+inspectionEsc(user?.email||"")+'" placeholder="Nombre y apellido"></label></div>'+
+ '<div class="inspection-head"><div><div class="inspection-brand">'+inspectionEsc(orgName)+'</div></div><div class="inspection-title">Formato de inspección<br>Condiciones de seguridad<br>Oficina / áreas administrativas</div><div class="inspection-meta"><span><b>CÓDIGO:</b> <strong id="inspCode">'+code+'</strong></span><span><b>VERSIÓN:</b> 01</span><span><b>FECHA:</b> <span id="inspHeaderDate">'+today.split("-").reverse().join("/")+'</span></span><span><b>PÁGINA:</b> Automática al imprimir</span></div></div>'+
+ '<div class="inspection-data"><label>Fecha de inspección<input id="inspDate" type="date" value="'+today+'" required></label><label>Inspección N.º<input id="inspNumber" value="'+code+'" readonly class="readonly-field" aria-readonly="true"></label><label>Frecuencia<select id="inspFrequency"><option>Mensual</option><option>Gerencial</option><option>Copasst/Vigía SST</option></select></label><label>Oficina inspeccionada<select id="inspEstablishment" required><option value="">Seleccionar establecimiento...</option>'+establishments.map(e=>'<option value="'+inspectionEsc(e.id)+'">'+inspectionEsc(e.Nombre||e.nombre||"Establecimiento")+'</option>').join("")+'</select></label><label>Sector / área<select id="inspArea" disabled required><option value="">Primero seleccioná una oficina...</option></select></label><label>Inspector responsable<input id="inspInspector" value="'+inspectionEsc(user?.email||"")+'" placeholder="Nombre y apellido"></label></div>'+
  '<div class="inspection-table-wrap"><table class="inspection-table"><thead><tr class="inspection-instructions"><th colspan="8">MARQUE CON X SEGÚN CORRESPONDA. SÍ, NO, N/A (NO APLICA). INDIQUE EL TIPO DE ACCIÓN Y LAS OBSERVACIONES.</th></tr><tr><th>ÍTEM</th><th>CONDICIONES GENERALES / PUNTOS DE VERIFICACIÓN</th><th>SÍ</th><th>NO</th><th>N/A</th><th colspan="2">TIPO DE ACCIÓN A SEGUIR</th><th>OBSERVACIONES</th></tr><tr><th colspan="5"></th><th>PREV.</th><th>CORR.</th><th></th></tr></thead><tbody>'+INSPECTION_SECTIONS.map((sec,si)=>'<tr class="inspection-section"><th>ÍTEM</th><th colspan="7">'+inspectionEsc(sec.title)+'</th></tr>'+sec.items.map((it,ii)=>inspectionRowHtml(si,ii,it)).join("")).join("")+'</tbody></table></div>'+
  '<label style="display:block;font-weight:800;margin-top:10px">OBSERVACIONES GENERALES<textarea id="inspGeneralNotes" class="inspection-notes" placeholder="Describa las condiciones generales, hallazgos y medidas requeridas..."></textarea></label>'+
  '<table class="inspection-participants"><thead><tr><th colspan="4">PARTICIPANTES DE LA INSPECCIÓN</th></tr><tr><th>N.º</th><th>NOMBRES Y APELLIDOS</th><th>CARGO</th><th>FIRMA / CONSTANCIA</th></tr></thead><tbody>'+[1,2,3].map(n=>'<tr><td>'+n+'</td><td><input data-participant-name="'+n+'" placeholder="Nombre y apellido"></td><td><input data-participant-role="'+n+'" placeholder="Cargo"></td><td><input data-participant-sign="'+n+'" placeholder="Firma / nombre"></td></tr>').join("")+'</tbody></table>'+
  '<div class="inspection-signoff"><div><b>OFICINA</b></div><div><b>ELABORÓ:</b><br><input id="inspPreparedBy" placeholder="Nombre y cargo"></div><div><b>REVISÓ:</b><br><input id="inspReviewedBy" placeholder="Nombre y cargo"></div><div><b>APROBÓ:</b><br><input id="inspApprovedBy" placeholder="Nombre y cargo"></div><div><b>ESTADO</b><br><span id="inspStatus">Borrador</span></div></div>'+
  '<div class="inspection-actions inspection-no-print"><button class="btn btn-blue" id="inspSave" type="button">Guardar inspección</button><button class="btn btn-light" id="inspPrint" type="button">Imprimir / Guardar PDF</button><button class="btn btn-light" id="inspReset" type="button">Nueva inspección</button><span id="inspFeedback" role="status" class="muted"></span></div>'+
  '<section class="inspection-saved-list inspection-no-print"><h3>Inspecciones guardadas</h3><div id="inspSavedRows" class="muted">Cargando registros...</div></section></section>';
- $("inspPrint").onclick=()=>{document.body.classList.add("inspection-printing");window.print();setTimeout(()=>document.body.classList.remove("inspection-printing"),800)};
+ $("inspDate").addEventListener("change",()=>{$("inspHeaderDate").textContent=$("inspDate").value?$("inspDate").value.split("-").reverse().join("/"):""});
+ $("inspEstablishment").addEventListener("change",()=>{const eid=$("inspEstablishment").value,area=$("inspArea"),opts=sectors.filter(x=>String(x.establecimiento_id)===String(eid));area.disabled=!eid;area.innerHTML='<option value="">' +(eid?(opts.length?"Seleccionar sector / área...":"No hay sectores activos para esta oficina"):"Primero seleccioná una oficina...") +'</option>'+opts.map(x=>'<option value="'+inspectionEsc(x.id)+'">'+inspectionEsc(x.nombre||x.Nombre||"Sector")+'</option>').join("")});
+ $("inspPrint").onclick=()=>{document.body.classList.add("inspection-printing");window.print();setTimeout(()=>document.body.classList.remove("inspection-printing"),1200)};
  $("inspReset").onclick=()=>renderInspectionModule();
  $("inspSave").onclick=saveInspectionRecord;
  await loadInspectionSavedList();
 }
 async function saveInspectionRecord(){
  const feedback=$("inspFeedback"),btn=$("inspSave");
- if(!$("inspDate").value||!$("inspEstablishment").value){feedback.textContent="Completá la fecha y el establecimiento.";return}
+ if(!$("inspDate").value||!$("inspEstablishment").value||!$("inspArea").value){feedback.textContent="Completá la fecha, la oficina y el sector / área.";return}
  const checklist=inspectionCollect();
  const participants=[1,2,3].map(n=>({nombre:document.querySelector('[data-participant-name="'+n+'"]').value.trim(),cargo:document.querySelector('[data-participant-role="'+n+'"]').value.trim(),firma:document.querySelector('[data-participant-sign="'+n+'"]').value.trim()})).filter(p=>p.nombre||p.cargo||p.firma);
- const payload={organizacion_id:activeOrg||null,establecimiento_id:$("inspEstablishment").value,sector_id:null,puesto_id:null,tipo:"Inspección de condiciones de seguridad — "+$("inspFrequency").value,fecha:$("inspDate").value,inspector:$("inspInspector").value.trim(),estado:checklist.some(r=>r.respuesta==="no")?"Con hallazgos":"Registrada",observaciones:JSON.stringify({numero:$("inspNumber").value.trim(),frecuencia:$("inspFrequency").value,area:$("inspArea").value.trim(),observaciones_generales:$("inspGeneralNotes").value.trim(),checklist,participantes,elaboro:$("inspPreparedBy").value.trim(),reviso:$("inspReviewedBy").value.trim(),aprobo:$("inspApprovedBy").value.trim()})};
+ const payload={organizacion_id:activeOrg||null,establecimiento_id:$("inspEstablishment").value,sector_id:$("inspArea").value,puesto_id:null,tipo:"Inspección de condiciones de seguridad — "+$("inspFrequency").value,fecha:$("inspDate").value,inspector:$("inspInspector").value.trim(),estado:checklist.some(r=>r.respuesta==="no")?"Con hallazgos":"Registrada",observaciones:JSON.stringify({numero:$("inspNumber").value,frecuencia:$("inspFrequency").value,area:$("inspArea").selectedOptions[0]?.textContent||"",observaciones_generales:$("inspGeneralNotes").value.trim(),checklist,participantes,elaboro:$("inspPreparedBy").value.trim(),reviso:$("inspReviewedBy").value.trim(),aprobo:$("inspApprovedBy").value.trim()})};
  btn.disabled=true;feedback.textContent="Guardando...";
  try{
   const {data,error}=await db.from("inspecciones").insert(payload).select("id").single();
   if(error)throw error;
-  $("inspNumber").value=$("inspNumber").value||String(Date.now()).slice(-6);
-  feedback.textContent="Inspección guardada correctamente.";
+  feedback.textContent="Inspección guardada correctamente: "+$("inspNumber").value+"."
   $("inspStatus").textContent=payload.estado;
   await loadInspectionSavedList();
  }catch(e){console.error(e);feedback.textContent="No se pudo guardar: "+(e.message||"verificá los permisos de la organización");}
