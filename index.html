@@ -85,6 +85,20 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 @media(max-width:650px){.brand-system-name{font-size:10px}.brand h1{font-size:15px}.professional-title{font-size:14px}}
 @media(max-width:650px){.consultor-header-logo{width:88px;flex-basis:88px}.brand{gap:9px}.brand h1{font-size:15px}.brand p{font-size:11px}.login-consultor-logo{max-width:300px}.cpii-credential{gap:10px}.cpii-credential svg{width:110px}.cpII-credential-text{font-size:11px}}
 
+
+/* Consulta transversal de registros relacionados */
+.related-modal{position:fixed;inset:0;z-index:1000;background:#0f172a99;display:flex;align-items:center;justify-content:center;padding:16px}
+.related-dialog{background:#fff;width:min(900px,100%);max-height:min(88vh,900px);overflow:auto;border-radius:16px;padding:22px;box-shadow:0 25px 80px #0004}
+.related-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-bottom:1px solid #e2e8f0;padding-bottom:14px;margin-bottom:16px}
+.related-head h2{margin:0 0 6px;font-size:21px}.related-head p{margin:0;color:#64748b;font-size:13px;overflow-wrap:anywhere}
+.related-section{border:1px solid #e2e8f0;border-radius:11px;padding:13px;margin-bottom:12px}
+.related-section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.related-section-title h3{margin:0;font-size:14px}
+.related-count{font-size:11px;font-weight:700;color:#1e40af;background:#eff6ff;border-radius:20px;padding:4px 8px}
+.related-list{display:flex;flex-direction:column;gap:7px}.related-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px;background:#f8fafc;border-radius:8px}
+.related-item-text{min-width:0;display:flex;flex-direction:column;gap:4px}.related-item-text strong{font-size:13px;overflow-wrap:anywhere}.related-item-text span{font-size:11px;color:#64748b;overflow-wrap:anywhere}
+.related-error{font-size:12px;color:#b91c1c}.related-empty{padding:24px;text-align:center;color:#64748b}
+@media(max-width:600px){.related-dialog{padding:14px}.related-head{align-items:flex-start}.related-item{align-items:flex-start;flex-direction:column}.related-head h2{font-size:18px}}
+
 /* TABLERO PROFESIONAL */
 .dashboard-welcome{background:linear-gradient(120deg,#10243a 0%,#1d4d70 100%);color:white;border-radius:17px;padding:25px 27px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;gap:18px;box-shadow:0 8px 24px #10243a18}
 .dashboard-welcome h2{font-size:25px;margin:0 0 8px}
@@ -1802,7 +1816,7 @@ function renderTable(id){
       else td.textContent=displayCellValue(id,row,k);
       tr.appendChild(td);
     });
-    const td=document.createElement("td");if(id==="personas")td.append(makeButton("Ver ficha","btn btn-blue btn-sm",()=>openPeopleDetail(row)));td.append(makeButton("Editar","btn btn-light btn-sm",()=>startEdit(id,row)),makeButton("Eliminar","btn btn-red btn-sm",()=>deleteRecord(id,row)));tr.appendChild(td);tb.appendChild(tr);
+    const td=document.createElement("td");if(id==="personas")td.append(makeButton("Ver ficha","btn btn-blue btn-sm",()=>openPeopleDetail(row)));td.append(makeButton("Relacionados","btn btn-light btn-sm",()=>openRelatedRecords(id,row)),makeButton("Editar","btn btn-light btn-sm",()=>startEdit(id,row)),makeButton("Eliminar","btn btn-red btn-sm",()=>deleteRecord(id,row)));tr.appendChild(td);tb.appendChild(tr);
   });
   if(id==="personas"){
     const nav=$("peoplePagination");nav.replaceChildren();
@@ -1811,6 +1825,90 @@ function renderTable(id){
     const next=makeButton("Siguiente","btn btn-light btn-sm",()=>{if(peoplePage<pageCount){peoplePage++;renderTable(id)}});next.disabled=peoplePage>=pageCount;nav.appendChild(next);
   }
 }
+
+/* Ficha de relaciones: consulta los registros vinculados sin duplicar datos. */
+const relatedRecordMap={
+ organizaciones:[["establecimientos","organizacion_id","Establecimientos"],["personas","organizacion_id","Personas"],["inspecciones","organizacion_id","Inspecciones"],["accidentes_incidentes","organizacion_id","Accidentes e incidentes"],["capacitaciones","organizacion_id","Capacitaciones"],["mediciones_ambientales","organizacion_id","Mediciones ambientales"],["epp","organizacion_id","Elementos de protección"],["documentacion","organizacion_id","Documentación"],["vencimientos","organizacion_id","Vencimientos"],["equipos_instalaciones","organizacion_id","Equipos e instalaciones"]],
+ establecimientos:[["sectores","establecimiento_id","Sectores"],["personas","organizacion_id","Personas de la organización"],["inspecciones","establecimiento_id","Inspecciones"],["mediciones_ambientales","establecimiento_id","Mediciones ambientales"],["accidentes_incidentes","establecimiento_id","Accidentes e incidentes"],["documentacion","establecimiento_id","Documentación"],["vencimientos","establecimiento_id","Vencimientos"],["equipos_instalaciones","establecimiento_id","Equipos e instalaciones"],["mapas_riesgos","establecimiento_id","Mapas de riesgos"]],
+ sectores:[["puestos","sector_id","Puestos"],["inspecciones","sector_id","Inspecciones"],["mediciones_ambientales","sector_id","Mediciones ambientales"],["accidentes_incidentes","sector_id","Accidentes e incidentes"],["equipos_instalaciones","sector_id","Equipos e instalaciones"],["mapas_riesgos","sector_id","Mapas de riesgos"]],
+ puestos:[["personas","puesto_id","Personas asignadas"],["riesgos","puesto_id","Evaluaciones de riesgos"],["inspecciones","puesto_id","Inspecciones"]],
+ peligros:[["riesgos","peligro_id","Riesgos asociados"]],
+ personas:[["accidentes_incidentes","persona_id","Accidentes e incidentes"],["capacitaciones_personas","persona_id","Capacitaciones y asistencia"],["epp_personas","persona_id","Entrega de EPP"],["acciones_correctivas","responsable_id","Acciones asignadas"],["vencimientos","responsable_id","Vencimientos a cargo"]],
+ riesgos:[["hallazgos","riesgo_id","Hallazgos asociados"]],
+ inspecciones:[["hallazgos","inspeccion_id","Hallazgos de la inspección"]],
+ hallazgos:[["acciones_correctivas","hallazgo_id","Acciones correctivas"]],
+ capacitaciones:[["capacitaciones_personas","capacitacion_id","Participantes y asistencia"]],
+ epp:[["epp_personas","epp_id","Entregas de este EPP"]]
+};
+const relatedLabels={
+ establecimientos:r=>r.Nombre||r.nombre||r.Codigo||r.id,
+ sectores:r=>r.nombre||r.codigo||r.id,
+ puestos:r=>r.Nombre||r.Codigo||r.id,
+ personas:r=>[r.Apellido,r.Nombre].filter(Boolean).join(", ")||r.Legajo||r.id,
+ peligros:r=>r.nombre||r.Categoria||r.id,
+ riesgos:r=>r.descripcion||("Riesgo "+(r.nivel_riesgo??""))||r.id,
+ inspecciones:r=>[r.tipo,r.fecha,r.estado].filter(Boolean).join(" · ")||r.id,
+ hallazgos:r=>r.descripcion||r.tipo||r.id,
+ acciones_correctivas:r=>r.descripcion||r.estado||r.id,
+ capacitaciones:r=>r.titulo||r.tipo||r.id,
+ capacitaciones_personas:r=>{const p=(moduleCache.personas||[]).find(x=>String(x.id)===String(r.persona_id));return (p?[p.Apellido,p.Nombre].filter(Boolean).join(", "):"Participante")+(r.asistencia===true?" · Asistió":r.asistencia===false?" · Ausente":"")+(r.aprobado===true?" · Aprobó":"")},
+ epp:r=>r.nombre||r.marca||r.id,
+ epp_personas:r=>{const p=(moduleCache.personas||[]).find(x=>String(x.id)===String(r.persona_id));const e=(moduleCache.epp||[]).find(x=>String(x.id)===String(r.epp_id));return (p?[p.Apellido,p.Nombre].filter(Boolean).join(", "):"Persona")+(e?" · "+e.nombre:"")+(r.fecha_entrega?" · Entrega "+formatDateDMY(r.fecha_entrega):"")},
+ accidentes_incidentes:r=>[r.tipo,r.fecha,r.descripcion].filter(Boolean).join(" · ")||r.id,
+ mediciones_ambientales:r=>[r.tipo,r.parametro,r.fecha,r.valor,r.unidad].filter(Boolean).join(" · ")||r.id,
+ documentacion:r=>[r.titulo,r.tipo,r.numero_documento].filter(Boolean).join(" · ")||r.id,
+ vencimientos:r=>[r.concepto,r.fecha_vencimiento,r.estado].filter(Boolean).join(" · ")||r.id,
+ equipos_instalaciones:r=>[r.nombre,r.tipo,r.codigo_interno].filter(Boolean).join(" · ")||r.id,
+ mapas_riesgos:r=>r.titulo||r.id
+};
+function closeRelatedRecords(){const m=$("relatedRecordsModal");if(m)m.remove();document.body.style.overflow=""}
+async function openRelatedRecords(moduleId,row){
+ closeRelatedRecords();
+ const cfg=configs[moduleId];if(!cfg)return;
+ const relations=relatedRecordMap[cfg.table]||[];
+ const modal=document.createElement("div");modal.id="relatedRecordsModal";modal.className="related-modal";
+ modal.innerHTML='<div class="related-dialog" role="dialog" aria-modal="true" aria-labelledby="relatedRecordsTitle"><div class="related-head"><div><h2 id="relatedRecordsTitle">Información relacionada</h2><p id="relatedRecordsSubtitle"></p></div><button type="button" class="btn btn-light" id="relatedRecordsClose">Cerrar</button></div><div id="relatedRecordsBody"><p class="muted">Consultando registros relacionados…</p></div></div>';
+ document.body.appendChild(modal);document.body.style.overflow="hidden";
+ $("relatedRecordsClose").onclick=closeRelatedRecords;modal.addEventListener("click",e=>{if(e.target===modal)closeRelatedRecords()});
+ const title=relatedLabels[cfg.table]?.(row)||row.nombre||row.Nombre||row.titulo||row.id;
+ $("relatedRecordsSubtitle").textContent=cfg.title+" · "+String(title);
+ const body=$("relatedRecordsBody");body.replaceChildren();
+ if(!relations.length){body.textContent="Este módulo todavía no tiene relaciones cruzadas configuradas en esta vista.";return}
+ const results=await Promise.all(relations.map(async ([table,fk,label])=>{
+  try{const {data,error}=await db.from(table).select("*").eq(fk,row.id).limit(100);if(error)throw error;return {table,fk,label,rows:data||[],error:null}}
+  catch(e){return {table,fk,label,rows:[],error:e}}
+ }));
+ body.replaceChildren();
+ let shown=0;
+ results.forEach(group=>{
+  if(!group.rows.length&&!group.error)return;
+  shown++;
+  const section=document.createElement("section");section.className="related-section";
+  const heading=document.createElement("div");heading.className="related-section-title";
+  const h=document.createElement("h3");h.textContent=group.label;heading.appendChild(h);
+  const count=document.createElement("span");count.className="related-count";count.textContent=group.error?"No disponible":group.rows.length+" registro(s)";heading.appendChild(count);section.appendChild(heading);
+  if(group.error){const p=document.createElement("p");p.className="related-error";p.textContent="No se pudo consultar esta relación con los permisos actuales.";section.appendChild(p)}
+  else if(!group.rows.length){const p=document.createElement("p");p.className="muted";p.textContent="Sin registros relacionados.";section.appendChild(p)}
+  else{
+   const list=document.createElement("div");list.className="related-list";
+   group.rows.forEach(item=>{
+    const card=document.createElement("div");card.className="related-item";
+    const text=document.createElement("div");text.className="related-item-text";
+    const strong=document.createElement("strong");strong.textContent=relatedLabels[group.table]?.(item)||item.nombre||item.Nombre||item.titulo||item.concepto||item.descripcion||("Registro "+item.id);text.appendChild(strong);
+    const detail=document.createElement("span");
+    const extras=[item.estado,item.fecha||item.fecha_vencimiento,item.prioridad,item.Codigo||item.codigo].filter(Boolean).map(x=>String(x));
+    detail.textContent=extras.join(" · ");text.appendChild(detail);card.appendChild(text);
+    if(configs[group.table]){const open=makeButton("Abrir módulo","btn btn-light btn-sm",()=>{closeRelatedRecords();openModule(group.table)});card.appendChild(open)}
+    list.appendChild(card);
+   });
+   section.appendChild(list);
+   if(group.rows.length===100){const note=document.createElement("p");note.className="muted";note.textContent="Se muestran hasta 100 registros de esta relación.";section.appendChild(note)}
+  }
+  body.appendChild(section);
+ });
+ if(!shown){const p=document.createElement("div");p.className="related-empty";p.textContent="No se encontraron registros relacionados en los módulos consultados.";body.appendChild(p)}
+}
+
 function makeButton(text,cls,fn){const b=document.createElement("button");b.type="button";b.className=cls;b.textContent=text;b.onclick=fn;return b}
 async function startEdit(id,row){
   await renderCrud(id);editing=row;$("formTitle").textContent="Editar registro";$("saveRecord").textContent="Guardar cambios";$("cancelEdit").classList.remove("hidden");
