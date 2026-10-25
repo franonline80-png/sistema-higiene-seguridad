@@ -444,10 +444,21 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 .risk-filterbar{display:flex;gap:9px;flex-wrap:wrap;padding:0 20px 15px}
 .risk-filterbar input,.risk-filterbar select{margin:0;max-width:none;min-width:150px;font-size:12px}
 .risk-filterbar input{flex:1;min-width:190px}
-.risk-table-wrap{border-top:1px solid var(--line);overflow:auto}
-.risk-table{width:100%;border-collapse:collapse;font-size:12px}
-.risk-table th{position:static;text-align:left;background:#f8fafc;color:#64748b;padding:12px 14px;font-size:10px;text-transform:uppercase;letter-spacing:.45px;border-bottom:1px solid var(--line);white-space:nowrap}
-.risk-table td{padding:13px 14px;border-bottom:1px solid #edf1f5;vertical-align:middle;max-width:260px}
+.risk-table-wrap{border-top:1px solid var(--line);overflow-x:auto;overflow-y:hidden;width:100%;max-width:100%}
+.risk-table{width:100%;min-width:1180px;table-layout:fixed;border-collapse:collapse;font-size:12px}
+.risk-table th{position:static;text-align:left;background:#f8fafc;color:#64748b;padding:12px 12px;font-size:10px;text-transform:uppercase;letter-spacing:.35px;border-bottom:1px solid var(--line);white-space:normal;vertical-align:bottom}
+.risk-table th:nth-child(1),.risk-table td:nth-child(1){width:15%}
+.risk-table th:nth-child(2),.risk-table td:nth-child(2){width:34%}
+.risk-table th:nth-child(3),.risk-table td:nth-child(3){width:9%}
+.risk-table th:nth-child(4),.risk-table td:nth-child(4){width:13%}
+.risk-table th:nth-child(5),.risk-table td:nth-child(5){width:8%}
+.risk-table th:nth-child(6),.risk-table td:nth-child(6){width:8%}
+.risk-table th:nth-child(7),.risk-table td:nth-child(7){width:13%}
+.risk-table td{padding:13px 12px;border-bottom:1px solid #edf1f5;vertical-align:middle;max-width:none;overflow-wrap:anywhere}
+.risk-table td:nth-child(2) .risk-main-cell,.risk-table td:nth-child(2) .risk-sub-cell{white-space:normal;overflow-wrap:anywhere}
+.risk-table td:nth-child(4) .risk-main-cell{white-space:normal;overflow-wrap:anywhere}
+.risk-row-actions{display:flex;gap:5px;white-space:normal;flex-wrap:wrap}
+.risk-row-actions .btn{padding:6px 8px;font-size:10px;flex:0 0 auto}
 .risk-table tr:last-child td{border-bottom:0}
 .risk-main-cell{font-weight:750;color:#1e293b;display:block;margin-bottom:4px}
 .risk-sub-cell{font-size:10px;color:var(--muted);display:block;line-height:1.4}
