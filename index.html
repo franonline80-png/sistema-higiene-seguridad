@@ -2134,7 +2134,7 @@ async function renderHome(){
       .filter(r=>!["cumplido","cerrado"].includes(estadoTexto(r.estado))&&r.fecha_vencimiento&&r.fecha_vencimiento<=fechaLimite)
       .sort((a,b)=>String(a.fecha_vencimiento).localeCompare(String(b.fecha_vencimiento)));
     $("dashVencCount").textContent=venc.length;
-    $("dashVencList").innerHTML=venc.length?`<div class="dashboard-compact-summary">Hay <strong>${venc.length}</strong> vencimiento(s) pendiente(s) de seguimiento dentro de los próximos 30 días. Consultá el apartado de Vencimientos para ver fechas, riesgos y responsables.</div>`:`<div class="dashboard-empty">✓ No hay vencimientos próximos registrados.</div>`;
+    $("dashVencList").innerHTML=venc.length?`<div class="dashboard-compact-summary">Hay <strong>${venc.length}</strong> vencimiento(s) pendiente(s), vencidos o próximos. Consultá el apartado de Vencimientos para ver fechas, riesgos y responsables.</div>`:`<div class="dashboard-empty">✓ No hay vencimientos próximos registrados.</div>`;
 
     const accidentes=accAll.filter(r=>r.organizacion_id===activeOrg&&!esCerrado(r.estado)).sort((a,b)=>String(b.fecha||"").localeCompare(String(a.fecha||"")));
     $("dashAccCount").textContent=accidentes.length;
