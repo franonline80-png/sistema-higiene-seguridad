@@ -743,6 +743,30 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 }
 @media(max-height:720px) and (min-width:601px){#loginScreen.login-scenic{align-items:flex-start}.login-scenic-card{padding-top:18px;padding-bottom:16px}.login-scenic-brand .login-brand-logo{max-width:245px}.login-scenic-divider{margin:8px 0 12px}.login-scenic-card h1{font-size:30px}.login-scenic-subtitle{margin-bottom:14px}}
 @media(prefers-reduced-motion:reduce){.login-scenic-card *{transition:none!important}}
+/* Ajuste de espacio para visualizar completa la matriz de riesgo */
+form .field:has(.risk-matrix-widget),
+form .form-field:has(.risk-matrix-widget),
+form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!important;max-width:none!important;min-width:0!important}
+.risk-matrix-widget{width:100%!important;max-width:none!important;min-width:0!important;box-sizing:border-box!important}
+.risk-matrix-layout{display:grid!important;grid-template-columns:minmax(210px,.9fr) minmax(210px,.9fr) minmax(340px,1.35fr)!important;gap:16px!important;align-items:start!important;width:100%!important}
+.risk-level-pickers{display:contents!important}
+.risk-level-pickers>div{min-width:0!important}
+.risk-matrix-bottom{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:10px!important;margin-top:0!important;min-width:0!important}
+.risk-matrix-wrap{width:100%!important;min-width:0!important;overflow:visible!important}
+.risk-matrix-table{width:100%!important;min-width:0!important;table-layout:fixed!important}
+.risk-matrix-table th{padding:7px 3px!important;overflow-wrap:anywhere}
+.risk-cell{min-width:0!important;padding:9px 1px!important;font-size:10px!important;overflow-wrap:anywhere}
+.risk-result-card{width:100%!important;box-sizing:border-box!important;padding:10px!important}
+@media(max-width:1100px){
+ .risk-matrix-layout{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .risk-matrix-bottom{grid-column:1/-1!important;grid-template-columns:minmax(0,1.6fr) minmax(180px,.8fr)!important}
+}
+@media(max-width:700px){
+ .risk-matrix-layout{grid-template-columns:minmax(0,1fr)!important}
+ .risk-matrix-bottom{grid-column:auto!important;grid-template-columns:minmax(0,1fr)!important}
+ .risk-matrix-table{min-width:280px!important}
+ .risk-matrix-wrap{overflow-x:auto!important}
+}
 </style>
 </head>
 <body>
@@ -2205,31 +2229,6 @@ function downloadReportPdf(){
  const w=window.open("","_blank");if(!w){$("reportStatus").textContent="El navegador bloqueó la ventana. Permití ventanas emergentes para guardar el PDF.";return}
  const css=[...document.querySelectorAll("style")].map(x=>x.textContent).join("\n");
   w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>'+reportEsc(def.title)+'</title><style>'+css+' body{background:#fff!important;padding:12mm!important}.report-paper{max-width:190mm;margin:auto;box-shadow:none;border:0;padding:0!important;font-size:10pt}@page{size:A4;margin:12mm}
-/* Ajuste de espacio para visualizar completa la matriz de riesgo */
-form .field:has(.risk-matrix-widget),
-form .form-field:has(.risk-matrix-widget),
-form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!important;max-width:none!important;min-width:0!important}
-.risk-matrix-widget{width:100%!important;max-width:none!important;min-width:0!important;box-sizing:border-box!important}
-.risk-matrix-layout{display:grid!important;grid-template-columns:minmax(210px,.9fr) minmax(210px,.9fr) minmax(340px,1.35fr)!important;gap:16px!important;align-items:start!important;width:100%!important}
-.risk-level-pickers{display:contents!important}
-.risk-level-pickers>div{min-width:0!important}
-.risk-matrix-bottom{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:10px!important;margin-top:0!important;min-width:0!important}
-.risk-matrix-wrap{width:100%!important;min-width:0!important;overflow:visible!important}
-.risk-matrix-table{width:100%!important;min-width:0!important;table-layout:fixed!important}
-.risk-matrix-table th{padding:7px 3px!important;overflow-wrap:anywhere}
-.risk-cell{min-width:0!important;padding:9px 1px!important;font-size:10px!important;overflow-wrap:anywhere}
-.risk-result-card{width:100%!important;box-sizing:border-box!important;padding:10px!important}
-@media(max-width:1100px){
- .risk-matrix-layout{grid-template-columns:repeat(2,minmax(0,1fr))!important}
- .risk-matrix-bottom{grid-column:1/-1!important;grid-template-columns:minmax(0,1.6fr) minmax(180px,.8fr)!important}
-}
-@media(max-width:700px){
- .risk-matrix-layout{grid-template-columns:minmax(0,1fr)!important}
- .risk-matrix-bottom{grid-column:auto!important;grid-template-columns:minmax(0,1fr)!important}
- .risk-matrix-table{min-width:280px!important}
- .risk-matrix-wrap{overflow-x:auto!important}
-}
-
 </style></head><body><article class="report-paper">'+paper.innerHTML+'</article><script>window.onload=()=>setTimeout(()=>window.print(),250)<\\/script></body></html>');
  w.document.close();
 }
