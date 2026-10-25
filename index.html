@@ -697,13 +697,60 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
  body.inspection-printing .panel{box-shadow:none!important;border:0!important;padding:0!important}
  @page{size:A4 landscape;margin:10mm 8mm 14mm;@bottom-right{content:"Página " counter(page) " de " counter(pages);font:9px Arial,sans-serif;color:#334155}}
 }
+
+/* Inicio de sesión panorámico: tarjeta translúcida y centrado adaptable */
+#loginScreen.login-scenic{
+  position:relative;isolation:isolate;min-height:100vh;min-height:100svh;width:100%;
+  display:flex;align-items:center;justify-content:center;overflow:auto;
+  padding:28px 18px;
+  background:#23384c url('https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=2200&q=85') center center/cover no-repeat;
+}
+.login-scenic-overlay{position:fixed;inset:0;z-index:-1;background:linear-gradient(110deg,#12283f66,#12283f18 48%,#5a321f33);backdrop-filter:blur(2px)}
+.login-scenic-card{
+  width:min(100%,650px);margin:auto;padding:28px 40px 24px;border-radius:28px;
+  border:1px solid #ffffffa6;background:linear-gradient(145deg,#ffffffe0,#f8f7f3c9);
+  box-shadow:0 24px 80px #07152555,inset 0 1px #ffffffd9;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  text-align:center;color:#211a16;
+}
+.login-scenic-brand{display:flex;justify-content:center;align-items:center}
+.login-scenic-brand .login-brand-logo{width:min(100%,310px);margin:0 auto 8px}
+.login-scenic-brand .login-brand-logo svg{display:block;width:100%;height:auto}
+.login-scenic-divider{height:1px;background:linear-gradient(90deg,transparent,#a8a29eaa,transparent);margin:14px 0 18px}
+.login-scenic-card h1{font-family:Georgia,'Times New Roman',serif;font-size:clamp(30px,4vw,40px);line-height:1.1;margin:0 0 8px;color:#211a16}
+.login-scenic-subtitle{font-size:15px;line-height:1.5;color:#58616c;margin:0 auto 22px;max-width:440px}
+.login-scenic-card form{text-align:left}
+.login-scenic-card label{font-size:13px;font-weight:700;color:#49372b;margin:0 0 7px}
+.login-scenic-card .login-input-wrap{display:flex;align-items:center;gap:10px;width:100%;margin-bottom:15px;padding:0 14px;border:1px solid #ffffff;background:#ffffffdf;border-radius:12px;box-shadow:0 2px 8px #3d30220c}
+.login-scenic-card .login-input-wrap>span{font-size:19px;color:#80512f;flex:0 0 auto}
+.login-scenic-card .login-input-wrap input{border:0!important;outline:none!important;box-shadow:none!important;background:transparent!important;padding:15px 0;margin:0;min-width:0;color:#2c2926}
+.login-scenic-card .login-input-wrap:focus-within{border-color:#a66b3e;box-shadow:0 0 0 3px #a66b3e24}
+.login-scenic-card .password-toggle{border:0;background:transparent;color:#66717d;padding:6px;flex:0 0 auto}
+.login-scenic-card #loginButton.login-v2-submit{display:flex;justify-content:center;align-items:center;gap:12px;width:100%;margin-top:5px;padding:15px 18px;border-radius:11px;background:linear-gradient(110deg,#88502e,#5e351f);color:#fff;font-weight:750;font-size:16px;box-shadow:0 7px 18px #653c242e}
+.login-scenic-card #loginButton.login-v2-submit:hover{filter:brightness(1.08)}
+.login-scenic-card #loginMessage{min-height:0;text-align:left;color:#9f2525}
+.login-scenic-footer{display:flex;align-items:center;justify-content:center;gap:9px;border-top:1px solid #8c82772b;margin-top:20px;padding-top:17px;color:#59616a;font-size:12px}
+.login-scenic-footer span{font-size:21px;color:#80512f}
+@media(max-width:600px){
+ #loginScreen.login-scenic{padding:16px 12px;align-items:center;background-position:center center}
+ .login-scenic-card{width:100%;max-width:440px;padding:20px 18px 17px;border-radius:22px}
+ .login-scenic-brand .login-brand-logo{max-width:260px;margin-bottom:2px}
+ .login-scenic-divider{margin:10px 0 14px}
+ .login-scenic-card h1{font-size:30px}
+ .login-scenic-subtitle{font-size:13px;margin-bottom:18px}
+ .login-scenic-card .login-input-wrap input{padding:14px 0;font-size:15px}
+ .login-scenic-card #loginButton.login-v2-submit{padding:14px}
+ .login-scenic-footer{font-size:11px;margin-top:16px;padding-top:13px}
+}
+@media(max-height:720px) and (min-width:601px){#loginScreen.login-scenic{align-items:flex-start}.login-scenic-card{padding-top:18px;padding-bottom:16px}.login-scenic-brand .login-brand-logo{max-width:245px}.login-scenic-divider{margin:8px 0 12px}.login-scenic-card h1{font-size:30px}.login-scenic-subtitle{margin-bottom:14px}}
+@media(prefers-reduced-motion:reduce){.login-scenic-card *{transition:none!important}}
 </style>
 </head>
 <body>
 
-<div id="loginScreen" class="login-v2">
-  <section class="login-brand-panel" aria-label="Consultor F&S">
-    <div class="login-brand-main">
+<div id="loginScreen" class="login-v2 login-scenic">
+  <div class="login-scenic-overlay" aria-hidden="true"></div>
+  <section class="login-scenic-card" aria-label="Acceso a Consultor F&S">
+    <div class="login-scenic-brand">
       <div class="login-brand-logo" role="img" aria-label="Consultor F&S, Licenciado en Higiene y Seguridad en el Trabajo">
         <svg viewBox="0 0 512 512" aria-hidden="true">
           <defs><linearGradient id="v2earth" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d69b4d"/><stop offset=".55" stop-color="#925022"/><stop offset="1" stop-color="#542b1b"/></linearGradient></defs>
@@ -723,28 +770,18 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
         <div class="scene-paper"></div><div class="scene-vest"></div>
       </div>
     </div>
-    <div class="login-brand-services">
-      <div class="login-service"><span class="service-icon">◇</span><strong>Prevención</strong><small>de riesgos</small></div>
-      <div class="login-service"><span class="service-icon">♧</span><strong>Seguridad</strong><small>del personal</small></div>
-      <div class="login-service"><span class="service-icon">⚙</span><strong>Gestión</strong><small>institucional</small></div>
-      <div class="login-service"><span class="service-icon">♧</span><strong>Compromiso</strong><small>ambiental</small></div>
-    </div>
-  </section>
-  <section class="login-access-panel">
-    <div class="login-access-card">
-      <div class="login-access-emblem" aria-hidden="true"><svg viewBox="0 0 80 90"><path d="M40 3 L72 15 V43 Q68 67 40 84 Q12 67 8 43 V15 Z" fill="#1372cb"/><path d="M23 43 Q23 25 40 25 Q57 25 57 43 V49 H23 Z" fill="#fff"/><path d="M17 49 H63 V57 H17 Z M40 17 V25" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg></div>
-      <h1>Sistema de<br>Higiene y Seguridad</h1>
-      <p class="login-access-subtitle">Gestión de riesgos, inspecciones, capacitaciones y documentación</p>
-      <form id="loginForm">
-        <label for="email">Correo electrónico</label>
-        <div class="login-input-wrap"><span aria-hidden="true">♙</span><input id="email" type="email" autocomplete="username" required placeholder="Usuario / correo electrónico"></div>
-        <label for="password">Contraseña</label>
-        <div class="login-input-wrap"><span aria-hidden="true">▣</span><input id="password" type="password" autocomplete="current-password" required placeholder="Contraseña"><button type="button" id="togglePassword" class="password-toggle" aria-label="Mostrar contraseña">◉</button></div>
-        <button id="loginButton" class="btn login-v2-submit" type="submit"><span aria-hidden="true">↪</span> Iniciar sesión</button>
-      </form>
-      <div id="loginMessage" role="status"></div>
-      <div class="login-access-promise"><span>⬡</span><p>Trabajo seguro, personas protegidas,<br>organizaciones más fuertes.</p></div>
-    </div>
+    <div class="login-scenic-divider"></div>
+    <h1>Bienvenido</h1>
+    <p class="login-scenic-subtitle">Ingresá para acceder al sistema de gestión de Higiene y Seguridad.</p>
+    <form id="loginForm">
+      <label for="email">Usuario</label>
+      <div class="login-input-wrap"><span aria-hidden="true">♙</span><input id="email" type="email" autocomplete="username" required placeholder="Usuario / correo electrónico"></div>
+      <label for="password">Contraseña</label>
+      <div class="login-input-wrap"><span aria-hidden="true">▣</span><input id="password" type="password" autocomplete="current-password" required placeholder="Ingresá tu contraseña"><button type="button" id="togglePassword" class="password-toggle" aria-label="Mostrar contraseña">◉</button></div>
+      <button id="loginButton" class="btn login-v2-submit" type="submit">Iniciar sesión <span aria-hidden="true">→</span></button>
+    </form>
+    <div id="loginMessage" role="status"></div>
+    <div class="login-scenic-footer"><span aria-hidden="true">⬡</span> Sistema de Gestión de Higiene y Seguridad</div>
   </section>
 </div>
 
