@@ -1326,14 +1326,35 @@ async function getNextLegajo(){
   return max+1;
 }
 function formatLegajo(n){return String(n).padStart(2,"0")}
+function alphaCodeToNumber(code){
+ let n=0;const s=String(code||"").trim().toUpperCase();
+ if(!/^[A-Z]+$/.test(s))return 0;
+ for(const ch of s)n=n*26+(ch.charCodeAt(0)-64);
+ return n;
+}
+function numberToAlphaCode(n){
+ if(!Number.isSafeInteger(n)||n<1)throw new Error("No se pudo calcular el código alfabético del sector.");
+ let out="";while(n>0){n--;out=String.fromCharCode(65+(n%26))+out;n=Math.floor(n/26)}return out;
+}
 async function getNextCode(moduleId){
-  const specs={sectores:{table:"sectores",column:"codigo",parentColumn:"establecimiento_id",parentField:"establecimiento_id"},puestos:{table:"puestos",column:"Codigo",parentColumn:"sector_id",parentField:"sector_id"}};
-  const spec=specs[moduleId];if(!spec)throw new Error("Módulo sin numeración automática.");
-  const parentId=$("f_"+spec.parentField)?.value;
-  if(!parentId)throw new Error(moduleId==="sectores"?"Seleccioná primero el establecimiento.":"Seleccioná primero el sector.");
-  const rows=await fetchRows(spec.table,5000);let max=0;
-  rows.filter(r=>String(r[spec.parentColumn]||"")===String(parentId)).forEach(r=>{const n=Number(String(r[spec.column]??"").trim());if(Number.isSafeInteger(n)&&n>max)max=n});
-  return String(max+1).padStart(3,"0");
+ const specs={sectores:{table:"sectores",column:"codigo",parentColumn:"establecimiento_id",parentField:"establecimiento_id"},puestos:{table:"puestos",column:"Codigo",parentColumn:"sector_id",parentField:"sector_id"}};
+ const spec=specs[moduleId];if(!spec)throw new Error("Módulo sin numeración automática.");
+ const parentId=$( "f_"+spec.parentField)?.value;
+ if(!parentId)throw new Error(moduleId==="sectores"?"Seleccioná primero el establecimiento.":"Seleccioná primero el sector.");
+ const rows=await fetchRows(spec.table,5000);
+ const siblings=rows.filter(r=>String(r[spec.parentColumn]||"")===String(parentId));
+ if(moduleId==="sectores"){
+  const max=siblings.reduce((n,r)=>Math.max(n,alphaCodeToNumber(r[spec.column])),0);
+  return numberToAlphaCode(max+1);
+ }
+ const {data:sector,error}=await db.from("sectores").select("id,nombre,codigo").eq("id",parentId).limit(1).maybeSingle();
+ if(error)throw error;
+ if(!sector)throw new Error("No se encontró el sector seleccionado. Volvé a seleccionarlo.");
+ const prefix=String(sector.codigo||"").trim().toUpperCase();
+ if(!/^[A-Z]+$/.test(prefix))throw new Error("El sector no tiene un código alfabético válido. Revisá el sector antes de crear el puesto.");
+ let max=0;
+ siblings.forEach(r=>{const code=String(r[spec.column]||"").trim().toUpperCase();if(code.startsWith(prefix)){const suffix=code.slice(prefix.length);if(/^\\d+$/.test(suffix))max=Math.max(max,Number(suffix))}});
+ return prefix+String(max+1);
 }
 function proposedMeasuresForRisk(score,hazardName="",riskDescription=""){
  const band=riskBand(score).label,context=(String(hazardName)+" "+String(riskDescription)).toLocaleLowerCase("es");
