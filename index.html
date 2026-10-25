@@ -1353,7 +1353,7 @@ async function getNextCode(moduleId){
  const prefix=String(sector.codigo||"").trim().toUpperCase();
  if(!/^[A-Z]+$/.test(prefix))throw new Error("El sector no tiene un código alfabético válido. Revisá el sector antes de crear el puesto.");
  let max=0;
- siblings.forEach(r=>{const code=String(r[spec.column]||"").trim().toUpperCase();if(code.startsWith(prefix)){const suffix=code.slice(prefix.length);if(/^\\d+$/.test(suffix))max=Math.max(max,Number(suffix))}});
+ siblings.forEach(r=>{const code=String(r[spec.column]||"").trim().toUpperCase();if(code.startsWith(prefix)){const suffix=code.slice(prefix.length);if(/^\d+$/.test(suffix))max=Math.max(max,Number(suffix))}});
  return prefix+String(max+1);
 }
 function proposedMeasuresForRisk(score,hazardName="",riskDescription=""){
