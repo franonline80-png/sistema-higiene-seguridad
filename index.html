@@ -250,7 +250,10 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 .paper-section{font-size:10px;font-weight:800;margin:12px 0 6px}
 .paper-table{width:100%;border-collapse:collapse;font-size:9px;margin-bottom:8px}
 .paper-table th,.paper-table td{border:1px solid #d7dee7;padding:6px;text-align:left;vertical-align:top}
-.paper-table th{background:#f1f5f9}
+.paper-table th{background:#f1f5f9;white-space:nowrap;word-break:keep-all}
+.paper-table th,.paper-table td{overflow-wrap:normal}
+.report-paper .paper-table{table-layout:auto}
+.report-paper .paper-table th{font-size:8px}
 .paper-note{background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px;padding:9px;line-height:1.5}
 .paper-signatures{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:28px 8px 12px;text-align:center;font-size:9px}
 .paper-signatures span{border-top:1px solid #64748b;padding-top:5px}
@@ -260,6 +263,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 .report-status{margin:8px 0;color:var(--muted);font-size:12px;min-height:16px}
 .report-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
 .report-stat{padding:10px;background:#f1f7f5;border-radius:8px}.report-stat b{display:block;font-size:20px;color:#12664e}.report-stat span{font-size:10px;color:var(--muted)}
+.dashboard-compact-summary{padding:14px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel,#fff);color:var(--muted);font-size:13px;line-height:1.5}.dashboard-compact-summary strong{color:var(--text);font-size:16px}
 @media(max-width:1050px){.reports-shell{grid-template-columns:1fr}.report-preview-wrap{position:static}.reports-filters{grid-template-columns:1fr 1fr}.report-quick{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.report-grid{grid-template-columns:1fr}.report-card{min-height:120px}.report-card img{width:78px;height:96px;flex-basis:78px}.reports-filters{grid-template-columns:1fr}.report-actions{grid-template-columns:1fr}.report-paper{padding:14px 11px}.report-preview-wrap{padding:8px}}
 @media print{body *{visibility:hidden!important}#reportPrintRoot,#reportPrintRoot *{visibility:visible!important}#reportPrintRoot{position:absolute;left:0;top:0;width:100%;background:#fff!important}.report-paper{border:0;box-shadow:none;padding:10mm;min-height:0;font-size:10pt}.paper-title{print-color-adjust:exact;-webkit-print-color-adjust:exact}.paper-table th,.paper-title{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
@@ -1726,10 +1730,11 @@ async function renderCrud(id){
  const cfg=configs[id];editing=null;
  if(id==="riesgos"){
   $("view").innerHTML=riskManagementIntro();
-  $("formFields").insertAdjacentHTML("beforebegin",`<section class="risk-deadline-settings" style="grid-column:1/-1;border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--panel,#fff);margin:4px 0 12px"><strong>Plazos predeterminados para corregir riesgos</strong><p class="muted" style="margin:4px 0 10px">Los días se calculan desde hoy según el nivel resultante. Podés editar los valores y cambiar la fecha límite manualmente en cada evaluación.</p><div class="form-grid" style="grid-template-columns:repeat(4,minmax(110px,1fr));gap:10px"><div><label for="riskDaysCritical">Crítico (días)</label><input id="riskDaysCritical" type="number" min="1" max="365" value="5"></div><div><label for="riskDaysHigh">Alto (días)</label><input id="riskDaysHigh" type="number" min="1" max="365" value="8"></div><div><label for="riskDaysModerate">Moderado (días)</label><input id="riskDaysModerate" type="number" min="1" max="365" value="12"></div><div><label for="riskDaysLow">Bajo (días)</label><input id="riskDaysLow" type="number" min="1" max="365" value="15"></div></div></section>`);
+  // Se eliminaron los plazos predeterminados visibles; la fecha límite se calcula automáticamente según el nivel de riesgo.
+
   for(const f of cfg.fields)$("formFields").insertAdjacentHTML("beforeend",await renderField(f,f[2]==="checkbox"?true:"",id));
-  const updateRiskDeadline=()=>{const p=Number($("f_Probabilidad")?.value||0),s=Number($("f_consecuencia")?.value||0),date=$("f_fecha_vencimiento");if(!date||!p||!s)return;const score=p*s,level=score>=15?"Critical":score>=10?"High":score>=5?"Moderate":"Low",key={Critical:"riskDaysCritical",High:"riskDaysHigh",Moderate:"riskDaysModerate",Low:"riskDaysLow"}[level],days=Math.max(1,Number($(key)?.value)||1),d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+days);date.value=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
-  ["f_Probabilidad","f_consecuencia","riskDaysCritical","riskDaysHigh","riskDaysModerate","riskDaysLow"].forEach(id=>$(id)?.addEventListener("change",updateRiskDeadline));
+  const updateRiskDeadline=()=>{const p=Number($("f_Probabilidad")?.value||0),s=Number($("f_consecuencia")?.value||0),date=$("f_fecha_vencimiento"),evaluacion=$("f_fecha_evaluacion")?.value;if(!date||!p||!s)return;const score=p*s,days=score>=15?1:score>=10?5:score>=5?10:15,base=evaluacion?new Date(evaluacion+"T12:00:00"):new Date();if(Number.isNaN(base.getTime()))return;base.setHours(12,0,0,0);base.setDate(base.getDate()+days);date.value=base.getFullYear()+"-"+String(base.getMonth()+1).padStart(2,"0")+"-"+String(base.getDate()).padStart(2,"0");};
+  ["f_Probabilidad","f_consecuencia","f_fecha_evaluacion"].forEach(id=>$(id)?.addEventListener("change",updateRiskDeadline));
   setupRiskDangerSelector();initRiskMatrixWidget();
   $("recordForm").onsubmit=e=>saveRecord(e,id);
   const closeForm=()=>{editing=null;$("riskFormPanel")?.classList.add("risk-hidden-form");$("formStatus").textContent="";$("cancelEdit").classList.add("hidden");$("saveRecord").textContent="Guardar evaluación"};
@@ -2129,11 +2134,7 @@ async function renderHome(){
       .filter(r=>!["cumplido","cerrado"].includes(estadoTexto(r.estado))&&r.fecha_vencimiento&&r.fecha_vencimiento<=fechaLimite)
       .sort((a,b)=>String(a.fecha_vencimiento).localeCompare(String(b.fecha_vencimiento)));
     $("dashVencCount").textContent=venc.length;
-    $("dashVencList").innerHTML=listaHTML(venc.slice(0,5).map(r=>{
-      const d=diasHasta(r.fecha_vencimiento),color=d<0?"red":d<=7?"amber":"blue";
-      const plazo=d<0?`Vencido hace ${Math.abs(d)} día(s)`:d===0?"Vence hoy":d===1?"Vence mañana":`En ${d} días`;
-      return alertaHTML(d<0?"!":"◷",color,r.concepto||r.tipo||"Vencimiento",r.descripcion||r.tipo||"Sin descripción",`${fechaLegible(r.fecha_vencimiento)} · ${plazo} · ${r.prioridad||"Prioridad no indicada"}`);
-    }),"No hay vencimientos próximos registrados.");
+    $("dashVencList").innerHTML=venc.length?`<div class="dashboard-compact-summary">Hay <strong>${venc.length}</strong> vencimiento(s) pendiente(s) de seguimiento dentro de los próximos 30 días. Consultá el apartado de Vencimientos para ver fechas, riesgos y responsables.</div>`:`<div class="dashboard-empty">✓ No hay vencimientos próximos registrados.</div>`;
 
     const accidentes=accAll.filter(r=>r.organizacion_id===activeOrg&&!esCerrado(r.estado)).sort((a,b)=>String(b.fecha||"").localeCompare(String(a.fecha||"")));
     $("dashAccCount").textContent=accidentes.length;
@@ -2177,6 +2178,7 @@ function renderReportsModule(){
  <div class="panel reports-filters">
  <div><label for="reportPeriod">Desde la fecha</label><input id="reportPeriod" type="date" value="${now.getFullYear()}-${month}-${String(now.getDate()).padStart(2,"0")}" max="${now.getFullYear()}-${month}-${String(now.getDate()).padStart(2,"0")}"></div>
  <div><label for="reportSector">Sector</label><select id="reportSector"><option value="">Todos los sectores</option></select></div>
+ <div id="riskReportResponsibleWrap" style="display:none"><label for="riskReportResponsible">Responsable de observaciones y recomendaciones</label><select id="riskReportResponsible"><option value="">Seleccionar personal...</option><option value="__manual">Ingresar nombre manualmente</option></select><input id="riskReportResponsibleManual" type="text" placeholder="Escribir nombre y apellido" style="display:none;margin-top:6px"></div>
  <div><label for="reportType">Tipo de reporte</label><select id="reportType"><option value="todos">Todos</option>${reportDefinitions.map(d=>`<option value="${d.id}">${reportEsc(d.short)}</option>`).join("")}</select></div>
  <button class="btn btn-green" id="reportGenerate" type="button">▤ Generar reporte</button></div>
  <h3>Seleccioná un tipo de reporte</h3><p class="muted" style="margin-top:-6px;margin-bottom:12px">Elegí el formulario que querés previsualizar. Los datos se obtienen de los módulos registrados.</p>
@@ -2195,6 +2197,8 @@ function renderReportsModule(){
  $("reportGenerate").onclick=generateReportPreview;
  $("reportsReload").onclick=()=>{reportRowsCache={};generateReportPreview()};
  $("reportSector").addEventListener("change",generateReportPreview);
+ $("riskReportResponsible").addEventListener("change",()=>{const manual=$("riskReportResponsible").value==="__manual";$("riskReportResponsibleManual").style.display=manual?"block":"none";generateReportPreview()});
+ $("riskReportResponsibleManual").addEventListener("input",()=>{if(reportSelected==="riesgos")generateReportPreview()});
  $("reportPeriod").addEventListener("change",generateReportPreview);
  $("reportDownload").onclick=downloadReportPdf;
  $("reportPrint").onclick=downloadReportPdf;
@@ -2215,8 +2219,9 @@ async function generateReportPreview(){
  const period=$("reportPeriod")?.value||"",sectorId=$("reportSector")?.value||"";
  const bounds=period?reportMonthBounds(period):null;
  const dateField=({inspecciones:"fecha",accidentes_incidentes:"fecha",mediciones_ambientales:"fecha",capacitaciones:"fecha",riesgos:"fecha_evaluacion",epp:"fecha_adquisicion"})[reportSelected]||"fecha";
- const [raw,sectors,posts]=await Promise.all([getReportRows(reportSelected),getReportRows("sectores"),getReportRows("puestos")]);
+ const [raw,sectors,posts,people]=await Promise.all([getReportRows(reportSelected),getReportRows("sectores"),getReportRows("puestos"),getReportRows("personas")]);
  const sectorById=new Map(sectors.map(s=>[String(s.id),s])),postById=new Map(posts.map(p=>[String(p.id),p]));
+ const responsibleWrap=$("riskReportResponsibleWrap");if(responsibleWrap){responsibleWrap.style.display=reportSelected==="riesgos"?"block":"none";if(reportSelected==="riesgos"){const sel=$("riskReportResponsible"),previous=sel.value,eligible=people.filter(p=>p.Activo!==false&&String(p.Activo)!=="false").map(p=>({...p,__post:postById.get(String(p.puesto_id||""))})).filter(p=>!sectorId||String(p.__post?.sector_id||"")===String(sectorId));sel.innerHTML='<option value="">Seleccionar personal...</option>'+eligible.map(p=>`<option value="${reportEsc(p.id)}">${reportEsc([p.Nombre,p.Apellido].filter(Boolean).join(" ")||p.Nombre||p.Apellido||"Personal sin nombre")}</option>`).join("")+'<option value="__manual">Ingresar nombre manualmente</option>';if([...sel.options].some(o=>o.value===previous))sel.value=previous;const manual=sel.value==="__manual";$("riskReportResponsibleManual").style.display=manual?"block":"none";}}
  let rows=raw.filter(r=>{if(!bounds)return true;const d=String(r[dateField]||"").slice(0,10);return !!d&&d>=bounds.start&&d<=bounds.end});
  rows=rows.map(r=>{const post=postById.get(String(r.puesto_id||""));const sid=r.sector_id||post?.sector_id||"";return {...r,__reportSectorId:String(sid),__reportSector:sectorById.get(String(sid))?.nombre||"—",__reportPost:post?.Nombre||"—"}});
  if(sectorId)rows=rows.filter(r=>r.__reportSectorId===String(sectorId));
@@ -2235,7 +2240,7 @@ async function generateReportPreview(){
  <div class="report-stat-row"><div class="report-stat"><b>${rows.length}</b><span>Registros encontrados</span></div><div class="report-stat"><b>${rows.filter(r=>/abierto|pendiente|en curso|programada/i.test(String(r.estado||""))).length}</b><span>Con seguimiento</span></div><div class="report-stat"><b>${rows.filter(r=>/cerrado|cerrada|cumplido/i.test(String(r.estado||""))).length}</b><span>Finalizados</span></div></div>
  <div class="paper-section">2. Detalle de registros ${rows.length>12?"(primeros 12 de "+rows.length+")":""}</div><table class="paper-table"><thead><tr>${cols.map(([,label])=>"<th>"+reportEsc(label)+"</th>").join("")}</tr></thead><tbody>${tableRows}</tbody></table>
  <div class="paper-section">3. Observaciones y recomendaciones</div><div class="paper-note">Revisar los registros pendientes y mantener actualizado el seguimiento de las medidas preventivas. Este documento refleja los datos disponibles en el sistema al momento de su generación.</div>
- <div class="paper-signatures"><span>Responsable de Higiene y Seguridad</span><span>Autoridad / Responsable del sector</span></div><div class="paper-footer"><span>Sistema de Higiene y Seguridad · Generado ${new Date().toLocaleString("es-AR")}</span><span>Vista previa</span></div>`;
+ <div class="paper-signatures"><span>Responsable de Higiene y Seguridad</span><span>${reportEsc(reportSelected==="riesgos"?($("riskReportResponsible")?.value==="__manual"?$("riskReportResponsibleManual")?.value:($("riskReportResponsible")?.selectedOptions?.[0]?.textContent||"")):"Autoridad / Responsable del sector")||"Autoridad / Responsable del sector"}</span></div><div class="paper-footer"><span>Sistema de Higiene y Seguridad · Generado ${new Date().toLocaleString("es-AR")}</span><span>Vista previa</span></div>`;
  $("reportPageLabel").textContent=rows.length>12?"Registros: "+rows.length:"PDF · A4";
  $("reportStatus").textContent="Vista previa actualizada. "+rows.length+" registro(s) encontrados. La exportación utiliza el cuadro de impresión del navegador.";
 }
