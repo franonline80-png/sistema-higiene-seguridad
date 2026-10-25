@@ -2166,13 +2166,13 @@ const reportDefinitions=[
 let reportSelected="inspecciones",reportRowsCache={},reportFilteredRows=[];
 function reportEsc(v){return escapeHtml(String(v??"—"))}
 function reportDate(v){return v?formatDateDMY(v):"—"}
-function reportMonthBounds(value){const [y,m]=value.split("-").map(Number);return {start:y+"-"+String(m).padStart(2,"0")+"-01",end:y+"-"+String(m).padStart(2,"0")+"-31"}}
+function reportMonthBounds(value){const now=new Date();return {start:value,end:now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0")}}
 function renderReportsModule(){
  const now=new Date(),month=String(now.getMonth()+1).padStart(2,"0"),period=now.getFullYear()+"-"+month;
  $("view").innerHTML=`<div class="page-title"><div><h2>Reportes e informes</h2><p>Generá, revisá y descargá informes en PDF con los datos registrados en el sistema.</p></div><button class="btn btn-light" id="reportsReload" type="button">↻ Actualizar datos</button></div>
  <div class="reports-shell"><section class="reports-main">
  <div class="panel reports-filters">
- <div><label for="reportPeriod">Período</label><input id="reportPeriod" type="month" value="${period}"></div>
+ <div><label for="reportPeriod">Desde la fecha</label><input id="reportPeriod" type="date" value="${now.getFullYear()}-${month}-${String(now.getDate()).padStart(2,"0")}" max="${now.getFullYear()}-${month}-${String(now.getDate()).padStart(2,"0")}"></div>
  <div><label for="reportSector">Sector</label><select id="reportSector"><option value="">Todos los sectores</option></select></div>
  <div><label for="reportType">Tipo de reporte</label><select id="reportType"><option value="todos">Todos</option>${reportDefinitions.map(d=>`<option value="${d.id}">${reportEsc(d.short)}</option>`).join("")}</select></div>
  <button class="btn btn-green" id="reportGenerate" type="button">▤ Generar reporte</button></div>
@@ -2212,15 +2212,17 @@ async function generateReportPreview(){
  const period=$("reportPeriod")?.value||"",sectorId=$("reportSector")?.value||"";
  const bounds=period?reportMonthBounds(period):null;
  const dateField=({inspecciones:"fecha",accidentes_incidentes:"fecha",mediciones_ambientales:"fecha",capacitaciones:"fecha",riesgos:"fecha_evaluacion",epp:"fecha_adquisicion"})[reportSelected]||"fecha";
- const raw=await getReportRows(reportSelected);
- const sectors=await getReportRows("sectores");
- let rows=raw.filter(r=>!bounds||!r[dateField]||(String(r[dateField])>=bounds.start&&String(r[dateField])<=bounds.end));
- if(sectorId){const sector=sectors.find(s=>String(s.id)===String(sectorId));rows=rows.filter(r=>String(r.sector_id||"")===String(sectorId)||(!r.sector_id&&sector&&String(r.establecimiento_id||"")===String(sector.establecimiento_id||"")))}
+ const [raw,sectors,posts]=await Promise.all([getReportRows(reportSelected),getReportRows("sectores"),getReportRows("puestos")]);
+ const sectorById=new Map(sectors.map(s=>[String(s.id),s])),postById=new Map(posts.map(p=>[String(p.id),p]));
+ let rows=raw.filter(r=>{if(!bounds)return true;const d=String(r[dateField]||"").slice(0,10);return !!d&&d>=bounds.start&&d<=bounds.end});
+ rows=rows.map(r=>{const post=postById.get(String(r.puesto_id||""));const sid=r.sector_id||post?.sector_id||"";return {...r,__reportSectorId:String(sid),__reportSector:sectorById.get(String(sid))?.nombre||"—",__reportPost:post?.Nombre||"—"}});
+ if(sectorId)rows=rows.filter(r=>r.__reportSectorId===String(sectorId));
  reportFilteredRows=rows;
- const org=getOrgName(),issued=new Date().toLocaleDateString("es-AR"),periodLabel=period?new Date(period+"-02T12:00:00").toLocaleDateString("es-AR",{month:"long",year:"numeric"}):"Todos los períodos";
- const cols=({inspecciones:[["fecha","Fecha"],["tipo","Tipo"],["estado","Estado"],["inspector","Inspector"]],riesgos:[["descripcion","Riesgo identificado"],["nivel_riesgo","Nivel"],["responsable","Responsable"],["fecha_evaluacion","Evaluación"]],accidentes_incidentes:[["fecha","Fecha"],["tipo","Tipo"],["lugar","Lugar"],["estado","Estado"]],mediciones_ambientales:[["fecha","Fecha"],["tipo","Medición"],["parametro","Parámetro"],["valor","Resultado"]],epp:[["nombre","Elemento"],["cantidad","Cantidad"],["estado","Estado"],["marca","Marca"]],gestion:[["fecha","Fecha"],["tipo","Registro"],["estado","Estado"],["observaciones","Observaciones"]]})[reportSelected]||[["fecha","Fecha"],["tipo","Tipo"],["estado","Estado"]];
+ const org=getOrgName(),issued=new Date().toLocaleDateString("es-AR"),periodLabel=period?"Desde "+reportDate(bounds.start)+" hasta "+reportDate(bounds.end):"Desde el inicio de los registros hasta "+issued;
+ let cols=({inspecciones:[["fecha","Fecha"],["tipo","Tipo"],["estado","Estado"],["inspector","Inspector"]],riesgos:[["descripcion","Riesgo identificado"],["nivel_riesgo","Nivel"],["responsable","Responsable"],["fecha_evaluacion","Evaluación"]],accidentes_incidentes:[["fecha","Fecha"],["tipo","Tipo"],["lugar","Lugar"],["estado","Estado"]],mediciones_ambientales:[["fecha","Fecha"],["tipo","Medición"],["parametro","Parámetro"],["valor","Resultado"]],epp:[["nombre","Elemento"],["cantidad","Cantidad"],["estado","Estado"],["marca","Marca"]],gestion:[["fecha","Fecha"],["tipo","Registro"],["estado","Estado"],["observaciones","Observaciones"]]})[reportSelected]||[["fecha","Fecha"],["tipo","Tipo"],["estado","Estado"]];
+ cols=sectorId?[["__reportPost","Puesto"],...cols]:[["__reportSector","Sector"],["__reportPost","Puesto"],...cols];
  const shown=rows.slice(0,12);
- let tableRows=shown.map(r=>"<tr>"+cols.map(([k])=>"<td>"+reportEsc(k==="fecha"||k==="fecha_evaluacion"?reportDate(r[k]):r[k])+"</td>").join("")+"</tr>").join("");
+ let tableRows=shown.map(r=>"<tr>"+cols.map(([k])=>{let v=r[k];if(k==="nivel_riesgo"&&reportSelected==="riesgos"){const score=Number(r.nivel_riesgo)||((Number(r.Probabilidad)||0)*(Number(r.consecuencia)||0));v=score?score+" — "+(score>=15?"Crítico":score>=10?"Alto":score>=5?"Moderado":"Bajo"):"Sin valorar"}else if(k==="fecha"||k==="fecha_evaluacion")v=reportDate(r[k]);return "<td>"+reportEsc(v)+"</td>"}).join("")+"</tr>").join("");
  if(!tableRows)tableRows='<tr><td colspan="'+cols.length+'" style="text-align:center;padding:18px">No hay registros para los filtros seleccionados. Este informe se completará cuando existan datos.</td></tr>';
  const intro=({inspecciones:"Registro de inspecciones, hallazgos y seguimiento preventivo.",riesgos:"Resumen de peligros identificados y evaluación de riesgos laborales.",accidentes_incidentes:"Registro de sucesos, investigación y seguimiento de acciones.",gestion:"Resumen operativo del período seleccionado y datos disponibles.",epp:"Resumen de elementos de protección personal registrados.",mediciones_ambientales:"Resultados registrados de mediciones en ambientes laborales."})[reportSelected];
  paper.innerHTML=`<div class="paper-brand"><div style="display:flex;align-items:center;gap:9px">${reportSelected==="riesgos"?'<div class="paper-consultor-logo" role="img" aria-label="Consultor F&S"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 190"><rect width="560" height="190" rx="12" fill="#fbfaf5"/><path d="M232 42 L280 8 L328 42" fill="none" stroke="#b8792c" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/><text x="280" y="101" text-anchor="middle" font-family="Georgia,serif" font-size="58" fill="#111827" letter-spacing="1">CONSULTOR</text><path d="M34 125 H83 M477 125 H526" stroke="#9ca3af" stroke-width="3"/><text x="280" y="132" text-anchor="middle" font-family="Georgia,serif" font-size="18" font-weight="bold" fill="#252525">Licenciado en Seguridad e Higiene</text><text x="280" y="166" text-anchor="middle" font-family="Georgia,serif" font-size="26" font-weight="bold" fill="#111827">F&amp;S</text></svg></div>':'<div class="paper-logo">✚</div>'}<div><strong>${reportEsc(org)}</strong><span>Higiene y Seguridad en el Trabajo</span></div></div><div style="text-align:right"><strong>Informe N.º: HYS-${new Date().getFullYear()}-${String(Date.now()).slice(-5)}</strong><span style="display:block">Emisión: ${issued}</span></div></div>
@@ -2244,7 +2246,7 @@ function downloadReportPdf(){
 }
 async function shareReport(){
  const def=reportDefinitions.find(d=>d.id===reportSelected)||reportDefinitions[0];
- const textShare=def.title+" — "+getOrgName()+" — "+($("reportPeriod")?.value||"Todos los períodos");
+ const bounds=$("reportPeriod")?.value?reportMonthBounds($("reportPeriod").value):null;const textShare=def.title+" — "+getOrgName()+" — "+(bounds?"Desde "+reportDate(bounds.start)+" hasta "+reportDate(bounds.end):"Desde el inicio de los registros hasta "+new Date().toLocaleDateString("es-AR"));
  if(navigator.share){try{await navigator.share({title:def.title,text:textShare});return}catch(e){if(e.name==="AbortError")return}}
  try{await navigator.clipboard.writeText(textShare);$("reportStatus").textContent="Resumen copiado para compartir."}catch(e){$("reportStatus").textContent="Podés usar Imprimir o Descargar PDF para guardar el informe y compartirlo."}
 }
