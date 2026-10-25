@@ -1726,7 +1726,10 @@ async function renderCrud(id){
  const cfg=configs[id];editing=null;
  if(id==="riesgos"){
   $("view").innerHTML=riskManagementIntro();
+  $("formFields").insertAdjacentHTML("beforebegin",`<section class="risk-deadline-settings" style="grid-column:1/-1;border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--panel,#fff);margin:4px 0 12px"><strong>Plazos predeterminados para corregir riesgos</strong><p class="muted" style="margin:4px 0 10px">Los días se calculan desde hoy según el nivel resultante. Podés editar los valores y cambiar la fecha límite manualmente en cada evaluación.</p><div class="form-grid" style="grid-template-columns:repeat(4,minmax(110px,1fr));gap:10px"><div><label for="riskDaysCritical">Crítico (días)</label><input id="riskDaysCritical" type="number" min="1" max="365" value="5"></div><div><label for="riskDaysHigh">Alto (días)</label><input id="riskDaysHigh" type="number" min="1" max="365" value="8"></div><div><label for="riskDaysModerate">Moderado (días)</label><input id="riskDaysModerate" type="number" min="1" max="365" value="12"></div><div><label for="riskDaysLow">Bajo (días)</label><input id="riskDaysLow" type="number" min="1" max="365" value="15"></div></div></section>`);
   for(const f of cfg.fields)$("formFields").insertAdjacentHTML("beforeend",await renderField(f,f[2]==="checkbox"?true:"",id));
+  const updateRiskDeadline=()=>{const p=Number($("f_Probabilidad")?.value||0),s=Number($("f_consecuencia")?.value||0),date=$("f_fecha_vencimiento");if(!date||!p||!s)return;const score=p*s,level=score>=15?"Critical":score>=10?"High":score>=5?"Moderate":"Low",key={Critical:"riskDaysCritical",High:"riskDaysHigh",Moderate:"riskDaysModerate",Low:"riskDaysLow"}[level],days=Math.max(1,Number($(key)?.value)||1),d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+days);date.value=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
+  ["f_Probabilidad","f_consecuencia","riskDaysCritical","riskDaysHigh","riskDaysModerate","riskDaysLow"].forEach(id=>$(id)?.addEventListener("change",updateRiskDeadline));
   setupRiskDangerSelector();initRiskMatrixWidget();
   $("recordForm").onsubmit=e=>saveRecord(e,id);
   const closeForm=()=>{editing=null;$("riskFormPanel")?.classList.add("risk-hidden-form");$("formStatus").textContent="";$("cancelEdit").classList.add("hidden");$("saveRecord").textContent="Guardar evaluación"};
@@ -2241,7 +2244,9 @@ function downloadReportPdf(){
  const def=reportDefinitions.find(d=>d.id===reportSelected)||reportDefinitions[0];
  const w=window.open("","_blank");if(!w){$("reportStatus").textContent="El navegador bloqueó la ventana. Permití ventanas emergentes para guardar el PDF.";return}
  const css=[...document.querySelectorAll("style")].map(x=>x.textContent).join("\n");
-  w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>'+reportEsc(def.title)+'</title><style>'+css+' body{background:#fff!important;padding:12mm!important}.report-paper{max-width:190mm;margin:auto;box-shadow:none;border:0;padding:0!important;font-size:10pt}@page{size:A4;margin:12mm}\n</style></head><body><article class="report-paper">'+paper.innerHTML+'</article><script>window.onload=()=>setTimeout(()=>window.print(),250)<\\/script></body></html>');
+  const landscape=reportSelected==="riesgos";
+  const printLayout=landscape?"body{background:#fff!important;padding:8mm!important}.report-paper{width:277mm;max-width:277mm;margin:auto;box-shadow:none;border:0;padding:0!important;font-size:9pt}.paper-table{font-size:8pt}.paper-table th,.paper-table td{padding:4px}@page{size:A4 landscape;margin:8mm}":"body{background:#fff!important;padding:12mm!important}.report-paper{max-width:190mm;margin:auto;box-shadow:none;border:0;padding:0!important;font-size:10pt}@page{size:A4 portrait;margin:12mm}";
+  w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>'+reportEsc(def.title)+'</title><style>'+css+' '+printLayout+'\n</style></head><body><article class="report-paper">'+paper.innerHTML+'</article><script>window.onload=()=>setTimeout(()=>window.print(),250)<\\/script></body></html>');
  w.document.close();
 }
 async function shareReport(){
@@ -2409,6 +2414,7 @@ function openModule(id){
 }
 
 </script>
+<script src="./session-history.js"></script>
 </body>
 </html>
 
