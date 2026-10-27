@@ -806,6 +806,44 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
 #view .table-wrap tbody tr:hover td{background:#e8f1fa}
 #view .table-wrap tbody tr td{transition:background-color .12s ease}
 @media(prefers-reduced-motion:reduce){#view .table-wrap tbody tr td{transition:none}}
+
+/* Aviso emergente de pendientes al ingresar */
+.startup-alert-backdrop{position:fixed;inset:0;z-index:10050;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(10,22,36,.58);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+.startup-alert-modal{width:min(620px,100%);max-height:min(82vh,760px);overflow:auto;background:#fff;border:1px solid #dbe4ee;border-radius:18px;box-shadow:0 28px 90px #0005}
+.startup-alert-head{display:flex;align-items:flex-start;gap:14px;padding:22px 24px 16px;background:linear-gradient(135deg,#fff7ed,#fff);border-bottom:1px solid #fed7aa}
+.startup-alert-mark{flex:0 0 46px;width:46px;height:46px;display:grid;place-items:center;border-radius:14px;background:#ffedd5;color:#c2410c;font-size:25px}
+.startup-alert-head h2{margin:0 0 5px;font-size:21px;color:#172033}
+.startup-alert-head p{margin:0;color:#64748b;font-size:13px;line-height:1.5}
+.startup-alert-close-x{margin-left:auto;border:0;background:transparent;color:#64748b;font-size:25px;line-height:1;padding:2px 5px}
+.startup-alert-content{padding:18px 24px}
+.startup-alert-item{display:flex;align-items:flex-start;gap:12px;padding:12px;margin:8px 0;border:1px solid #e2e8f0;border-radius:11px;background:#f8fafc}
+.startup-alert-item.critical{background:#fff1f2;border-color:#fecdd3}
+.startup-alert-item.warning{background:#fffbeb;border-color:#fde68a}
+.startup-alert-item.info{background:#eff6ff;border-color:#bfdbfe}
+.startup-alert-item-icon{font-size:20px;line-height:1.4}
+.startup-alert-item strong{display:block;color:#172033;font-size:14px}
+.startup-alert-item span{display:block;margin-top:3px;color:#475569;font-size:12px;line-height:1.45}
+.startup-alert-footer{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;padding:0 24px 22px}
+@media(max-width:520px){.startup-alert-backdrop{padding:10px}.startup-alert-head,.startup-alert-content{padding:17px}.startup-alert-footer{padding:0 17px 17px}.startup-alert-head h2{font-size:18px}}
+
+
+let startupAlertsShownForOrg="";
+function showStartupAlerts(items){
+  if(!items.length||startupAlertsShownForOrg===activeOrg)return;
+  startupAlertsShownForOrg=activeOrg;
+  const old=document.getElementById("startupAlertsBackdrop");if(old)old.remove();
+  const backdrop=document.createElement("div");backdrop.id="startupAlertsBackdrop";backdrop.className="startup-alert-backdrop";
+  backdrop.setAttribute("role","presentation");
+  const content=items.map(item=>'<div class="startup-alert-item '+item.level+'"><div class="startup-alert-item-icon">'+item.icon+'</div><div><strong>'+escapeHtml(item.title)+'</strong><span>'+escapeHtml(item.detail)+'</span></div></div>').join("");
+  backdrop.innerHTML='<section class="startup-alert-modal" role="dialog" aria-modal="true" aria-labelledby="startupAlertsTitle"><header class="startup-alert-head"><div class="startup-alert-mark">⚠</div><div><h2 id="startupAlertsTitle">Advertencias y pendientes</h2><p>Se detectaron asuntos que requieren revisión en '+escapeHtml(getOrgName())+'. Revisá las prioridades antes de continuar.</p></div><button type="button" class="startup-alert-close-x" id="startupAlertsX" aria-label="Cerrar">×</button></header><div class="startup-alert-content">'+content+'</div><footer class="startup-alert-footer"><button type="button" class="btn btn-light" id="startupAlertsClose">Cerrar y continuar</button><button type="button" class="btn btn-blue" id="startupAlertsGo">Revisar vencimientos</button></footer></section>';
+  document.body.appendChild(backdrop);
+  const close=()=>backdrop.remove();
+  backdrop.querySelector("#startupAlertsX").onclick=close;
+  backdrop.querySelector("#startupAlertsClose").onclick=close;
+  backdrop.querySelector("#startupAlertsGo").onclick=()=>{close();openModule("vencimientos")};
+  backdrop.addEventListener("click",e=>{if(e.target===backdrop)close()});
+  document.addEventListener("keydown",function escHandler(e){if(e.key==="Escape"&&document.getElementById("startupAlertsBackdrop")){close();document.removeEventListener("keydown",escHandler)}});
+}
 </style>
 </head>
 <body>
@@ -2102,44 +2140,6 @@ async function deleteRecord(id,row){
 }
 
 
-/* Aviso emergente de pendientes al ingresar */
-.startup-alert-backdrop{position:fixed;inset:0;z-index:10050;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(10,22,36,.58);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
-.startup-alert-modal{width:min(620px,100%);max-height:min(82vh,760px);overflow:auto;background:#fff;border:1px solid #dbe4ee;border-radius:18px;box-shadow:0 28px 90px #0005}
-.startup-alert-head{display:flex;align-items:flex-start;gap:14px;padding:22px 24px 16px;background:linear-gradient(135deg,#fff7ed,#fff);border-bottom:1px solid #fed7aa}
-.startup-alert-mark{flex:0 0 46px;width:46px;height:46px;display:grid;place-items:center;border-radius:14px;background:#ffedd5;color:#c2410c;font-size:25px}
-.startup-alert-head h2{margin:0 0 5px;font-size:21px;color:#172033}
-.startup-alert-head p{margin:0;color:#64748b;font-size:13px;line-height:1.5}
-.startup-alert-close-x{margin-left:auto;border:0;background:transparent;color:#64748b;font-size:25px;line-height:1;padding:2px 5px}
-.startup-alert-content{padding:18px 24px}
-.startup-alert-item{display:flex;align-items:flex-start;gap:12px;padding:12px;margin:8px 0;border:1px solid #e2e8f0;border-radius:11px;background:#f8fafc}
-.startup-alert-item.critical{background:#fff1f2;border-color:#fecdd3}
-.startup-alert-item.warning{background:#fffbeb;border-color:#fde68a}
-.startup-alert-item.info{background:#eff6ff;border-color:#bfdbfe}
-.startup-alert-item-icon{font-size:20px;line-height:1.4}
-.startup-alert-item strong{display:block;color:#172033;font-size:14px}
-.startup-alert-item span{display:block;margin-top:3px;color:#475569;font-size:12px;line-height:1.45}
-.startup-alert-footer{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;padding:0 24px 22px}
-@media(max-width:520px){.startup-alert-backdrop{padding:10px}.startup-alert-head,.startup-alert-content{padding:17px}.startup-alert-footer{padding:0 17px 17px}.startup-alert-head h2{font-size:18px}}
-
-
-let startupAlertsShownForOrg="";
-function showStartupAlerts(items){
-  if(!items.length||startupAlertsShownForOrg===activeOrg)return;
-  startupAlertsShownForOrg=activeOrg;
-  const old=document.getElementById("startupAlertsBackdrop");if(old)old.remove();
-  const backdrop=document.createElement("div");backdrop.id="startupAlertsBackdrop";backdrop.className="startup-alert-backdrop";
-  backdrop.setAttribute("role","presentation");
-  const content=items.map(item=>'<div class="startup-alert-item '+item.level+'"><div class="startup-alert-item-icon">'+item.icon+'</div><div><strong>'+escapeHtml(item.title)+'</strong><span>'+escapeHtml(item.detail)+'</span></div></div>').join("");
-  backdrop.innerHTML='<section class="startup-alert-modal" role="dialog" aria-modal="true" aria-labelledby="startupAlertsTitle"><header class="startup-alert-head"><div class="startup-alert-mark">⚠</div><div><h2 id="startupAlertsTitle">Advertencias y pendientes</h2><p>Se detectaron asuntos que requieren revisión en '+escapeHtml(getOrgName())+'. Revisá las prioridades antes de continuar.</p></div><button type="button" class="startup-alert-close-x" id="startupAlertsX" aria-label="Cerrar">×</button></header><div class="startup-alert-content">'+content+'</div><footer class="startup-alert-footer"><button type="button" class="btn btn-light" id="startupAlertsClose">Cerrar y continuar</button><button type="button" class="btn btn-blue" id="startupAlertsGo">Revisar vencimientos</button></footer></section>';
-  document.body.appendChild(backdrop);
-  const close=()=>backdrop.remove();
-  backdrop.querySelector("#startupAlertsX").onclick=close;
-  backdrop.querySelector("#startupAlertsClose").onclick=close;
-  backdrop.querySelector("#startupAlertsGo").onclick=()=>{close();openModule("vencimientos")};
-  backdrop.addEventListener("click",e=>{if(e.target===backdrop)close()});
-  document.addEventListener("keydown",function escHandler(e){if(e.key==="Escape"&&document.getElementById("startupAlertsBackdrop")){close();document.removeEventListener("keydown",escHandler)}});
-}
-
 /* TABLERO DE CONTROL */
 async function renderHome(){
   const view=$("view");
@@ -2509,7 +2509,6 @@ function openModule(id){
 }
 
 </script>
-<script src="./session-history.js"></script>
 </body>
 </html>
 
