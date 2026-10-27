@@ -1884,7 +1884,7 @@ function exportModuleCsv(id){
  const headers=cfg.columns.map(k=>cfg.fields.find(f=>f[0]===k)?.[1]||k);
  const csvCell=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
  const lines=[headers,...rows.map(row=>cfg.columns.map(k=>displayCellValue(id,row,k)))].map(row=>row.map(csvCell).join(","));
- const blob=new Blob(["\\uFEFF"+lines.join("\\r\\n")],{type:"text/csv;charset=utf-8;"});
+ const blob=new Blob(["\uFEFF"+lines.join("\r\n")],{type:"text/csv;charset=utf-8;"});
  const url=URL.createObjectURL(blob),a=document.createElement("a");
  a.href=url;a.download=(cfg.title||id).replace(/[^a-zA-Z0-9_-]+/g,"_")+".csv";
  document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
