@@ -828,22 +828,7 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
 
 
 let startupAlertsShownForOrg="";
-function showStartupAlerts(items){
-  if(!items.length||startupAlertsShownForOrg===activeOrg)return;
-  startupAlertsShownForOrg=activeOrg;
-  const old=document.getElementById("startupAlertsBackdrop");if(old)old.remove();
-  const backdrop=document.createElement("div");backdrop.id="startupAlertsBackdrop";backdrop.className="startup-alert-backdrop";
-  backdrop.setAttribute("role","presentation");
-  const content=items.map(item=>'<div class="startup-alert-item '+item.level+'"><div class="startup-alert-item-icon">'+item.icon+'</div><div><strong>'+escapeHtml(item.title)+'</strong><span>'+escapeHtml(item.detail)+'</span></div></div>').join("");
-  backdrop.innerHTML='<section class="startup-alert-modal" role="dialog" aria-modal="true" aria-labelledby="startupAlertsTitle"><header class="startup-alert-head"><div class="startup-alert-mark">⚠</div><div><h2 id="startupAlertsTitle">Advertencias y pendientes</h2><p>Se detectaron asuntos que requieren revisión en '+escapeHtml(getOrgName())+'. Revisá las prioridades antes de continuar.</p></div><button type="button" class="startup-alert-close-x" id="startupAlertsX" aria-label="Cerrar">×</button></header><div class="startup-alert-content">'+content+'</div><footer class="startup-alert-footer"><button type="button" class="btn btn-light" id="startupAlertsClose">Cerrar y continuar</button><button type="button" class="btn btn-blue" id="startupAlertsGo">Revisar vencimientos</button></footer></section>';
-  document.body.appendChild(backdrop);
-  const close=()=>backdrop.remove();
-  backdrop.querySelector("#startupAlertsX").onclick=close;
-  backdrop.querySelector("#startupAlertsClose").onclick=close;
-  backdrop.querySelector("#startupAlertsGo").onclick=()=>{close();openModule("vencimientos")};
-  backdrop.addEventListener("click",e=>{if(e.target===backdrop)close()});
-  document.addEventListener("keydown",function escHandler(e){if(e.key==="Escape"&&document.getElementById("startupAlertsBackdrop")){close();document.removeEventListener("keydown",escHandler)}});
-}
+
 </style>
 </head>
 <body>
@@ -2141,6 +2126,23 @@ async function deleteRecord(id,row){
 
 
 /* TABLERO DE CONTROL */
+function showStartupAlerts(items){
+  if(!items.length||startupAlertsShownForOrg===activeOrg)return;
+  startupAlertsShownForOrg=activeOrg;
+  const old=document.getElementById("startupAlertsBackdrop");if(old)old.remove();
+  const backdrop=document.createElement("div");backdrop.id="startupAlertsBackdrop";backdrop.className="startup-alert-backdrop";
+  backdrop.setAttribute("role","presentation");
+  const content=items.map(item=>'<div class="startup-alert-item '+item.level+'"><div class="startup-alert-item-icon">'+item.icon+'</div><div><strong>'+escapeHtml(item.title)+'</strong><span>'+escapeHtml(item.detail)+'</span></div></div>').join("");
+  backdrop.innerHTML='<section class="startup-alert-modal" role="dialog" aria-modal="true" aria-labelledby="startupAlertsTitle"><header class="startup-alert-head"><div class="startup-alert-mark">⚠</div><div><h2 id="startupAlertsTitle">Advertencias y pendientes</h2><p>Se detectaron asuntos que requieren revisión en '+escapeHtml(getOrgName())+'. Revisá las prioridades antes de continuar.</p></div><button type="button" class="startup-alert-close-x" id="startupAlertsX" aria-label="Cerrar">×</button></header><div class="startup-alert-content">'+content+'</div><footer class="startup-alert-footer"><button type="button" class="btn btn-light" id="startupAlertsClose">Cerrar y continuar</button><button type="button" class="btn btn-blue" id="startupAlertsGo">Revisar vencimientos</button></footer></section>';
+  document.body.appendChild(backdrop);
+  const close=()=>backdrop.remove();
+  backdrop.querySelector("#startupAlertsX").onclick=close;
+  backdrop.querySelector("#startupAlertsClose").onclick=close;
+  backdrop.querySelector("#startupAlertsGo").onclick=()=>{close();openModule("vencimientos")};
+  backdrop.addEventListener("click",e=>{if(e.target===backdrop)close()});
+  document.addEventListener("keydown",function escHandler(e){if(e.key==="Escape"&&document.getElementById("startupAlertsBackdrop")){close();document.removeEventListener("keydown",escHandler)}});
+}
+
 async function renderHome(){
   const view=$("view");
   const fechaLocal=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
