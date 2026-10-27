@@ -106,14 +106,21 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 .dashboard-date{font-size:12px;color:#dbeafe;margin-top:13px}
 .dashboard-section-title{font-size:17px;font-weight:800;margin:24px 0 13px}
 .dashboard-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}
-.dashboard-metric{background:#fff;border:1px solid #e5ebf2;border-radius:14px;padding:18px;min-width:0;box-shadow:0 3px 12px #0f172a06;position:relative;overflow:hidden}
+.dashboard-metric{background:#eff6ff;border:1px solid #dbeafe;border-radius:14px;padding:18px;min-width:0;box-shadow:0 3px 12px #0f172a06;position:relative;overflow:hidden;transition:transform .18s ease,box-shadow .18s ease}
+.dashboard-metric:nth-child(2){background:#ecfeff;border-color:#cffafe}
+.dashboard-metric:nth-child(3){background:#f5f3ff;border-color:#ede9fe}
+.dashboard-metric:nth-child(4){background:#f0fdf4;border-color:#dcfce7}
 .dashboard-metric:after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#2563eb}
 .dashboard-metric:nth-child(2):after{background:#0891b2}
 .dashboard-metric:nth-child(3):after{background:#7c3aed}
 .dashboard-metric:nth-child(4):after{background:#16a34a}
 .dashboard-metric-top{display:flex;justify-content:space-between;gap:8px;align-items:center}
-.dashboard-metric-label{font-size:12px;color:#64748b;font-weight:700}
-.dashboard-metric-icon{width:38px;height:38px;display:grid;place-items:center;background:#eff6ff;border-radius:11px;font-size:19px}
+.dashboard-metric-label{font-size:12px;color:#475569;font-weight:700}
+.dashboard-metric-icon{width:38px;height:38px;display:grid;place-items:center;background:#dbeafe;color:#1d4ed8;border-radius:11px;font-size:19px}
+.dashboard-metric:nth-child(2) .dashboard-metric-icon{background:#cffafe;color:#0e7490}
+.dashboard-metric:nth-child(3) .dashboard-metric-icon{background:#ede9fe;color:#6d28d9}
+.dashboard-metric:nth-child(4) .dashboard-metric-icon{background:#dcfce7;color:#15803d}
+.dashboard-metric:hover{transform:translateY(-2px);box-shadow:0 6px 16px #0f172a12}
 .dashboard-metric-number{font-size:31px;font-weight:800;letter-spacing:-1px;margin-top:13px}
 .dashboard-metric-foot{font-size:11px;color:#64748b;margin-top:5px}
 .dashboard-two-columns{display:grid;grid-template-columns:1fr 1fr;gap:17px;align-items:start}
