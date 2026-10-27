@@ -827,7 +827,7 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
 @media(max-width:520px){.startup-alert-backdrop{padding:10px}.startup-alert-head,.startup-alert-content{padding:17px}.startup-alert-footer{padding:0 17px 17px}.startup-alert-head h2{font-size:18px}}
 
 
-let startupAlertsShownForOrg="";
+
 
 </style>
 </head>
@@ -2126,6 +2126,7 @@ async function deleteRecord(id,row){
 
 
 /* TABLERO DE CONTROL */
+let startupAlertsShownForOrg="";
 function showStartupAlerts(items){
   if(!items.length||startupAlertsShownForOrg===activeOrg)return;
   startupAlertsShownForOrg=activeOrg;
