@@ -782,6 +782,21 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
  .risk-matrix-table{min-width:280px!important}
  .risk-matrix-wrap{overflow-x:auto!important}
 }
+
+/* Prueba visual: cuatro tonos suaves inspirados en el sistema de referencia */
+.nav-menu-item:nth-child(4n+1){background:#fff1f2;border-left:3px solid #dc2626}
+.nav-menu-item:nth-child(4n+2){background:#f0fdf4;border-left:3px solid #16a34a}
+.nav-menu-item:nth-child(4n+3){background:#fefce8;border-left:3px solid #eab308}
+.nav-menu-item:nth-child(4n){background:#eff6ff;border-left:3px solid #38bdf8}
+.nav-menu-item:hover{filter:saturate(1.15);box-shadow:inset 0 0 0 1px #64748b30}
+.nav-menu-item.active{background:#dbeafe;border-left:3px solid #1d4ed8;color:#123e5c;box-shadow:inset 0 0 0 1px #93c5fd}
+#view .table-wrap tbody tr:nth-child(4n+1) td{background:#fff7f7}
+#view .table-wrap tbody tr:nth-child(4n+2) td{background:#f3fbf5}
+#view .table-wrap tbody tr:nth-child(4n+3) td{background:#fffdf0}
+#view .table-wrap tbody tr:nth-child(4n) td{background:#f1f8ff}
+#view .table-wrap tbody tr:hover td{background:#e8f1fa}
+#view .table-wrap tbody tr td{transition:background-color .12s ease}
+@media(prefers-reduced-motion:reduce){#view .table-wrap tbody tr td{transition:none}}
 </style>
 </head>
 <body>
