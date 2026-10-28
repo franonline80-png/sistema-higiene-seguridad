@@ -923,6 +923,7 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
       </div>
       <div><h1>Francisco Sánchez</h1><p>Licenciado en Seguridad e Higiene</p><span class="brand-system-name">Sistema de Higiene y Seguridad</span></div>
     </div>
+    <div id="activeEstablishmentHeader" class="active-establishment-header hidden" aria-live="polite"><img id="activeEstablishmentPhoto" alt="" class="active-establishment-photo"><div><span class="active-establishment-caption">Establecimiento activo</span><strong id="activeEstablishmentName"></strong></div></div>
     <div class="top-actions">
       <select id="orgSelect" class="org-select" aria-label="Organización activa"></select>
       <button id="refreshAll" class="btn btn-light" type="button">↻ Actualizar</button>
@@ -1317,7 +1318,7 @@ function moduleIconMarkup(id,size="small"){
 function showLogin(message=""){$("app").style.display="none";$("loginScreen").style.display="flex";$("loginMessage").textContent=message}
 function showApp(){$("loginScreen").style.display="none";$("app").style.display="block"}
 function getOrgIds(){return organizations.map(o=>o.id)}
-function getOrgName(){return organizations.find(o=>o.id===activeOrg)?.nombre||"Organización"}
+function getOrgName(){return organizations.find(o=>o.id===activeOrg)?.nombre||"Organización"}\nasync function updateActiveEstablishmentHeader(){const box=$("activeEstablishmentHeader"),img=$("activeEstablishmentPhoto"),name=$("activeEstablishmentName");if(!box||!img||!name)return;try{const rows=await fetchRows("establecimientos");const active=rows.filter(row=>row.organizacion_id===activeOrg&&row.Activo!==false&&!["false","0","no","inactivo","falso"].includes(String(row.Activo??"true").trim().toLowerCase()));const chosen=active.find(row=>row.foto_data_url)||active[0];if(!chosen){box.classList.add("hidden");img.removeAttribute("src");name.textContent="";return}name.textContent=chosen.Nombre||"Establecimiento activo";if(chosen.foto_data_url){img.src=chosen.foto_data_url;img.classList.remove("hidden")}else{img.removeAttribute("src");img.classList.add("hidden")}box.classList.remove("hidden")}catch(error){console.error("No se pudo actualizar el establecimiento del encabezado:",error);box.classList.add("hidden")}}\n
 function visibleModules(){return modules.filter(m=>m.id==="inicio"||m.id==="legislacion"||m.id==="sesiones"||m.id==="reportes"||m.id==="mapa_riesgos"||configs[m.id])}
 function buildNav(){
   const nav=$("navTabs");nav.replaceChildren();
@@ -2203,7 +2204,7 @@ async function saveRecord(ev,id){
     const result=editing?await db.from(cfg.table).update(payload).eq("id",editing.id).select("id"):await db.from(cfg.table).insert(payload).select("id");
     if(result.error)throw result.error;
     if(!result.data?.length)throw new Error("No se confirmó la operación. Verificá los permisos RLS.");
-    editing=null;await renderCrud(id);
+    editing=null;await renderCrud(id);if(id==="establecimientos")await updateActiveEstablishmentHeader();
   }catch(e){console.error(e);let msg=e.message||"Error desconocido";if(id==="riesgos"&&/row-level security|permission denied|violates row-level security|RLS/i.test(msg))msg="La evaluación no se guardó porque tu usuario no tiene permisos para este puesto. Se requiere rol profesional de Higiene y Seguridad, administrador de la organización o administrador de plataforma.";$("formStatus").textContent="No se pudo guardar: "+msg;$("formStatus").className="status error"}
   finally{b.disabled=false}
 }
@@ -2432,7 +2433,7 @@ function downloadReportPdf(){
  const css=[...document.querySelectorAll("style")].map(x=>x.textContent).join("\n");
   const landscape=reportSelected==="riesgos";
   const printLayout=landscape?"body{background:#fff!important;padding:8mm!important}.report-paper{width:277mm;max-width:277mm;margin:auto;box-shadow:none;border:0;padding:0!important;font-size:9pt}.paper-table{font-size:8pt}.paper-table th,.paper-table td{padding:4px}@page{size:A4 landscape;margin:8mm}":"body{background:#fff!important;padding:12mm!important}.report-paper{max-width:190mm;margin:auto;box-shadow:none;border:0;padding:0!important;font-size:10pt}@page{size:A4 portrait;margin:12mm}";
-  w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>'+reportEsc(def.title)+'</title><style>'+css+' '+printLayout+'\n\n/* Alta de establecimientos en ventana modal y fotografía */\n.establishments-create-panel{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.establishments-create-panel p{margin:0;color:var(--muted,#64748b)}.establishments-dialog{width:min(760px,calc(100vw - 28px));max-height:90vh;overflow:auto}.establishment-photo-field{margin:18px 0;padding:14px;border:1px dashed var(--border,#cbd5e1);border-radius:12px;display:grid;gap:10px}.establishment-photo-field label{font-weight:600}.establishment-photo-field input{max-width:100%}.establishment-photo-preview{display:flex;align-items:center;gap:12px;flex-wrap:wrap;color:var(--muted,#64748b);font-size:13px}.establishment-photo-preview img{display:block;max-width:100%;width:auto;max-height:220px;object-fit:contain;border-radius:10px;border:1px solid var(--border,#cbd5e1)}\n</style></head><body><article class="report-paper">'+paper.innerHTML+'</article><script>window.onload=()=>setTimeout(()=>window.print(),250)<\\/script></body></html>');
+  w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>'+reportEsc(def.title)+'</title><style>'+css+' '+printLayout+'\n\n/* Alta de establecimientos en ventana modal y fotografía */\n.establishments-create-panel{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.establishments-create-panel p{margin:0;color:var(--muted,#64748b)}.establishments-dialog{width:min(760px,calc(100vw - 28px));max-height:90vh;overflow:auto}.establishment-photo-field{margin:18px 0;padding:14px;border:1px dashed var(--border,#cbd5e1);border-radius:12px;display:grid;gap:10px}.establishment-photo-field label{font-weight:600}.establishment-photo-field input{max-width:100%}.establishment-photo-preview{display:flex;align-items:center;gap:12px;flex-wrap:wrap;color:var(--muted,#64748b);font-size:13px}.establishment-photo-preview img{display:block;max-width:100%;width:auto;max-height:220px;object-fit:contain;border-radius:10px;border:1px solid var(--border,#cbd5e1)}\n\n/* Fotografía compacta en el alta y en el encabezado del sistema */\n.establishment-photo-field{grid-template-columns:minmax(0,1fr);padding:12px;margin:12px 0}.establishment-photo-field input{max-width:100%;font-size:13px}.establishment-photo-preview{min-height:36px;gap:8px}.establishment-photo-preview img{width:auto;max-width:150px;max-height:90px;object-fit:cover;border-radius:8px}.active-establishment-header{display:flex;align-items:center;gap:10px;min-width:0;max-width:300px;padding:6px 12px;border-left:1px solid #ffffff35;border-right:1px solid #ffffff35;color:#fff}.active-establishment-photo{width:44px;height:44px;flex:0 0 44px;object-fit:cover;border-radius:8px;background:#ffffff20;border:1px solid #ffffff55}.active-establishment-header>div{display:flex;flex-direction:column;min-width:0;gap:3px}.active-establishment-header strong{font-size:13px;line-height:1.25;overflow-wrap:anywhere}.active-establishment-caption{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:#cbd5e1}@media(max-width:900px){.active-establishment-header{order:3;width:100%;max-width:none;border:0;padding:6px 0}.topbar{flex-wrap:wrap}.active-establishment-photo{width:38px;height:38px;flex-basis:38px}}\n</style></head><body><article class="report-paper">'+paper.innerHTML+'</article><script>window.onload=()=>setTimeout(()=>window.print(),250)<\\/script></body></html>');
  w.document.close();
 }
 async function shareReport(){
@@ -2480,8 +2481,8 @@ async function initialize(){
   const select=$("orgSelect");select.replaceChildren();
   organizations.forEach(o=>{const op=document.createElement("option");op.value=o.id;op.textContent=o.nombre||"Organización";select.appendChild(op)});
   select.value=activeOrg;
-  select.onchange=()=>{activeOrg=select.value;moduleCache={};openModule(activeModule)};
-  showApp();buildNav();await renderHome();
+  select.onchange=()=>{activeOrg=select.value;moduleCache={};updateActiveEstablishmentHeader();openModule(activeModule)};
+  showApp();buildNav();await updateActiveEstablishmentHeader();await renderHome();
   })();
   try{return await initializationPromise}finally{initializationPromise=null}
 }
@@ -2498,7 +2499,7 @@ $("logoutButton").addEventListener("click",async()=>{
   const {error}=await db.auth.signOut();if(error){alert("No se pudo cerrar sesión: "+error.message);return}
   user=null;organizations=[];activeOrg="";moduleCache={};sessionAccessToken=null;showLogin();
 });
-$("refreshAll").addEventListener("click",()=>{moduleCache={};openModule(activeModule)});
+$("refreshAll").addEventListener("click",()=>{moduleCache={};updateActiveEstablishmentHeader();openModule(activeModule)});
 db.auth.getSession().then(async({data,error})=>{
   if(error){showLogin("No se pudo verificar la sesión.");return}
   if(loginInProgress)return;
