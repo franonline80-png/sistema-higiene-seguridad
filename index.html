@@ -854,6 +854,30 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
 .vencimiento-card-actions{display:flex;gap:6px;flex-wrap:wrap}
 @media(max-width:850px){.vencimientos-cards{grid-template-columns:1fr}.vencimientos-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){.vencimiento-card-meta{grid-template-columns:1fr}.vencimientos-summary{gap:8px}.vencimientos-stat{padding:12px}.vencimientos-stat strong{font-size:22px}}
+
+/* Paleta unificada para ventanas emergentes: marrón oscuro, celeste grisáceo y verde */
+.related-modal,.people-modal-backdrop,.hazard-illustration-modal,.startup-alert-backdrop,.vencimiento-detail-backdrop{background:rgba(29,24,21,.72)!important;backdrop-filter:blur(5px)}
+.related-dialog,.people-modal,.hazard-illustration-dialog,.startup-alert-modal,.vencimiento-detail-modal{background:#dce8ee!important;border:1px solid #aabdc6!important;color:#28221e}
+.related-head,.people-modal-header,.hazard-illustration-dialog-header,.startup-alert-head,.vencimiento-detail-head{background:linear-gradient(125deg,#2d241f,#49362a)!important;color:#fff!important;border-color:#6b584b!important}
+.related-head h2,.related-head p,.people-modal-header h3,.people-modal-header p,.hazard-illustration-dialog-header h3,.startup-alert-head h2,.startup-alert-head p,.vencimiento-detail-head h2,.vencimiento-detail-head p{color:#fff!important}
+.related-section,.people-modal-content,.vencimiento-detail-field{background:#eef4f7!important;border-color:#c3d1d8!important}
+.related-item,.people-modal-tabs,.hazard-illustration-dialog-art{background:#cbdce5!important;border-color:#b2c6d0!important}
+.related-count,.people-modal-tab.active{background:#385c70!important;color:#fff!important}
+.people-modal-tab{color:#354b56}
+.startup-alert-content{background:#dce8ee}
+.startup-alert-item{background:#eef4f7;border-color:#c3d1d8}
+.startup-alert-item strong,.startup-alert-item span{color:#303b40}
+.startup-alert-item.critical{background:#f7e3e1;border-color:#d7a6a0}
+.startup-alert-item.warning{background:#f8edda;border-color:#ddc28c}
+.startup-alert-item.info{background:#e4edf3;border-color:#b9ccd8}
+.vencimiento-detail-field strong{color:#536570!important}.vencimiento-detail-field span{color:#292c2d!important}
+.related-dialog .btn-blue,.people-modal .btn-blue,.hazard-illustration-dialog .btn-blue,.startup-alert-modal .btn-blue,.vencimiento-detail-modal .btn-blue,
+.related-dialog button.btn-green,.people-modal button.btn-green,.hazard-illustration-dialog button.btn-green,.startup-alert-modal button.btn-green,.vencimiento-detail-modal button.btn-green{background:#15966d!important;border-color:#12845f!important;color:#fff!important}
+.related-dialog .btn-blue:hover,.people-modal .btn-blue:hover,.hazard-illustration-dialog .btn-blue:hover,.startup-alert-modal .btn-blue:hover,.vencimiento-detail-modal .btn-blue:hover{background:#117a59!important}
+.related-dialog .btn-red,.people-modal .btn-red,.hazard-illustration-dialog .btn-red,.startup-alert-modal .btn-red,.vencimiento-detail-modal .btn-red{background:#9b443b!important;border-color:#85382f!important;color:#fff!important}
+.people-modal-close,.startup-alert-close-x,.hazard-illustration-close{background:#ffffff18!important;border:1px solid #ffffff55!important;color:#fff!important}
+.startup-alert-footer,.vencimiento-detail-footer{background:#dce8ee}
+@media(max-width:600px){.related-dialog,.people-modal,.hazard-illustration-dialog,.startup-alert-modal,.vencimiento-detail-modal{background:#dce8ee!important}}
 </style>
 </head>
 <body>
