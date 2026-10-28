@@ -836,6 +836,15 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
 .vencimientos-stat{background:var(--panel,#fff);border:1px solid var(--border,#e5e7eb);border-radius:14px;padding:14px 16px;box-shadow:0 3px 12px rgba(15,23,42,.04)}
 .vencimientos-stat span{display:block;color:var(--muted,#64748b);font-size:12px;font-weight:600;margin-bottom:7px}
 .vencimientos-stat strong{font-size:25px;line-height:1.1;color:var(--text,#172033)}
+/* Fondos diferenciados para los cuatro indicadores de vencimientos */
+.vencimientos-stat:nth-child(1){background:#e8f1ff;border-color:#b7d0f8}
+.vencimientos-stat:nth-child(1) span,.vencimientos-stat:nth-child(1) strong{color:#1e40af}
+.vencimientos-stat:nth-child(2){background:#fee8e7;border-color:#f4b8b4}
+.vencimientos-stat:nth-child(2) span,.vencimientos-stat:nth-child(2) strong{color:#a12622}
+.vencimientos-stat:nth-child(3){background:#fff2d9;border-color:#f0d39a}
+.vencimientos-stat:nth-child(3) span,.vencimientos-stat:nth-child(3) strong{color:#8a4b08}
+.vencimientos-stat:nth-child(4){background:#e2f6e9;border-color:#a9dfbc}
+.vencimientos-stat:nth-child(4) span,.vencimientos-stat:nth-child(4) strong{color:#17653a}
 .vencimientos-filters{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 16px}
 .vencimientos-filter{border:1px solid var(--border,#dbe1e8);background:var(--panel,#fff);color:var(--text,#334155);border-radius:999px;padding:8px 14px;font-weight:600;cursor:pointer}
 .vencimientos-filter.active{background:#e8f1ff;border-color:#93b4f5;color:#1d4ed8}
