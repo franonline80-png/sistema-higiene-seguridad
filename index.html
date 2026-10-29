@@ -946,7 +946,7 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
       </div>
       <div><h1>Francisco Sánchez</h1><p>Licenciado en Seguridad e Higiene</p><span class="brand-system-name">Sistema de Higiene y Seguridad</span></div>
     </div>
-    <div id="activeEstablishmentHeader" class="active-establishment-header" aria-live="polite"><img id="activeEstablishmentPhoto" alt="" class="active-establishment-photo hidden"><div><span class="active-establishment-caption">Establecimiento seleccionado</span><select id="activeEstablishmentSelect" class="active-establishment-select" aria-label="Seleccionar establecimiento"><option value="">Seleccionar establecimiento…</option></select></div></div>
+    
     <div class="top-actions">
       <select id="orgSelect" class="org-select" aria-label="Organización activa"></select>
       <button id="refreshAll" class="btn btn-light" type="button">↻ Actualizar</button>
@@ -1344,25 +1344,23 @@ function getOrgIds(){return organizations.map(o=>o.id)}
 function getOrgName(){return organizations.find(o=>o.id===activeOrg)?.nombre||"Organización"}
 let selectedEstablishmentId="";
 async function updateActiveEstablishmentHeader(){
- const box=$("activeEstablishmentHeader"),img=$("activeEstablishmentPhoto"),picker=$("activeEstablishmentSelect");if(!box||!img||!picker)return;
+ const img=$("activeEstablishmentPhoto"),name=$("activeEstablishmentName"),select=$("orgSelect");if(!img||!name||!select)return;
  try{
   const rows=await fetchRows("establecimientos");
-  const orgRows=rows.filter(row=>row.organizacion_id===activeOrg);
-  picker.replaceChildren();const placeholder=document.createElement("option");placeholder.value="";placeholder.textContent="Seleccionar establecimiento…";picker.appendChild(placeholder);
-  orgRows.sort((a,b)=>String(a.Nombre||"").localeCompare(String(b.Nombre||""),"es")).forEach(row=>{const option=document.createElement("option");option.value=row.id;option.textContent=(row.Nombre||"Sin nombre")+(row.Activo===true?"":" (inactivo)");picker.appendChild(option)});
-  if(!orgRows.some(row=>row.id===selectedEstablishmentId))selectedEstablishmentId="";
-  picker.value=selectedEstablishmentId;
-  const chosen=orgRows.find(row=>row.id===selectedEstablishmentId);
-  if(!chosen){img.removeAttribute("src");img.classList.add("hidden");box.classList.remove("has-establishment");return}
+  select.replaceChildren();const placeholder=document.createElement("option");placeholder.value="";placeholder.textContent="Seleccionar establecimiento…";select.appendChild(placeholder);
+  rows.filter(row=>row.organizacion_id===activeOrg).sort((a,b)=>String(a.Nombre||"").localeCompare(String(b.Nombre||""),"es")).forEach(row=>{const op=document.createElement("option");op.value=row.id;op.textContent=(row.Nombre||"Sin nombre")+(row.Activo===true?"":" (inactivo)");select.appendChild(op)});
+  if(!rows.some(row=>row.id===selectedEstablishmentId&&row.organizacion_id===activeOrg))selectedEstablishmentId="";
+  select.value=selectedEstablishmentId;
+  const chosen=rows.find(row=>row.id===selectedEstablishmentId);
+  if(!chosen){img.removeAttribute("src");img.classList.add("hidden");name.textContent="Seleccioná un establecimiento";return}
+  name.textContent=chosen.Nombre||"Establecimiento";
   if(chosen.foto_data_url){img.src=chosen.foto_data_url;img.classList.remove("hidden")}else{img.removeAttribute("src");img.classList.add("hidden")}
-  box.classList.add("has-establishment");
  }catch(error){console.error("No se pudo actualizar el selector de establecimientos:",error)}
 }
 async function selectActiveEstablishment(id){
- if(!id){selectedEstablishmentId="";await updateActiveEstablishmentHeader();return}
- const {data,error}=await db.from("establecimientos").update({Activo:true}).eq("id",id).eq("organizacion_id",activeOrg).select("id");
- if(error)throw error;if(!data?.length)throw new Error("No se pudo activar el establecimiento. Verificá los permisos.");
- selectedEstablishmentId=id;moduleCache={};await updateActiveEstablishmentHeader();if(activeModule!=="establecimientos")await openModule(activeModule);
+ selectedEstablishmentId=id||"";moduleCache={};await updateActiveEstablishmentHeader();
+ if(activeModule==="establecimientos"){await renderCrud("establecimientos");return}
+ await openModule(activeModule);
 }
 function visibleModules(){return modules.filter(m=>m.id==="inicio"||m.id==="legislacion"||m.id==="sesiones"||m.id==="reportes"||m.id==="mapa_riesgos"||configs[m.id])}
 function buildNav(){
@@ -1496,12 +1494,15 @@ async function fetchRows(table,limit=500){
   let q=db.from(table).select("*").limit(limit);
   if(table==="organizaciones")q=q.in("id",getOrgIds());
   else if(["establecimientos","personas","accidentes_incidentes","inspecciones","mediciones_ambientales","epp","capacitaciones","documentacion","equipos_instalaciones","vencimientos"].includes(table))q=q.in("organizacion_id",getOrgIds());
-  else if(table==="sectores"){
-    const es=await fetchRows("establecimientos");const ids=es.map(x=>x.id);if(!ids.length)return [];q=q.in("establecimiento_id",ids);
+  if(table==="establecimientos"){const {data,error}=await q.order("created_at",{ascending:true});if(error)throw error;return data||[]}
+  if(table==="sectores"){
+    const ids=selectedEstablishmentId?[selectedEstablishmentId]:(await fetchRows("establecimientos")).map(x=>x.id);if(!ids.length)return [];q=q.in("establecimiento_id",ids);
   }else if(table==="puestos"){
-    const ss=await fetchRows("sectores");const ids=ss.map(x=>x.id);if(!ids.length)return [];q=q.in("sector_id",ids);
+    const ids=(await fetchRows("sectores")).map(x=>x.id);if(!ids.length)return [];q=q.in("sector_id",ids);
   }else if(table==="riesgos"){
-    const ps=await fetchRows("puestos");const ids=ps.map(x=>x.id);if(!ids.length)return [];q=q.in("puesto_id",ids);
+    const ids=(await fetchRows("puestos")).map(x=>x.id);if(!ids.length)return [];q=q.in("puesto_id",ids);
+  }else if(selectedEstablishmentId&&["personas","accidentes_incidentes","inspecciones","mediciones_ambientales","epp","capacitaciones","documentacion","equipos_instalaciones","vencimientos"].includes(table)){
+    q=q.eq("establecimiento_id",selectedEstablishmentId);
   }
   const {data,error}=await q;if(error)throw error;return data||[];
 }
@@ -2237,7 +2238,7 @@ async function saveRecord(ev,id){
       if(f[2]==="checkbox")payload[f[0]]=el.checked;
       else{const v=el.value.trim();payload[f[0]]=v===""?null:((f[2]==="number"||(id==="riesgos"&&["Probabilidad","consecuencia","nivel_riesgo"].includes(f[0])))?Number(v):v)}
     }
-    if(id==="establecimientos"){const photoInput=$("establishmentPhoto"),file=photoInput?.files?.[0];if(file)payload.foto_data_url=await compressEstablishmentPhoto(file);else if(photoInput?.dataset.removePhoto==="true")payload.foto_data_url=null;else payload.foto_data_url=editing?.foto_data_url??null;}if(cfg.org&&!editing)payload.organizacion_id=activeOrg;
+    if(id==="establecimientos"){const photoInput=$("establishmentPhoto"),file=photoInput?.files?.[0];if(file)payload.foto_data_url=await compressEstablishmentPhoto(file);else if(photoInput?.dataset.removePhoto==="true")payload.foto_data_url=null;else payload.foto_data_url=editing?.foto_data_url??null;}if(cfg.org&&!editing)payload.organizacion_id=activeOrg;if(selectedEstablishmentId&&["personas","accidentes_incidentes","inspecciones","mediciones_ambientales","epp","capacitaciones","documentacion","equipos_instalaciones","vencimientos"].includes(id)&&!("establecimiento_id" in payload))payload.establecimiento_id=selectedEstablishmentId;
     if(id==="personas")payload.Legajo=editing?editing.Legajo:formatLegajo(await getNextLegajo());
     if(id==="sectores")payload.codigo=editing?editing.codigo:await getNextCode(id);
     if(id==="puestos")payload.Codigo=editing?editing.Codigo:await getNextCode(id);
@@ -2523,11 +2524,8 @@ async function initialize(){
   const {data:orgs,error:oe}=await db.from("organizaciones").select("id,nombre").in("id",ids);if(oe)throw oe;
   organizations=orgs||[];if(!organizations.length)throw new Error("No se encontraron organizaciones autorizadas.");
   activeOrg=organizations[0].id;
-  const select=$("orgSelect");select.replaceChildren();
-  organizations.forEach(o=>{const op=document.createElement("option");op.value=o.id;op.textContent=o.nombre||"Organización";select.appendChild(op)});
-  select.value=activeOrg;
-  select.onchange=()=>{activeOrg=select.value;moduleCache={};updateActiveEstablishmentHeader();openModule(activeModule)};
-  $("activeEstablishmentSelect").onchange=async e=>{try{await selectActiveEstablishment(e.target.value)}catch(error){console.error(error);alert("No se pudo seleccionar el establecimiento: "+error.message);await updateActiveEstablishmentHeader()}};
+  const select=$("orgSelect");
+  select.onchange=async()=>{try{await selectActiveEstablishment(select.value)}catch(error){console.error(error);alert("No se pudo seleccionar el establecimiento: "+error.message)}};
   showApp();buildNav();await updateActiveEstablishmentHeader();await renderHome();
   })();
   try{return await initializationPromise}finally{initializationPromise=null}
