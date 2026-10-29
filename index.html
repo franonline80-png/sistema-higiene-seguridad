@@ -906,6 +906,9 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
 @media(max-width:760px){.topbar{flex-wrap:wrap}.topbar .brand{flex:1 1 auto}.active-establishment-header{order:3;flex:1 1 100%;max-width:none;border:0;padding:5px 0}.top-actions{flex:0 1 auto;flex-wrap:wrap}.consultor-header-logo{width:66px;flex-basis:66px}}
 
 .active-establishment-header{flex:0 1 250px;max-width:250px}.active-establishment-select{width:100%;min-width:150px;max-width:205px;margin:2px 0 0;padding:6px 8px;border:1px solid #ffffff55;border-radius:7px;background:#ffffff12;color:#fff;font-size:12px}.active-establishment-select option{color:#172033;background:#fff}.active-establishment-caption{display:block}.active-establishment-header:not(.has-establishment) .active-establishment-photo{display:none}
+
+/* Encabezado: conservar logo profesional y mostrar el establecimiento en una sola línea */
+.topbar{display:flex;align-items:center;flex-wrap:nowrap;gap:14px}.topbar .brand{display:flex;align-items:center;gap:12px;flex:0 0 auto;min-width:0}.consultor-header-logo{display:block;width:104px;flex:0 0 104px}.consultor-header-logo svg{display:block;width:100%;height:auto}.active-establishment-header{display:flex;align-items:center;gap:8px;flex:0 1 235px;max-width:235px;min-width:0;padding:4px 10px;border-left:1px solid #ffffff35;border-right:1px solid #ffffff35;color:#fff}.active-establishment-photo{width:42px;height:42px;flex:0 0 42px;object-fit:cover;border-radius:50%;background:#ffffff20;border:1px solid #ffffff55}.active-establishment-identity{display:flex;flex-direction:column;gap:3px;min-width:0}.active-establishment-identity strong{font-size:12px;line-height:1.2;overflow-wrap:anywhere;max-width:165px}.active-establishment-caption{font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:#cbd5e1}.top-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex:0 0 auto;min-width:0}.org-select{display:block;width:205px;max-width:205px;min-width:150px;margin:0;padding:8px}.org-select option{color:#172033;background:#fff}@media(max-width:1050px){.consultor-header-logo{width:76px;flex-basis:76px}.brand h1{font-size:15px}.active-establishment-header{flex-basis:175px;max-width:175px}.active-establishment-photo{width:36px;height:36px;flex-basis:36px}.org-select{width:165px;min-width:125px}.top-actions{gap:5px}}@media(max-width:760px){.topbar{flex-wrap:wrap}.active-establishment-header{order:3;flex:1 1 100%;max-width:none;border:0;padding:5px 0}.top-actions{flex:1 1 100%;flex-wrap:wrap}.org-select{flex:1 1 180px;max-width:none}}
 </style>
 </head>
 <body>
@@ -946,9 +949,15 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
       </div>
       <div><h1>Francisco Sánchez</h1><p>Licenciado en Seguridad e Higiene</p><span class="brand-system-name">Sistema de Higiene y Seguridad</span></div>
     </div>
-    
+    <div id="activeEstablishmentHeader" class="active-establishment-header" aria-live="polite">
+      <img id="activeEstablishmentPhoto" alt="Logo del establecimiento" class="active-establishment-photo hidden">
+      <div class="active-establishment-identity">
+        <span class="active-establishment-caption">Establecimiento seleccionado</span>
+        <strong id="activeEstablishmentName">Seleccioná un establecimiento</strong>
+      </div>
+    </div>
     <div class="top-actions">
-      <select id="orgSelect" class="org-select" aria-label="Establecimiento activo"></select>
+      <select id="orgSelect" class="org-select" aria-label="Seleccionar establecimiento"></select>
       <button id="refreshAll" class="btn btn-light" type="button">↻ Actualizar</button>
       <button id="logoutButton" class="btn btn-red" type="button">Cerrar sesión</button>
     </div>
@@ -1346,16 +1355,18 @@ let selectedEstablishmentId="";
 async function updateActiveEstablishmentHeader(){
  const img=$("activeEstablishmentPhoto"),name=$("activeEstablishmentName"),select=$("orgSelect");if(!img||!name||!select)return;
  try{
-  const rows=await fetchRows("establecimientos");
-  select.replaceChildren();const placeholder=document.createElement("option");placeholder.value="";placeholder.textContent="Seleccionar establecimiento…";select.appendChild(placeholder);
-  rows.filter(row=>row.organizacion_id===activeOrg).sort((a,b)=>String(a.Nombre||"").localeCompare(String(b.Nombre||""),"es")).forEach(row=>{const op=document.createElement("option");op.value=row.id;op.textContent=(row.Nombre||"Sin nombre")+(row.Activo===true?"":" (inactivo)");select.appendChild(op)});
-  if(!rows.some(row=>row.id===selectedEstablishmentId&&row.organizacion_id===activeOrg))selectedEstablishmentId="";
+  const {data,error}=await db.from("establecimientos").select("id,organizacion_id,Nombre,Activo,foto_data_url").eq("organizacion_id",activeOrg).order("created_at",{ascending:true});
+  if(error)throw error;
+  const rows=data||[];select.replaceChildren();
+  const placeholder=document.createElement("option");placeholder.value="";placeholder.textContent=rows.length?"Seleccionar establecimiento…":"No hay establecimientos";select.appendChild(placeholder);
+  rows.sort((a,b)=>String(a.Nombre||"").localeCompare(String(b.Nombre||""),"es")).forEach(row=>{const op=document.createElement("option");op.value=row.id;op.textContent=(row.Nombre||"Sin nombre")+(row.Activo===true?"":" (inactivo)");select.appendChild(op)});
+  if(!rows.some(row=>row.id===selectedEstablishmentId))selectedEstablishmentId="";
   select.value=selectedEstablishmentId;
   const chosen=rows.find(row=>row.id===selectedEstablishmentId);
   if(!chosen){img.removeAttribute("src");img.classList.add("hidden");name.textContent="Seleccioná un establecimiento";return}
   name.textContent=chosen.Nombre||"Establecimiento";
   if(chosen.foto_data_url){img.src=chosen.foto_data_url;img.classList.remove("hidden")}else{img.removeAttribute("src");img.classList.add("hidden")}
- }catch(error){console.error("No se pudo actualizar el selector de establecimientos:",error)}
+ }catch(error){console.error("No se pudo cargar el selector de establecimientos:",error);select.replaceChildren();const op=document.createElement("option");op.value="";op.textContent="Error al cargar establecimientos";select.appendChild(op);name.textContent="No se pudieron cargar los establecimientos"}
 }
 async function selectActiveEstablishment(id){
  selectedEstablishmentId=id||"";moduleCache={};await updateActiveEstablishmentHeader();
