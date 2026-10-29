@@ -948,7 +948,7 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
     </div>
     
     <div class="top-actions">
-      <select id="orgSelect" class="org-select" aria-label="Organización activa"></select>
+      <select id="orgSelect" class="org-select" aria-label="Establecimiento activo"></select>
       <button id="refreshAll" class="btn btn-light" type="button">↻ Actualizar</button>
       <button id="logoutButton" class="btn btn-red" type="button">Cerrar sesión</button>
     </div>
@@ -1501,7 +1501,11 @@ async function fetchRows(table,limit=500){
     const ids=(await fetchRows("sectores")).map(x=>x.id);if(!ids.length)return [];q=q.in("sector_id",ids);
   }else if(table==="riesgos"){
     const ids=(await fetchRows("puestos")).map(x=>x.id);if(!ids.length)return [];q=q.in("puesto_id",ids);
-  }else if(selectedEstablishmentId&&["personas","accidentes_incidentes","inspecciones","mediciones_ambientales","epp","capacitaciones","documentacion","equipos_instalaciones","vencimientos"].includes(table)){
+  }else if(selectedEstablishmentId&&table==="personas"){
+    const ids=(await fetchRows("puestos")).map(x=>x.id);
+    if(ids.length)q=q.or("establecimiento_id.eq."+selectedEstablishmentId+",puesto_id.in.("+ids.join(",")+")");
+    else q=q.eq("establecimiento_id",selectedEstablishmentId);
+  }else if(selectedEstablishmentId&&["accidentes_incidentes","inspecciones","mediciones_ambientales","epp","capacitaciones","documentacion","equipos_instalaciones","vencimientos"].includes(table)){
     q=q.eq("establecimiento_id",selectedEstablishmentId);
   }
   const {data,error}=await q;if(error)throw error;return data||[];
