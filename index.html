@@ -1340,7 +1340,7 @@ function getOrgIds(){return organizations.map(o=>o.id)}
 function getOrgName(){return organizations.find(o=>o.id===activeOrg)?.nombre||"Organización"}
 let selectedEstablishmentId="";
 async function updateActiveEstablishmentHeader(){
- const img=$("activeEstablishmentPhoto"),select=$("orgSelect");if(!img||!select)return;
+ const img=$("activeEstablishmentPhoto"),header=$("activeEstablishmentHeader"),select=$("orgSelect");if(!img||!header||!select)return;
  try{
   const {data,error}=await db.from("establecimientos").select("id,organizacion_id,Nombre,Activo,foto_data_url").eq("organizacion_id",activeOrg).order("created_at",{ascending:true});
   if(error)throw error;
@@ -1358,15 +1358,17 @@ async function updateActiveEstablishmentHeader(){
    img.src=chosen.foto_data_url;
    img.alt="Imagen de "+(chosen.Nombre||"establecimiento seleccionado");
    img.classList.remove("hidden");
+   header.classList.add("has-establishment");
   }else{
    img.removeAttribute("src");
    img.classList.add("hidden");
+   header.classList.remove("has-establishment");
   }
  }catch(error){
   console.error("No se pudo cargar el selector de establecimientos:",error);
   select.replaceChildren();
   const op=document.createElement("option");op.value="";op.textContent="Error al cargar establecimientos";select.appendChild(op);
-  img.removeAttribute("src");img.classList.add("hidden");
+  img.removeAttribute("src");img.classList.add("hidden");header.classList.remove("has-establishment");
  }
 }
 async function selectActiveEstablishment(id){
@@ -2495,7 +2497,32 @@ function downloadReportPdf(){
  const css=[...document.querySelectorAll("style")].map(x=>x.textContent).join("\n");
   const landscape=reportSelected==="riesgos";
   const printLayout=landscape?"body{background:#fff!important;padding:8mm!important}.report-paper{width:277mm;max-width:277mm;margin:auto;box-shadow:none;border:0;padding:0!important;font-size:9pt}.paper-table{font-size:8pt}.paper-table th,.paper-table td{padding:4px}@page{size:A4 landscape;margin:8mm}":"body{background:#fff!important;padding:12mm!important}.report-paper{max-width:190mm;margin:auto;box-shadow:none;border:0;padding:0!important;font-size:10pt}@page{size:A4 portrait;margin:12mm}";
-  w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>'+reportEsc(def.title)+'</title><style>'+css+' '+printLayout+'</style></head><body><article class="report-paper">'+paper.innerHTML+'</article><script>window.onload=()=>setTimeout(()=>window.print(),250)<\\/script></body></html>');
+  w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>'+reportEsc(def.title)+'</title><style>'+css+' '+printLayout+'
+/* Corrección definitiva: logo del establecimiento visible junto al logo profesional */
+.topbar{display:flex!important;align-items:center!important;flex-wrap:nowrap!important;gap:14px!important}
+.topbar>.brand{flex:0 0 auto!important;min-width:0!important}
+.topbar>.active-establishment-header{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ order:initial!important;flex:1 1 220px!important;min-width:130px!important;max-width:260px!important;
+ min-height:76px!important;padding:4px 12px!important;margin:0 auto!important;
+ border-left:1px solid #ffffff55!important;border-right:1px solid #ffffff55!important;
+}
+.topbar>.active-establishment-header>.active-establishment-photo{
+ display:block!important;visibility:visible!important;opacity:1!important;
+ width:100%!important;max-width:220px!important;height:68px!important;flex:0 1 220px!important;
+ object-fit:contain!important;border-radius:7px!important;background:#fff!important;padding:4px!important;
+}
+.topbar>.active-establishment-header>.active-establishment-photo.hidden{display:none!important}
+.topbar>.active-establishment-header:not(.has-establishment)>.active-establishment-photo{display:none!important}
+.topbar>.top-actions{flex:0 0 auto!important;min-width:0!important}
+@media(max-width:760px){
+ .topbar{flex-wrap:wrap!important}
+ .topbar>.brand{flex:1 1 auto!important}
+ .topbar>.active-establishment-header{order:2!important;flex:1 1 100%!important;max-width:none!important;min-width:0!important;min-height:64px!important;border:0!important;margin:0!important}
+ .topbar>.active-establishment-header>.active-establishment-photo{max-width:200px!important;height:60px!important}
+ .topbar>.top-actions{order:3!important;flex:1 1 100%!important;flex-wrap:wrap!important}
+}
+</style></head><body><article class="report-paper">'+paper.innerHTML+'</article><script>window.onload=()=>setTimeout(()=>window.print(),250)<\\/script></body></html>');
  w.document.close();
 }
 async function shareReport(){
