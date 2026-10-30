@@ -2547,7 +2547,19 @@ function downloadReportPdf(){
  const css=[...document.querySelectorAll("style")].map(x=>x.textContent).join("\n");
   const landscape=reportSelected==="riesgos";
   const printLayout=landscape?"body{background:#fff!important;padding:8mm!important}.report-paper{width:277mm;max-width:277mm;margin:auto;box-shadow:none;border:0;padding:0!important;font-size:9pt}.paper-table{font-size:8pt}.paper-table th,.paper-table td{padding:4px}@page{size:A4 landscape;margin:8mm}":"body{background:#fff!important;padding:12mm!important}.report-paper{max-width:190mm;margin:auto;box-shadow:none;border:0;padding:0!important;font-size:10pt}@page{size:A4 portrait;margin:12mm}";
-  w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>'+reportEsc(def.title)+'</title><style>'+css+' '+printLayout+'</style></head><body><article class="report-paper">'+paper.innerHTML+'</article><script>window.onload=()=>setTimeout(()=>window.print(),250)<\\/script></body></html>');
+  w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>'+reportEsc(def.title)+'</title><style>'+css+' '+printLayout+'
+/* Indicadores principales de evaluación de riesgos: mayor jerarquía visual */
+.risk-list-panel .risk-prototype-stats{gap:12px;margin:18px 0 20px}
+.risk-list-panel .risk-prototype-stats>div{position:relative;overflow:hidden;min-height:112px;padding:17px 18px;background:#eaf2fb;border:1px solid #c5d6ea;border-left:5px solid #315f91;border-radius:12px;box-shadow:0 3px 10px rgba(15,41,70,.07)}
+.risk-list-panel .risk-prototype-stats>div:nth-child(2){background:#f0edff;border-color:#d9d2fb;border-left-color:#6954b8}
+.risk-list-panel .risk-prototype-stats>div:nth-child(3){background:#e8f6ef;border-color:#c4e6d2;border-left-color:#238451}
+.risk-list-panel .risk-prototype-stats>div:nth-child(4){background:#fff1e8;border-color:#f6d4bd;border-left-color:#d65b22}
+.risk-list-panel .risk-prototype-stats>div>span{font-size:14px;font-weight:800;line-height:1.35;color:#243b53;letter-spacing:.05px}
+.risk-list-panel .risk-prototype-stats strong{font-size:34px;font-weight:850;line-height:1.12;color:#102a43;margin-top:10px}
+.risk-list-panel .risk-prototype-stats small{font-size:13px;font-weight:750;color:#9a3412;margin-top:5px}
+.risk-list-panel .risk-count-pill{background:#dbeafe;color:#173f70;border:1px solid #a9c9ed;padding:8px 13px;font-size:13px;font-weight:850}
+@media(max-width:760px){.risk-list-panel .risk-prototype-stats{gap:9px}.risk-list-panel .risk-prototype-stats>div{min-height:100px;padding:13px}.risk-list-panel .risk-prototype-stats>div>span{font-size:13px}.risk-list-panel .risk-prototype-stats strong{font-size:29px}}
+</style></head><body><article class="report-paper">'+paper.innerHTML+'</article><script>window.onload=()=>setTimeout(()=>window.print(),250)<\\/script></body></html>');
  w.document.close();
 }
 async function shareReport(){
