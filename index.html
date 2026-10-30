@@ -72,7 +72,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 .consultor-logo svg{display:block;width:100%;height:auto}
 .login-consultor-logo{width:100%;max-width:330px;margin:0 auto 20px;overflow:hidden;border:1px solid #eee8dc;border-radius:10px}
 .consultor-header-logo{width:118px;flex:0 0 118px;overflow:hidden;border-radius:8px;box-shadow:0 0 0 1px #ffffff24}
-.consultor-header-logo svg{display:block;width:100%;height:auto}
+.consultor-header-logo{display:block;width:118px;height:72px;flex:0 0 118px;object-fit:contain;background:#fff;border-radius:8px;padding:3px}
 .professional-footer{padding:22px 14px 18px;background:#fff;border-top:1px solid var(--line);margin-top:26px}
 .cpii-credential{display:flex;align-items:center;justify-content:center;gap:16px;max-width:720px;margin:0 auto 14px;text-align:left}
 .cpii-credential svg{width:145px;max-width:38%;height:auto;flex:0 0 auto}
@@ -83,7 +83,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 .professional-title{font-weight:700;color:#173e59;margin-top:-8px}
 .brand-system-name{display:block;font-size:11px;color:#d6e3ef;margin-top:3px}
 @media(max-width:650px){.brand-system-name{font-size:10px}.brand h1{font-size:15px}.professional-title{font-size:14px}}
-@media(max-width:650px){.consultor-header-logo{width:88px;flex-basis:88px}.brand{gap:9px}.brand h1{font-size:15px}.brand p{font-size:11px}.login-consultor-logo{max-width:300px}.cpii-credential{gap:10px}.cpii-credential svg{width:110px}.cpII-credential-text{font-size:11px}}
+@media(max-width:650px){.consultor-header-logo{width:88px;height:58px;flex-basis:88px}.brand{gap:9px}.brand h1{font-size:15px}.brand p{font-size:11px}.login-consultor-logo{max-width:300px}.cpii-credential{gap:10px}.cpii-credential svg{width:110px}.cpII-credential-text{font-size:11px}}
 
 
 /* Consulta transversal de registros relacionados */
@@ -902,7 +902,7 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
 .establishment-photo-field input{max-width:100%;font-size:13px}
 .establishment-photo-preview{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:30px}
 .establishment-photo-preview img{display:block;width:auto;max-width:120px;max-height:72px;object-fit:cover;border-radius:8px}
-@media(max-width:1050px){.topbar{gap:10px}.consultor-header-logo{width:78px;flex-basis:78px}.brand h1{font-size:15px}.active-establishment-header{flex-basis:180px;max-width:180px}.active-establishment-photo{width:40px;height:40px;flex-basis:40px}.top-actions{gap:5px}.top-actions .btn{padding:8px 9px;font-size:12px}}
+@media(max-width:1050px){.topbar{gap:10px}.consultor-header-logo{width:78px;height:54px;flex-basis:78px}.brand h1{font-size:15px}.active-establishment-header{flex-basis:180px;max-width:180px}.active-establishment-photo{width:40px;height:40px;flex-basis:40px}.top-actions{gap:5px}.top-actions .btn{padding:8px 9px;font-size:12px}}
 @media(max-width:760px){.topbar{flex-wrap:wrap}.topbar .brand{flex:1 1 auto}.active-establishment-header{order:3;flex:1 1 100%;max-width:none;border:0;padding:5px 0}.top-actions{flex:0 1 auto;flex-wrap:wrap}.consultor-header-logo{width:66px;flex-basis:66px}}
 
 .active-establishment-header{flex:0 1 250px;max-width:250px}.active-establishment-select{width:100%;min-width:150px;max-width:205px;margin:2px 0 0;padding:6px 8px;border:1px solid #ffffff55;border-radius:7px;background:#ffffff12;color:#fff;font-size:12px}.active-establishment-select option{color:#172033;background:#fff}.active-establishment-caption{display:block}.active-establishment-header:not(.has-establishment) .active-establishment-photo{display:none}
@@ -937,20 +937,10 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
 <div id="app">
   <header class="topbar">
     <div class="brand">
-      <div class="consultor-header-logo" role="img" aria-label="Consultor F&S">
-        <svg viewBox="0 0 560 190" aria-hidden="true">
-          <rect width="560" height="190" rx="12" fill="#fbfaf5"/>
-          <path d="M232 42 L280 8 L328 42" fill="none" stroke="#b8792c" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
-          <text x="280" y="101" text-anchor="middle" font-family="Georgia,serif" font-size="58" fill="#111827" letter-spacing="1">CONSULTOR</text>
-          <path d="M34 125 H83 M477 125 H526" stroke="#9ca3af" stroke-width="3"/>
-          <text x="280" y="132" text-anchor="middle" font-family="Georgia,serif" font-size="18" font-weight="bold" fill="#252525">Licenciado en Seguridad e Higiene</text>
-          <text x="280" y="166" text-anchor="middle" font-family="Georgia,serif" font-size="26" font-weight="bold" fill="#111827">F&amp;S</text>
-        </svg>
-      </div>
+      <img id="activeEstablishmentPhoto" class="consultor-header-logo hidden" alt="Logo de la empresa seleccionada">
       <div><h1>Francisco Sánchez</h1><p>Licenciado en Seguridad e Higiene</p><span class="brand-system-name">Sistema de Higiene y Seguridad</span></div>
     </div>
     <div id="activeEstablishmentHeader" class="active-establishment-header" aria-live="polite">
-      <img id="activeEstablishmentPhoto" alt="Logo del establecimiento" class="active-establishment-photo hidden">
       <div class="active-establishment-identity">
         <span class="active-establishment-caption">Establecimiento seleccionado</span>
         <strong id="activeEstablishmentName">Seleccioná un establecimiento</strong>
