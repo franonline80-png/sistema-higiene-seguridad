@@ -2383,7 +2383,7 @@ async function renderOrganizationHub(){
  $("view").innerHTML='<div class="page-title"><div><h2>Organización</h2><p>Administrá la estructura de la organización y sus recursos asociados.</p></div></div><section class="organization-module-grid">'+cards.map(c=>'<button type="button" class="organization-module-card" data-org-module="'+c.id+'"><img src="'+c.image+'" alt="" loading="lazy" onerror="this.style.display=\'none\'"><div class="organization-module-content"><span class="organization-module-icon">'+c.icon+'</span><h3>'+c.title+'</h3><p>'+c.desc+'</p><div class="organization-module-action">Ver módulo →</div></div></button>').join("")+'</section>';
  $("view").querySelectorAll("[data-org-module]").forEach(b=>b.onclick=()=>openModule(b.dataset.orgModule));
 }
-function renderHome(){
+async function renderHome(){
   const view=$("view");
   const fechaLocal=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
   const hoy=fechaLocal(new Date()),limite=new Date();limite.setDate(limite.getDate()+30);
