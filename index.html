@@ -1341,12 +1341,13 @@ async function updateActiveEstablishmentHeader(){
  try{
   const {data,error}=await db.from("establecimientos").select("id,organizacion_id,Nombre,Activo,foto_data_url").eq("organizacion_id",activeOrg).order("created_at",{ascending:true});
   if(error)throw error;
-  const rows=data||[];select.replaceChildren();
+  const rows=data||[];
+  const defaultEstablishment=rows.find(row=>row.Activo===true)||rows[0]||null;
+  select.replaceChildren();
   const placeholder=document.createElement("option");placeholder.value="";placeholder.textContent=rows.length?"Seleccionar establecimiento…":"No hay establecimientos";select.appendChild(placeholder);
-  rows.sort((a,b)=>String(a.Nombre||"").localeCompare(String(b.Nombre||""),"es")).forEach(row=>{const op=document.createElement("option");op.value=row.id;op.textContent=(row.Nombre||"Sin nombre")+(row.Activo===true?"":" (inactivo)");select.appendChild(op)});
-  if(!rows.some(row=>row.id===selectedEstablishmentId)){
-   const firstActive=rows.find(row=>row.Activo===true);
-   selectedEstablishmentId=(firstActive||rows[0])?.id||"";
+  rows.slice().sort((a,b)=>String(a.Nombre||"").localeCompare(String(b.Nombre||""),"es")).forEach(row=>{const op=document.createElement("option");op.value=row.id;op.textContent=(row.Nombre||"Sin nombre")+(row.Activo===true?"":" (inactivo)");select.appendChild(op)});
+  if(!rows.some(row=>String(row.id)===String(selectedEstablishmentId))){
+   selectedEstablishmentId=defaultEstablishment?.id||"";
   }
   select.value=selectedEstablishmentId;
   const chosen=rows.find(row=>String(row.id)===String(selectedEstablishmentId));
