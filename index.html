@@ -909,25 +909,38 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
 
 /* Encabezado: conservar logo profesional y mostrar el establecimiento en una sola línea */
 .topbar{display:flex;align-items:center;flex-wrap:nowrap;gap:14px}.topbar .brand{display:flex;align-items:center;gap:12px;flex:0 0 auto;min-width:0}.consultor-header-logo{display:block;width:104px;flex:0 0 104px}.consultor-header-logo svg{display:block;width:100%;height:auto}.active-establishment-header{display:flex;align-items:center;gap:8px;flex:0 1 235px;max-width:235px;min-width:0;padding:4px 10px;border-left:1px solid #ffffff35;border-right:1px solid #ffffff35;color:#fff}.active-establishment-photo{width:42px;height:42px;flex:0 0 42px;object-fit:cover;border-radius:50%;background:#ffffff20;border:1px solid #ffffff55}.active-establishment-identity{display:flex;flex-direction:column;gap:3px;min-width:0}.active-establishment-identity strong{font-size:12px;line-height:1.2;overflow-wrap:anywhere;max-width:165px}.active-establishment-caption{font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:#cbd5e1}.top-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex:0 0 auto;min-width:0}.org-select{display:block;width:205px;max-width:205px;min-width:150px;margin:0;padding:8px}.org-select option{color:#172033;background:#fff}@media(max-width:1050px){.consultor-header-logo{width:76px;flex-basis:76px}.brand h1{font-size:15px}.active-establishment-header{flex-basis:175px;max-width:175px}.active-establishment-photo{width:36px;height:36px;flex-basis:36px}.org-select{width:165px;min-width:125px}.top-actions{gap:5px}}@media(max-width:760px){.topbar{flex-wrap:wrap}.active-establishment-header{order:3;flex:1 1 100%;max-width:none;border:0;padding:5px 0}.top-actions{flex:1 1 100%;flex-wrap:wrap}.org-select{flex:1 1 180px;max-width:none}}
-/* Encabezado: logo del establecimiento limpio sobre el azul, sin barras laterales */
+/* Encabezado: imagen nítida de 116 px, sin recuadros ni barras; marca izquierda con más separación */
+.topbar{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:24px!important;flex-wrap:nowrap!important}
+.topbar>.brand{display:flex!important;align-items:center!important;gap:22px!important;flex:0 1 auto!important;min-width:0!important;margin-right:8px!important}
+.topbar>.brand>.consultor-header-logo{width:104px!important;height:72px!important;flex:0 0 104px!important;object-fit:contain!important}
 .topbar>.active-establishment-header{
  display:flex!important;align-items:center!important;justify-content:center!important;
- flex:0 1 215px!important;min-width:150px!important;max-width:215px!important;
- min-height:76px!important;padding:0!important;margin:0 auto!important;
+ flex:0 0 116px!important;width:116px!important;min-width:116px!important;max-width:116px!important;
+ height:116px!important;min-height:116px!important;padding:0!important;margin:0 12px!important;
  overflow:hidden!important;border:0!important;background:transparent!important;
 }
 .topbar>.active-establishment-header>.active-establishment-photo{
  display:block!important;visibility:visible!important;opacity:1!important;
- width:100%!important;max-width:210px!important;height:76px!important;flex:0 1 210px!important;
+ width:116px!important;max-width:116px!important;height:116px!important;flex:0 0 116px!important;
  object-fit:contain!important;object-position:center!important;
  border:0!important;border-radius:0!important;background:transparent!important;
- padding:0!important;box-shadow:none!important;mix-blend-mode:multiply!important;
+ padding:0!important;box-shadow:none!important;mix-blend-mode:normal!important;
 }
 .topbar>.active-establishment-header>.active-establishment-photo.hidden{display:none!important}
 .topbar>.active-establishment-header:not(.has-establishment)>.active-establishment-photo{display:none!important}
+.topbar>.top-actions{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:9px!important;flex:0 0 auto!important;min-width:0!important}
+@media(max-width:1050px){
+ .topbar{gap:14px!important;padding:14px 16px!important}
+ .topbar>.brand{gap:16px!important}
+ .topbar>.brand>.consultor-header-logo{width:82px!important;height:60px!important;flex-basis:82px!important}
+ .topbar>.active-establishment-header,.topbar>.active-establishment-header>.active-establishment-photo{width:96px!important;height:96px!important;min-height:96px!important;min-width:96px!important;max-width:96px!important;flex-basis:96px!important}
+}
 @media(max-width:760px){
- .topbar>.active-establishment-header{order:2!important;flex:1 1 100%!important;max-width:none!important;min-width:0!important;min-height:70px!important;border:0!important;margin:0!important;padding:0!important}
- .topbar>.active-establishment-header>.active-establishment-photo{max-width:205px!important;height:70px!important}
+ .topbar{flex-wrap:wrap!important}
+ .topbar>.brand{flex:1 1 auto!important;gap:14px!important}
+ .topbar>.active-establishment-header{order:2!important;flex:0 0 88px!important;width:88px!important;height:88px!important;min-width:88px!important;min-height:88px!important;margin:0 auto!important}
+ .topbar>.active-establishment-header>.active-establishment-photo{width:88px!important;height:88px!important;max-width:88px!important;flex-basis:88px!important}
+ .topbar>.top-actions{order:3!important;flex:1 1 100%!important;flex-wrap:wrap!important}
 }
 </style>
 </head>
