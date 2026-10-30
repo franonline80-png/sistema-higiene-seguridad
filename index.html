@@ -958,6 +958,18 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
 .risk-list-panel .risk-prototype-stats small{font-size:13px;font-weight:750;color:#9a3412;margin-top:5px}
 .risk-list-panel .risk-count-pill{background:#dbeafe;color:#173f70;border:1px solid #a9c9ed;padding:8px 13px;font-size:13px;font-weight:850}
 @media(max-width:760px){.risk-list-panel .risk-prototype-stats{gap:9px}.risk-list-panel .risk-prototype-stats>div{min-height:100px;padding:13px}.risk-list-panel .risk-prototype-stats>div>span{font-size:13px}.risk-list-panel .risk-prototype-stats strong{font-size:29px}}
+/* Tarjetas visuales para los módulos dependientes de Organización */
+.organization-module-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.organization-module-card{display:flex;align-items:stretch;gap:15px;min-height:168px;padding:13px;text-align:left;color:var(--text);background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 2px 7px #10243a0a;cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s}
+.organization-module-card:hover{transform:translateY(-2px);border-color:#8ab6df;box-shadow:0 8px 22px #10243a14}
+.organization-module-card>img{width:128px;min-width:128px;height:140px;object-fit:cover;border-radius:10px;background:#edf2f7}
+.organization-module-content{display:flex;flex-direction:column;align-items:flex-start;min-width:0;padding:2px 2px 1px}
+.organization-module-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#e2f4ec;color:#087653;font-size:20px;font-weight:800}
+.organization-module-content h3{font-size:16px;line-height:1.25;margin:9px 0 5px;color:#172b43}
+.organization-module-content p{font-size:13px;line-height:1.45;color:var(--muted);margin:0}
+.organization-module-action{margin-top:auto;padding-top:12px;color:#14815f;font-size:13px;font-weight:850}
+@media(max-width:700px){.organization-module-grid{grid-template-columns:1fr}}
+@media(max-width:440px){.organization-module-card{gap:11px;min-height:145px;padding:10px}.organization-module-card>img{width:104px;min-width:104px;height:124px}.organization-module-content h3{font-size:14px}.organization-module-content p{font-size:12px}}
 </style>
 </head>
 <body>
@@ -1467,6 +1479,7 @@ function buildNav(){
       menu.appendChild(b);
     });
     trigger.onclick=()=>{
+      if(g.label==="Organización"){openModule("organizacion");return}
       const wasOpen=wrap.classList.contains("open");
       nav.querySelectorAll(".nav-group.open").forEach(el=>{el.classList.remove("open");const t=el.querySelector(".nav-trigger");if(t)t.setAttribute("aria-expanded","false")});
       if(!wasOpen){wrap.classList.add("open");trigger.setAttribute("aria-expanded","true")}
@@ -1558,7 +1571,7 @@ async function renderRiskMapModule(){
  }catch(e){console.error(e);status("No se pudieron cargar los datos del mapa: "+(e.message||""),true);$m("rmSavedList").innerHTML='<p class="muted">Revisá la conexión y los permisos de tu usuario.</p>'}
 }
 
-function openModuleBase(id){activeModule=id;editing=null;searchText="";peoplePage=1;buildNav();if(id==="inicio")return renderHome();if(id==="legislacion")return renderLegislation();if(id==="capacitaciones")return renderTrainingModule();if(id==="sesiones")return renderSessionsModule();if(id==="reportes")return renderReportsModule();if(id==="mapa_riesgos")return renderRiskMapModule();if(configs[id])return renderCrud(id)}
+function openModuleBase(id){activeModule=id;editing=null;searchText="";peoplePage=1;buildNav();if(id==="organizacion")return renderOrganizationHub();if(id==="inicio")return renderHome();if(id==="legislacion")return renderLegislation();if(id==="capacitaciones")return renderTrainingModule();if(id==="sesiones")return renderSessionsModule();if(id==="reportes")return renderReportsModule();if(id==="mapa_riesgos")return renderRiskMapModule();if(configs[id])return renderCrud(id)}
 
 async function fetchRows(table,limit=500){
   let q=db.from(table).select("*").limit(limit);
@@ -2360,7 +2373,17 @@ function showStartupAlerts(items){
   document.addEventListener("keydown",function escHandler(e){if(e.key==="Escape"&&document.getElementById("startupAlertsBackdrop")){close();document.removeEventListener("keydown",escHandler)}});
 }
 
-async function renderHome(){
+async function renderOrganizationHub(){
+ const cards=[
+  {id:"establecimientos",title:"Establecimientos",desc:"Administrá las instalaciones y sus datos generales, ubicación e identificación.",icon:"▦",image:"https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=480&q=82"},
+  {id:"sectores",title:"Sectores",desc:"Organizá las áreas y dependencias de trabajo de cada establecimiento.",icon:"▤",image:"https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=480&q=82"},
+  {id:"puestos",title:"Puestos",desc:"Registrá los puestos de trabajo y su vinculación con los sectores.",icon:"▣",image:"https://images.unsplash.com/photo-1497215842964-222b430dc094?auto=format&fit=crop&w=480&q=82"},
+  {id:"personas",title:"Personas",desc:"Administrá el personal y su relación con establecimientos y puestos.",icon:"♙",image:"https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=480&q=82"}
+ ];
+ $("view").innerHTML='<div class="page-title"><div><h2>Organización</h2><p>Administrá la estructura de la organización y sus recursos asociados.</p></div></div><section class="organization-module-grid">'+cards.map(c=>'<button type="button" class="organization-module-card" data-org-module="'+c.id+'"><img src="'+c.image+'" alt="" loading="lazy" onerror="this.style.display=\'none\'"><div class="organization-module-content"><span class="organization-module-icon">'+c.icon+'</span><h3>'+c.title+'</h3><p>'+c.desc+'</p><div class="organization-module-action">Ver módulo →</div></div></button>').join("")+'</section>';
+ $("view").querySelectorAll("[data-org-module]").forEach(b=>b.onclick=()=>openModule(b.dataset.orgModule));
+}
+function renderHome(){
   const view=$("view");
   const fechaLocal=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
   const hoy=fechaLocal(new Date()),limite=new Date();limite.setDate(limite.getDate()+30);
