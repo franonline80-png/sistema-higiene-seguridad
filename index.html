@@ -891,11 +891,9 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
 .brand h1{margin:0;font-size:18px;line-height:1.2}
 .brand p{margin:3px 0;font-size:12px;line-height:1.2}
 .brand-system-name{font-size:11px;line-height:1.2}
-.active-establishment-header{display:flex;align-items:center;gap:8px;flex:0 1 230px;min-width:0;max-width:230px;padding:4px 10px;border-left:1px solid #ffffff35;border-right:1px solid #ffffff35;color:#fff}
-.active-establishment-photo{display:block;width:48px;height:48px;flex:0 0 48px;object-fit:cover;border-radius:50%;background:#ffffff20;border:1px solid #ffffff55}
-.active-establishment-header>div{display:flex;flex-direction:column;min-width:0;gap:3px}
-.active-establishment-header strong{font-size:12px;line-height:1.2;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.active-establishment-caption{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#cbd5e1}
+.active-establishment-header{display:flex;align-items:center;justify-content:center;flex:0 1 190px;min-width:100px;max-width:190px;min-height:68px;padding:4px 12px;border-left:1px solid #ffffff35;border-right:1px solid #ffffff35}
+.active-establishment-photo{display:block;width:100%;max-width:166px;height:68px;flex:0 1 166px;object-fit:contain;border-radius:7px;background:#fff;padding:4px;box-shadow:0 1px 5px #0003}
+.active-establishment-photo.hidden{display:none!important}
 .top-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex:0 0 auto;min-width:0}
 .org-select{max-width:180px;margin:0}
 .establishment-photo-field{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding:10px;margin:10px 0}
@@ -939,12 +937,8 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
     <div class="brand">
       <div><h1>Francisco Sánchez</h1><p>Licenciado en Seguridad e Higiene</p><span class="brand-system-name">Sistema de Higiene y Seguridad</span></div>
     </div>
-    <div id="activeEstablishmentHeader" class="active-establishment-header" aria-live="polite">
-      <img id="activeEstablishmentPhoto" class="active-establishment-photo hidden" alt="Logo del establecimiento">
-      <div class="active-establishment-identity">
-        <span class="active-establishment-caption">Establecimiento seleccionado</span>
-        <strong id="activeEstablishmentName">Seleccioná un establecimiento</strong>
-      </div>
+    <div id="activeEstablishmentHeader" class="active-establishment-header" aria-live="polite" aria-label="Imagen del establecimiento seleccionado">
+      <img id="activeEstablishmentPhoto" class="active-establishment-photo hidden" alt="Imagen del establecimiento seleccionado">
     </div>
     <div class="top-actions">
       <select id="orgSelect" class="org-select" aria-label="Seleccionar establecimiento"></select>
@@ -1343,20 +1337,33 @@ function getOrgIds(){return organizations.map(o=>o.id)}
 function getOrgName(){return organizations.find(o=>o.id===activeOrg)?.nombre||"Organización"}
 let selectedEstablishmentId="";
 async function updateActiveEstablishmentHeader(){
- const img=$("activeEstablishmentPhoto"),name=$("activeEstablishmentName"),select=$("orgSelect");if(!img||!name||!select)return;
+ const img=$("activeEstablishmentPhoto"),select=$("orgSelect");if(!img||!select)return;
  try{
   const {data,error}=await db.from("establecimientos").select("id,organizacion_id,Nombre,Activo,foto_data_url").eq("organizacion_id",activeOrg).order("created_at",{ascending:true});
   if(error)throw error;
   const rows=data||[];select.replaceChildren();
   const placeholder=document.createElement("option");placeholder.value="";placeholder.textContent=rows.length?"Seleccionar establecimiento…":"No hay establecimientos";select.appendChild(placeholder);
   rows.sort((a,b)=>String(a.Nombre||"").localeCompare(String(b.Nombre||""),"es")).forEach(row=>{const op=document.createElement("option");op.value=row.id;op.textContent=(row.Nombre||"Sin nombre")+(row.Activo===true?"":" (inactivo)");select.appendChild(op)});
-  if(!rows.some(row=>row.id===selectedEstablishmentId))selectedEstablishmentId="";
+  if(!rows.some(row=>row.id===selectedEstablishmentId)){
+   const firstActive=rows.find(row=>row.Activo===true);
+   selectedEstablishmentId=(firstActive||rows[0])?.id||"";
+  }
   select.value=selectedEstablishmentId;
-  const chosen=rows.find(row=>row.id===selectedEstablishmentId);
-  if(!chosen){img.removeAttribute("src");img.classList.add("hidden");name.textContent="Seleccioná un establecimiento";return}
-  name.textContent=chosen.Nombre||"Establecimiento";
-  if(chosen.foto_data_url){img.src=chosen.foto_data_url;img.classList.remove("hidden")}else{img.removeAttribute("src");img.classList.add("hidden")}
- }catch(error){console.error("No se pudo cargar el selector de establecimientos:",error);select.replaceChildren();const op=document.createElement("option");op.value="";op.textContent="Error al cargar establecimientos";select.appendChild(op);name.textContent="No se pudieron cargar los establecimientos"}
+  const chosen=rows.find(row=>String(row.id)===String(selectedEstablishmentId));
+  if(chosen?.foto_data_url){
+   img.src=chosen.foto_data_url;
+   img.alt="Imagen de "+(chosen.Nombre||"establecimiento seleccionado");
+   img.classList.remove("hidden");
+  }else{
+   img.removeAttribute("src");
+   img.classList.add("hidden");
+  }
+ }catch(error){
+  console.error("No se pudo cargar el selector de establecimientos:",error);
+  select.replaceChildren();
+  const op=document.createElement("option");op.value="";op.textContent="Error al cargar establecimientos";select.appendChild(op);
+  img.removeAttribute("src");img.classList.add("hidden");
+ }
 }
 async function selectActiveEstablishment(id){
  selectedEstablishmentId=id||"";moduleCache={};await updateActiveEstablishmentHeader();
