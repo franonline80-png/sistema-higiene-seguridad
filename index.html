@@ -996,6 +996,15 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
 .risk-stage-card.is-current .risk-stage-content>span{color:#1d4ed8}
 @media(max-width:760px){.risk-prototype-steps.risk-stage-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.risk-stage-card>img{height:95px}}
 @media(max-width:420px){.risk-prototype-steps.risk-stage-cards{grid-template-columns:1fr 1fr;gap:8px}.risk-stage-card>img{height:78px}.risk-stage-content{padding:9px}.risk-stage-content>b{font-size:12px}.risk-stage-content>small{font-size:11px}}
+
+.hazard-category-photo{display:block;position:relative;width:100%;height:112px;overflow:hidden;border-radius:10px;background:#e2e8f0}
+.hazard-category-photo img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .25s ease}
+.hazard-category-card:hover .hazard-category-photo img{transform:scale(1.045)}
+.hazard-category-photo:after{content:"";position:absolute;inset:35% 0 0;background:linear-gradient(transparent,#0f172a55);pointer-events:none}
+.hazard-category-photo-icon{position:absolute;right:9px;bottom:8px;z-index:1;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#ffffffdf;font-size:19px;box-shadow:0 2px 8px #0f172a22}
+.hazard-category-card{min-height:0;padding:10px;gap:8px}
+.hazard-category-card .hazard-category-count{margin-top:auto}
+@media(max-width:650px){.hazard-category-photo{height:92px}.hazard-category-card{padding:8px}}
 </style>
 </head>
 <body>
@@ -1132,7 +1141,16 @@ vencimientos:{title:"Vencimientos",table:"vencimientos",org:true,fields:[
 
 
 const HAZARD_CATEGORIES=[
-{value:"Ergonómicos",icon:"🧍",bg:"#dbeafe",description:"Cargas, posturas y movimientos"},{value:"Químicos",icon:"🧪",bg:"#fef3c7",description:"Sustancias, gases y vapores"},{value:"Físicos",icon:"🔊",bg:"#ede9fe",description:"Ruido, vibraciones y temperatura"},{value:"Biológicos",icon:"🦠",bg:"#dcfce7",description:"Virus, bacterias y hongos"},{value:"Mecánicos y de seguridad",icon:"⚙️",bg:"#ffedd5",description:"Golpes, cortes y atrapamientos"},{value:"Eléctricos",icon:"⚡",bg:"#fef9c3",description:"Contactos y arco eléctrico"},{value:"Locativos y de circulación",icon:"🪜",bg:"#e0f2fe",description:"Caídas, superficies y tránsito"},{value:"Psicosociales y organizacionales",icon:"🧠",bg:"#fce7f3",description:"Carga mental y organización"},{value:"Incendio y emergencias",icon:"🧯",bg:"#fee2e2",description:"Ignición, fuego y evacuación"},{value:"Transporte y logística",icon:"🚚",bg:"#e2e8f0",description:"Carga, descarga y estiba"}
+{value:"Ergonómicos",icon:"🧍",bg:"#dbeafe",description:"Cargas, posturas y movimientos",image:"https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=640&q=82"},
+{value:"Químicos",icon:"🧪",bg:"#fef3c7",description:"Sustancias, gases y vapores",image:"https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=640&q=82"},
+{value:"Físicos",icon:"🔊",bg:"#ede9fe",description:"Ruido, vibraciones y temperatura",image:"https://images.unsplash.com/photo-1517420879524-86d64ac2f339?auto=format&fit=crop&w=640&q=82"},
+{value:"Biológicos",icon:"🦠",bg:"#dcfce7",description:"Virus, bacterias y hongos",image:"https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=640&q=82"},
+{value:"Mecánicos y de seguridad",icon:"⚙️",bg:"#ffedd5",description:"Golpes, cortes y atrapamientos",image:"https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=640&q=82"},
+{value:"Eléctricos",icon:"⚡",bg:"#fef9c3",description:"Contactos y arco eléctrico",image:"https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=640&q=82"},
+{value:"Locativos y de circulación",icon:"🪜",bg:"#e0f2fe",description:"Caídas, superficies y tránsito",image:"https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=640&q=82"},
+{value:"Psicosociales y organizacionales",icon:"🧠",bg:"#fce7f3",description:"Carga mental y organización",image:"https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=640&q=82"},
+{value:"Incendio y emergencias",icon:"🧯",bg:"#fee2e2",description:"Ignición, fuego y evacuación",image:"https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=640&q=82"},
+{value:"Transporte y logística",icon:"🚚",bg:"#e2e8f0",description:"Carga, descarga y estiba",image:"https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=640&q=82"}
 ];
 function hazardIllustration(c){
 const common='stroke="#1e3a5f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"';
@@ -1164,7 +1182,7 @@ async function importAssociatedRiskCatalog(){
 }
 function hazardCategoryCards(){
 const rows=moduleCache.peligros||[];
-return '<section class="panel hazard-category-panel"><div class="page-title"><div><h3 style="margin:0 0 5px">Elegí una categoría de peligro</h3><p class="muted">Ilustraciones de referencia. Tocá una tarjeta para clasificar un peligro.</p></div><span class="badge">'+rows.length+' peligro(s)</span></div><div class="hazard-category-grid">'+HAZARD_CATEGORIES.map(c=>{const n=rows.filter(r=>String(r.Categoria||r.categoria||r.tipo||"").trim()===c.value).length;return '<button type="button" class="hazard-category-card" data-hazard-category="'+escapeHtml(c.value)+'"><span class="hazard-illustration" style="background:'+c.bg+'">'+hazardIllustration(c)+'</span><span class="hazard-category-name">'+escapeHtml(c.value)+'</span><span class="hazard-category-description">'+escapeHtml(c.description)+'</span><span class="hazard-category-count">'+n+' registrados</span></button>'}).join("")+'</div><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:16px"><button type="button" id="importRiskCatalog" class="btn btn-primary" onclick="importAssociatedRiskCatalog()">Incorporar catálogo de las fotografías</button><span class="muted" style="font-size:12px">Agrega solo peligros faltantes y conserva los registros existentes.</span></div></section>';
+return '<section class="panel hazard-category-panel"><div class="page-title"><div><h3 style="margin:0 0 5px">Elegí una categoría de peligro</h3><p class="muted">Referencias visuales de cada familia de peligros. Tocá una tarjeta para clasificar un peligro.</p></div><span class="badge">'+rows.length+' peligro(s)</span></div><div class="hazard-category-grid">'+HAZARD_CATEGORIES.map(c=>{const n=rows.filter(r=>String(r.Categoria||r.categoria||r.tipo||"").trim()===c.value).length;return '<button type="button" class="hazard-category-card" data-hazard-category="'+escapeHtml(c.value)+'"><span class="hazard-category-photo"><img src="'+c.image+'" alt="" loading="lazy"><span class="hazard-category-photo-icon">'+c.icon+'</span></span><span class="hazard-category-name">'+escapeHtml(c.value)+'</span><span class="hazard-category-description">'+escapeHtml(c.description)+'</span><span class="hazard-category-count">'+n+' registrados</span></button>'}).join("")+'</div><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:16px"><button type="button" id="importRiskCatalog" class="btn btn-primary" onclick="importAssociatedRiskCatalog()">Incorporar catálogo de las fotografías</button><span class="muted" style="font-size:12px">Agrega solo peligros faltantes y conserva los registros existentes.</span></div></section>';
 }
 function setupHazardCategoryCards(){const input=$("f_Categoria");if(!input)return;const refresh=()=>document.querySelectorAll("[data-hazard-category]").forEach(b=>b.classList.toggle("selected",b.dataset.hazardCategory===input.value));document.querySelectorAll("[data-hazard-category]").forEach(b=>b.onclick=()=>{input.value=b.dataset.hazardCategory;refresh();input.dispatchEvent(new Event("change",{bubbles:true}));$("f_nombre")?.focus()});input.addEventListener("change",refresh);refresh()}
 
