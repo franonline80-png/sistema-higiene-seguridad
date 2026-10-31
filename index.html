@@ -1189,6 +1189,7 @@ function setupHazardCategoryCards(){const input=$("f_Categoria");if(!input)retur
 function hazardSvgScene(row,variant="main"){
  const label=String((row?.nombre||"Peligro")+" "+(row?.tipo||row?.Categoria||"")).toLocaleLowerCase("es");
  if(variant==="main" && label.includes("esfuerzos por empujar o tirar objetos"))return '<img src="https://raw.githubusercontent.com/franonline80-png/sistema-higiene-seguridad/main/assets/imagenes-riesgos/empujar%20o%20tirar%20objetos.jpg" alt="Trabajador empujando o tirando una carga" style="display:block;width:100%;height:auto;max-height:440px;object-fit:contain;border-radius:12px;background:#f3f4f6">';
+ if(variant==="main" && label.includes("carga o movimiento de materiales o equipos"))return '<img src="https://raw.githubusercontent.com/franonline80-png/sistema-higiene-seguridad/main/assets/imagenes-riesgos/Carga%20o%20movimiento%20de%20materiales%20o%20equipos.jpg" alt="Carga o movimiento de materiales o equipos" style="display:block;width:100%;height:auto;max-height:440px;object-fit:contain;border-radius:12px;background:#f3f4f6">';
  const bad=variant==="unsafe",safe=variant==="safe";
  const bg=bad?"#fff1f2":"#eef6ff",accent=bad?"#dc2626":safe?"#15803d":"#2563eb";
  let kind="general";
