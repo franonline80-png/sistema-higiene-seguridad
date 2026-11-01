@@ -2460,7 +2460,7 @@ async function saveRecord(ev,id){
 async function deleteRecord(id,row){
   const name=row.Nombre||row.nombre||row.titulo||row.concepto||row.descripcion||row.id;
   if(!confirm(`¿Querés eliminar el registro "${name}"? Esta acción puede ser irreversible.`))return;
-  try{const {error}=await db.from(configs[id].table).delete().eq("id",row.id);if(error)throw error;await loadModuleRows(id)}
+  try{const {error}=await db.from(configs[id].table).delete().eq("id",row.id);if(error)throw error;await loadModuleRows(id);if(id==="riesgos"&&activeRiskEvaluation)await updateRiskEvaluationToolbar()}
   catch(e){alert("No se pudo eliminar: "+e.message)}
 }
 
