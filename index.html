@@ -2040,6 +2040,8 @@ async function updateRiskEvaluationToolbar(){
  if(!panel||!finish||!start)return;
  if(!activeRiskEvaluation){
   panel.innerHTML="<strong>Sin evaluación general abierta</strong><span>Iniciá una evaluación para comenzar a incorporar sectores, puestos y riesgos.</span>";
+  start.querySelector("b").textContent="＋ Nueva evaluación";
+  start.querySelector("small").textContent="Iniciar el relevamiento integral de la organización";
   finish.disabled=true;start.disabled=false;return;
  }
  const {data,error}=await db.from("riesgos").select("id,puesto_id").eq("evaluacion_id",activeRiskEvaluation.id);
@@ -2047,8 +2049,11 @@ async function updateRiskEvaluationToolbar(){
  const riskRows=data||[],postIds=[...new Set(riskRows.map(r=>r.puesto_id).filter(Boolean))];
  let sectorCount=0;
  if(postIds.length){const {data:posts}=await db.from("puestos").select("id,sector_id").in("id",postIds);const sectorIds=[...new Set((posts||[]).map(p=>p.sector_id).filter(Boolean))];sectorCount=sectorIds.length}
- panel.innerHTML='<strong>Evaluación general en curso</strong><span>Iniciada: '+formatDateDMY(String(activeRiskEvaluation.fecha_inicio||"").slice(0,10))+' · '+sectorCount+' sector(es) relevados · '+postIds.length+' puesto(s) · '+riskRows.length+' riesgo(s) registrado(s)</span>';
- finish.disabled=false;start.disabled=true;
+ const numero=String(activeRiskEvaluation.numero||1).padStart(2,"0")+'/'+String(activeRiskEvaluation.anio||new Date(activeRiskEvaluation.fecha_inicio||Date.now()).getFullYear());
+ panel.innerHTML='<strong>Evaluación general N.º '+numero+' · En curso</strong><span>Iniciada: '+formatDateDMY(String(activeRiskEvaluation.fecha_inicio||"").slice(0,10))+' · '+sectorCount+' sector(es) relevados · '+postIds.length+' puesto(s) · '+riskRows.length+' riesgo(s) registrado(s)</span>';
+ start.querySelector("b").textContent="＋ Agregar riesgo";
+ start.querySelector("small").textContent="Incorporar otro peligro o riesgo a esta evaluación";
+ finish.disabled=false;start.disabled=false;
 }
 async function finishRiskEvaluation(){
  if(!activeRiskEvaluation)return;
@@ -2077,9 +2082,9 @@ async function renderCrud(id){
   ["f_Probabilidad","f_consecuencia","f_fecha_evaluacion"].forEach(id=>$(id)?.addEventListener("change",updateRiskDeadline));
   setupRiskDangerSelector();initRiskMatrixWidget();
   $("recordForm").onsubmit=e=>saveRecord(e,id);
-  const closeForm=()=>{editing=null;$("riskFormModal")?.classList.add("hidden");$("formStatus").textContent="";$("cancelEdit").classList.add("hidden");$("saveRecord").textContent="Guardar evaluación"};
+  const closeForm=()=>{editing=null;$("riskFormModal")?.classList.add("hidden");$("formStatus").textContent="";$("cancelEdit").classList.add("hidden");$("saveRecord").textContent="Guardar riesgo"};
   $("cancelEdit").onclick=closeForm;$("cancelEditBottom").onclick=closeForm;
-  $("riskNewAssessment").onclick=async()=>{try{if(!activeRiskEvaluation){const {data,error}=await db.from("evaluaciones_riesgos").insert({organizacion_id:activeOrg,estado:"En curso"}).select("*").single();if(error)throw error;activeRiskEvaluation=data;updateRiskEvaluationToolbar()}editing=null;$("recordForm").reset();$("formTitle").textContent="＋ Nueva evaluación de riesgo";$("saveRecord").textContent="Guardar evaluación";$("cancelEdit").classList.remove("hidden");$("riskFormModal").classList.remove("hidden");setupRiskDangerSelector();initRiskMatrixWidget();$("f_puesto_id")?.focus()}catch(e){alert("No se pudo iniciar la evaluación general: "+e.message)}};
+  $("riskNewAssessment").onclick=async()=>{try{if(!activeRiskEvaluation){const {data,error}=await db.rpc("crear_evaluacion_riesgos",{p_organizacion_id:activeOrg});if(error)throw error;activeRiskEvaluation=Array.isArray(data)?data[0]:data;if(!activeRiskEvaluation)throw new Error("No se recibió la evaluación creada.");await updateRiskEvaluationToolbar()}editing=null;$("recordForm").reset();$("formTitle").textContent=activeRiskEvaluation.numero?"＋ Agregar riesgo · Evaluación N.º "+String(activeRiskEvaluation.numero).padStart(2,"0")+"/"+activeRiskEvaluation.anio:"＋ Agregar riesgo a la evaluación general";$("saveRecord").textContent="Guardar riesgo";$("cancelEdit").classList.remove("hidden");$("riskFormModal").classList.remove("hidden");setupRiskDangerSelector();initRiskMatrixWidget();$("f_puesto_id")?.focus()}catch(e){alert("No se pudo iniciar o continuar la evaluación general: "+e.message)}};
   $("riskFormModal").addEventListener("click",e=>{if(e.target===$("riskFormModal"))closeForm()});
   
   $("tableSearch").oninput=renderRiskTable;$("riskLevelFilter").onchange=renderRiskTable;$("riskActiveFilter").onchange=renderRiskTable;
@@ -2436,7 +2441,7 @@ async function saveRecord(ev,id){
       if(f[2]==="checkbox")payload[f[0]]=el.checked;
       else{const v=el.value.trim();payload[f[0]]=v===""?null:((f[2]==="number"||(id==="riesgos"&&["Probabilidad","consecuencia","nivel_riesgo"].includes(f[0])))?Number(v):v)}
     }
-    if(id==="establecimientos"){const photoInput=$("establishmentPhoto"),file=photoInput?.files?.[0];if(file)payload.foto_data_url=await compressEstablishmentPhoto(file);else if(photoInput?.dataset.removePhoto==="true")payload.foto_data_url=null;else payload.foto_data_url=editing?.foto_data_url??null;}if(cfg.org&&!editing)payload.organizacion_id=activeOrg;if(id==="riesgos"&&!editing){if(!activeRiskEvaluation)throw new Error("Primero iniciá una evaluación general con el botón Nueva evaluación.");payload.evaluacion_id=activeRiskEvaluation.id;}if(id==="riesgos"&&editing&&editing.evaluacion_id)payload.evaluacion_id=editing.evaluacion_id;if(selectedEstablishmentId&&["personas","accidentes_incidentes","inspecciones","mediciones_ambientales","epp","capacitaciones","documentacion","equipos_instalaciones","vencimientos"].includes(id)&&!("establecimiento_id" in payload))payload.establecimiento_id=selectedEstablishmentId;
+    if(id==="establecimientos"){const photoInput=$("establishmentPhoto"),file=photoInput?.files?.[0];if(file)payload.foto_data_url=await compressEstablishmentPhoto(file);else if(photoInput?.dataset.removePhoto==="true")payload.foto_data_url=null;else payload.foto_data_url=editing?.foto_data_url??null;}if(cfg.org&&!editing)payload.organizacion_id=activeOrg;if(id==="riesgos"&&!editing){if(!activeRiskEvaluation)throw new Error("Primero iniciá una evaluación general.");payload.evaluacion_id=activeRiskEvaluation.id;}if(id==="riesgos"&&editing&&editing.evaluacion_id)payload.evaluacion_id=editing.evaluacion_id;if(selectedEstablishmentId&&["personas","accidentes_incidentes","inspecciones","mediciones_ambientales","epp","capacitaciones","documentacion","equipos_instalaciones","vencimientos"].includes(id)&&!("establecimiento_id" in payload))payload.establecimiento_id=selectedEstablishmentId;
     if(id==="personas")payload.Legajo=editing?editing.Legajo:formatLegajo(await getNextLegajo());
     if(id==="sectores")payload.codigo=editing?editing.codigo:await getNextCode(id);
     if(id==="puestos")payload.Codigo=editing?editing.Codigo:await getNextCode(id);
