@@ -227,6 +227,25 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 @media(max-width:480px){.training-calendar{grid-template-columns:1fr}.training-toolbar>div{min-width:100%}}
 .session-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}.session-summary .dashboard-metric{min-width:0}.session-duration{font-variant-numeric:tabular-nums;white-space:nowrap}@media(max-width:650px){.session-summary{grid-template-columns:1fr}}
 
+/* Modal de vista previa de informes */
+.report-preview-launch{margin:0 0 16px;display:flex;justify-content:flex-end}
+.report-modal{display:none;position:fixed;inset:0;z-index:10000;align-items:center;justify-content:center;padding:18px}
+.report-modal.open{display:flex}.report-modal-backdrop{position:absolute;inset:0;background:#0b1728b8;backdrop-filter:blur(3px)}
+.report-modal-dialog{position:relative;z-index:1;width:min(1100px,96vw);max-height:92vh;display:flex;flex-direction:column;background:#f1f5f9;border-radius:16px;box-shadow:0 24px 70px #0005;overflow:hidden}
+.report-modal-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 20px;background:#fff;border-bottom:1px solid #dbe3ec}
+.report-modal-head h3{margin:0;font-size:18px}.report-modal-head p{margin:4px 0 0;color:var(--muted);font-size:12px}
+.report-modal-tools{display:flex;align-items:end;gap:12px;flex-wrap:wrap;padding:12px 20px;background:#fff;border-bottom:1px solid #dbe3ec}
+.report-modal-tools label{margin:0}.report-modal-tools select{width:auto;min-width:220px;margin:0}
+.report-modal-preview{overflow:auto;padding:20px;display:flex;justify-content:center;align-items:flex-start}
+.report-modal-preview .report-paper{width:210mm;min-height:297mm;max-width:none;flex:0 0 auto;padding:10mm;font-size:10pt;box-shadow:0 3px 14px #10243a20}
+.report-modal-preview .report-paper.format-A4-landscape{width:297mm;min-height:210mm}
+.report-modal-preview .report-paper.format-Legal-portrait{width:215.9mm;min-height:355.6mm}
+.report-modal-preview .report-paper.format-Legal-landscape{width:355.6mm;min-height:215.9mm}
+.report-modal-preview .report-paper.format-Letter-portrait{width:215.9mm;min-height:279.4mm}
+.report-modal-preview .report-paper.format-Letter-landscape{width:279.4mm;min-height:215.9mm}
+.report-modal-preview .report-paper.format-Oficio-portrait{width:216mm;min-height:330mm}
+.report-modal-preview .report-paper.format-Oficio-landscape{width:330mm;min-height:216mm}
+@media(max-width:650px){.report-modal{padding:5px}.report-modal-dialog{max-height:96vh}.report-modal-tools{padding:10px}.report-modal-tools select{width:100%}.report-modal-preview{padding:8px}}
 /* Reportes e informes */
 .reports-shell{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(340px,.85fr);gap:18px;align-items:start}
 .reports-main,.reports-preview{min-width:0}
@@ -2705,11 +2724,11 @@ function renderReportsModule(){
  <div class="report-grid" id="reportCards">${reportDefinitions.map(d=>`<button type="button" class="report-card ${d.id===reportSelected?"selected":""}" data-report-card="${d.id}"><img src="${d.image}" alt="" loading="lazy" onerror="this.style.display='none'"><div><span class="report-icon">${d.icon}</span><h3>${reportEsc(d.title)}</h3><p>${reportEsc(d.desc)}</p><div class="report-arrow">Ver informe →</div></div></button>`).join("")}</div>
  <h3 style="margin-top:18px">Reportes rápidos</h3><p class="muted" style="margin-top:-6px">Accesos directos a resúmenes frecuentes.</p>
  <div class="report-quick"><button data-quick-report="inspecciones">⭐<br>Resumen de inspecciones</button><button data-quick-report="riesgos">⚠<br>Riesgos críticos</button><button data-quick-report="capacitaciones">●<br>Capacitaciones</button><button data-quick-report="acciones_correctivas">▤<br>Acciones pendientes</button></div>
- <div id="reportStatus" class="report-status" role="status"></div></section>
- <aside class="reports-preview"><div class="report-preview-wrap"><div class="report-preview-head"><div><h3>◉ Vista previa del informe</h3><p>Así se verá el documento al imprimirlo o guardarlo como PDF.</p></div><span id="reportPageLabel" class="muted">A4</span></div>
- <div id="reportPrintRoot"><article class="report-paper" id="reportPaper"></article></div>
- <div class="report-actions"><button class="btn btn-green" id="reportDownload" type="button">⬇ Descargar PDF</button><button class="btn btn-light" id="reportPrint" type="button">▣ Imprimir</button><button class="btn btn-light" id="reportShare" type="button">↗ Compartir</button></div>
- <p class="muted" style="font-size:11px;margin:8px 2px 0">Para guardar el PDF, elegí “Guardar como PDF” en el cuadro de impresión.</p></div></aside></div>`;
+ <div id="reportStatusMain" class="report-status" role="status"></div></section>
+ <div class="report-preview-launch"><button class="btn btn-light" id="reportPreviewOpen" type="button">◉ Vista previa del informe</button></div></div>
+ <div class="report-modal" id="reportPreviewModal" aria-hidden="true"><div class="report-modal-backdrop" data-report-modal-close></div><section class="report-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="reportModalTitle"><header class="report-modal-head"><div><h3 id="reportModalTitle">Vista previa del informe</h3><p>Seleccioná el tamaño y la orientación de la hoja antes de imprimir o guardar.</p></div><button class="btn btn-light" id="reportPreviewClose" type="button" aria-label="Cerrar">✕</button></header>
+ <div class="report-modal-tools"><label for="reportPageFormat">Formato de página</label><select id="reportPageFormat"><option value="A4-portrait">A4 · Vertical</option><option value="A4-landscape">A4 · Horizontal</option><option value="Legal-portrait">Legal · Vertical</option><option value="Legal-landscape">Legal · Horizontal</option><option value="Letter-portrait">Carta · Vertical</option><option value="Letter-landscape">Carta · Horizontal</option><option value="Oficio-portrait">Oficio · Vertical</option><option value="Oficio-landscape">Oficio · Horizontal</option></select><button class="btn btn-green" id="reportDownload" type="button">⬇ Imprimir / Guardar PDF</button></div>
+ <div class="report-modal-preview"><article class="report-paper" id="reportPaper"></article></div><div id="reportStatus" class="report-status" role="status"></div></section></div>`;
  const sectorSelect=$("reportSector");
  fetchRows("sectores").then(rows=>{sectorSelect.innerHTML='<option value="">Todos los sectores</option>'+rows.map(r=>`<option value="${reportEsc(r.id)}">${reportEsc(r.nombre)}</option>`).join("")}).catch(e=>console.warn("No se pudieron cargar sectores",e));
  $("reportCards").addEventListener("click",e=>{const b=e.target.closest("[data-report-card]");if(!b)return;reportSelected=b.dataset.reportCard;updateReportCards();generateReportPreview()});
@@ -2721,9 +2740,11 @@ function renderReportsModule(){
  $("riskReportResponsibleManual").addEventListener("input",()=>{if(reportSelected==="riesgos")generateReportPreview()});
  $("reportPeriod").addEventListener("change",generateReportPreview);
  $("riskAssessmentSelect").addEventListener("change",e=>{reportSelectedAssessment=e.target.value;generateReportPreview()});
+ $("reportPreviewOpen").onclick=()=>openReportPreviewModal();
+ $("reportPreviewClose").onclick=closeReportPreviewModal;
+ $("reportPreviewModal").querySelector("[data-report-modal-close]").onclick=closeReportPreviewModal;
+ $("reportPageFormat").addEventListener("change",updateReportPreviewFormat);
  $("reportDownload").onclick=downloadReportPdf;
- $("reportPrint").onclick=downloadReportPdf;
- $("reportShare").onclick=shareReport;
  $("view").querySelectorAll("[data-quick-report]").forEach(b=>b.onclick=()=>{const id=b.dataset.quickReport;if(id==="capacitaciones")reportSelected="gestion";else if(id==="acciones_correctivas")reportSelected="inspecciones";else reportSelected=id;updateReportCards();generateReportPreview()});
  generateReportPreview();
 }
@@ -2794,13 +2815,17 @@ async function generateReportPreview(){
  $("reportPageLabel").textContent=rows.length>12?"Registros: "+rows.length:"PDF · A4";
  $("reportStatus").textContent="Vista previa actualizada. "+rows.length+" registro(s) encontrados. La exportación utiliza el cuadro de impresión del navegador.";
 }
+function openReportPreviewModal(){const modal=$("reportPreviewModal");if(!modal)return;modal.classList.add("open");modal.setAttribute("aria-hidden","false");updateReportPreviewFormat();generateReportPreview()}
+function closeReportPreviewModal(){const modal=$("reportPreviewModal");if(!modal)return;modal.classList.remove("open");modal.setAttribute("aria-hidden","true")}
+function updateReportPreviewFormat(){const paper=$("reportPaper"),format=$("reportPageFormat")?.value||"A4-portrait";if(!paper)return;paper.className="report-paper format-"+format;const [size,orientation]=format.split("-");paper.dataset.pageSize=size;paper.dataset.pageOrientation=orientation}
 function downloadReportPdf(){
  const paper=$("reportPaper");if(!paper)return;
  const def=reportDefinitions.find(d=>d.id===reportSelected)||reportDefinitions[0];
  const w=window.open("","_blank");if(!w){$("reportStatus").textContent="El navegador bloqueó la ventana. Permití ventanas emergentes para guardar el PDF.";return}
  const css=[...document.querySelectorAll("style")].map(x=>x.textContent).join("\n");
-  const landscape=reportSelected==="riesgos";
-  const printLayout=landscape?"body{background:#fff!important;padding:8mm!important}.report-paper{width:277mm;max-width:277mm;margin:auto;box-shadow:none;border:0;padding:0!important;font-size:9pt}.paper-table{font-size:8pt}.paper-table th,.paper-table td{padding:4px}@page{size:A4 landscape;margin:8mm}":"body{background:#fff!important;padding:12mm!important}.report-paper{max-width:190mm;margin:auto;box-shadow:none;border:0;padding:0!important;font-size:10pt}@page{size:A4 portrait;margin:12mm}";
+  const format=$("reportPageFormat")?.value||"A4-portrait",parts=format.split("-"),pageSize=parts[0],orientation=parts[1]||"portrait";
+ const dimensions={"A4":"210mm 297mm","Legal":"215.9mm 355.6mm","Letter":"215.9mm 279.4mm","Oficio":"216mm 330mm"};
+ const printLayout="body{background:#fff!important;padding:0!important}.report-paper{width:"+dimensions[pageSize]+";max-width:none;margin:0 auto;box-shadow:none;border:0;padding:0!important;font-size:"+(orientation==="landscape"?"9pt":"10pt")+"}"+(orientation==="landscape"?".paper-table{font-size:8pt}.paper-table th,.paper-table td{padding:4px}":"")+"@page{size:"+pageSize+" "+orientation+";margin:10mm}";
   w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>'+reportEsc(def.title)+'</title><style>'+css+' '+printLayout+'</style></head><body><article class="report-paper">'+paper.innerHTML+'</article><script>window.onload=()=>setTimeout(()=>window.print(),250)<\\/script></body></html>');
  w.document.close();
 }
