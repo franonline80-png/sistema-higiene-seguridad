@@ -2519,7 +2519,7 @@ async function saveRecord(ev,id){
       if(f[2]==="checkbox")payload[f[0]]=el.checked;
       else{const v=el.value.trim();payload[f[0]]=v===""?null:((f[2]==="number"||(id==="riesgos"&&["Probabilidad","consecuencia","nivel_riesgo"].includes(f[0])))?Number(v):v)}
     }
-    if(id==="establecimientos"){const photoInput=$("establishmentPhoto"),file=photoInput?.files?.[0];if(file)payload.foto_data_url=await compressEstablishmentPhoto(file);else if(photoInput?.dataset.removePhoto==="true")payload.foto_data_url=null;else payload.foto_data_url=editing?.foto_data_url??null;}if(cfg.org&&!editing)payload.organizacion_id=activeOrg;if(id==="riesgos"&&!editing){if(!activeRiskEvaluation)throw new Error("Primero iniciá una evaluación general.");payload.evaluacion_id=activeRiskEvaluation.id;}if(id==="riesgos"&&editing&&editing.evaluacion_id)payload.evaluacion_id=editing.evaluacion_id;if(selectedEstablishmentId&&["personas","accidentes_incidentes","inspecciones","mediciones_ambientales","epp","capacitaciones","documentacion","equipos_instalaciones","vencimientos"].includes(id)&&!("establecimiento_id" in payload))payload.establecimiento_id=selectedEstablishmentId;
+    if(id==="establecimientos"){const photoInput=$("establishmentPhoto"),file=photoInput?.files?.[0];if(file)payload.foto_data_url=await compressEstablishmentPhoto(file);else if(photoInput?.dataset.removePhoto==="true")payload.foto_data_url=null;else payload.foto_data_url=editing?.foto_data_url??null;}if(cfg.org&&!editing)payload.organizacion_id=activeOrg;if(id==="riesgos"&&!editing){if(!activeRiskEvaluation)throw new Error("Primero iniciá una evaluación general.");const {data:parent,error:parentError}=await db.from("evaluaciones_riesgos").select("id").eq("id",activeRiskEvaluation.id).eq("organizacion_id",activeOrg).eq("estado","En curso").maybeSingle();if(parentError)throw parentError;if(!parent)throw new Error("La evaluación general ya no está abierta o no pertenece a la organización activa. Actualizá el módulo.");payload.evaluacion_id=parent.id;}if(id==="riesgos"&&editing){if(!editing.evaluacion_id)throw new Error("Este riesgo no está vinculado a una evaluación general. No se modificó para evitar perder su trazabilidad.");const {data:parent,error:parentError}=await db.from("evaluaciones_riesgos").select("id").eq("id",editing.evaluacion_id).eq("organizacion_id",activeOrg).maybeSingle();if(parentError)throw parentError;if(!parent)throw new Error("La evaluación general asociada no pertenece a la organización activa.");payload.evaluacion_id=parent.id;}if(selectedEstablishmentId&&["personas","accidentes_incidentes","inspecciones","mediciones_ambientales","epp","capacitaciones","documentacion","equipos_instalaciones","vencimientos"].includes(id)&&!("establecimiento_id" in payload))payload.establecimiento_id=selectedEstablishmentId;
     if(id==="personas")payload.Legajo=editing?editing.Legajo:formatLegajo(await getNextLegajo());
     if(id==="sectores")payload.codigo=editing?editing.codigo:await getNextCode(id);
     if(id==="puestos")payload.Codigo=editing?editing.Codigo:await getNextCode(id);
@@ -2528,7 +2528,7 @@ async function saveRecord(ev,id){
       if(!/^\d{1,8}$/.test(dni))throw new Error("El DNI debe contener únicamente números y un máximo de 8 dígitos.");
       payload.Documneto=dni;
     }
-    const result=editing?await db.from(cfg.table).update(payload).eq("id",editing.id).select("id"):await db.from(cfg.table).insert(payload).select("id");
+    const result=editing?(id==="riesgos"?await db.from(cfg.table).update(payload).eq("id",editing.id).eq("evaluacion_id",editing.evaluacion_id).select("id"):await db.from(cfg.table).update(payload).eq("id",editing.id).select("id")):await db.from(cfg.table).insert(payload).select("id");
     if(result.error)throw result.error;
     if(!result.data?.length)throw new Error("No se confirmó la operación. Verificá los permisos RLS.");
     editing=null;await renderCrud(id);if(id==="establecimientos")await updateActiveEstablishmentHeader();
@@ -2538,7 +2538,7 @@ async function saveRecord(ev,id){
 async function deleteRecord(id,row){
   const name=row.Nombre||row.nombre||row.titulo||row.concepto||row.descripcion||row.id;
   if(!confirm(`¿Querés eliminar el registro "${name}"? Esta acción puede ser irreversible.`))return;
-  try{const {error}=await db.from(configs[id].table).delete().eq("id",row.id);if(error)throw error;await loadModuleRows(id);if(id==="riesgos"&&activeRiskEvaluation)await updateRiskEvaluationToolbar()}
+  try{let query=db.from(configs[id].table).delete().eq("id",row.id);if(id==="riesgos"){if(!row.evaluacion_id)throw new Error("El riesgo no tiene una evaluación general asociada; no se eliminó para preservar la trazabilidad.");const {data:parent,error:parentError}=await db.from("evaluaciones_riesgos").select("id").eq("id",row.evaluacion_id).eq("organizacion_id",activeOrg).maybeSingle();if(parentError)throw parentError;if(!parent)throw new Error("La evaluación asociada no pertenece a la organización activa.");query=query.eq("evaluacion_id",row.evaluacion_id)}const {error}=await query;if(error)throw error;await loadModuleRows(id);if(id==="riesgos"&&activeRiskEvaluation)await updateRiskEvaluationToolbar();if(id==="riesgos")await renderRiskEvaluationHistory()}
   catch(e){alert("No se pudo eliminar: "+e.message)}
 }
 
