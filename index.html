@@ -2724,7 +2724,36 @@ function renderLegislation(){
 
 let loginInProgress=false;
 let initializationPromise=null;
-async function initialize(){
+let inactivityTimer=null,inactivityCountdown=null,inactivityWarningOpen=false;
+ const INACTIVITY_LIMIT_MS=3*60*1000,INACTIVITY_GRACE_SECONDS=60;
+ function ensureInactivityDialog(){
+  if(document.getElementById("inactivityWarning"))return;
+  const modal=document.createElement("div");modal.id="inactivityWarning";modal.style.cssText="position:fixed;inset:0;z-index:100000;background:rgba(15,23,42,.62);display:none;align-items:center;justify-content:center;padding:20px";
+  modal.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="inactivityTitle" style="width:min(440px,100%);background:#fff;border-radius:16px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.25);color:#1e293b"><h2 id="inactivityTitle" style="margin:0 0 10px;font-size:21px">¿Seguís trabajando?</h2><p style="margin:0 0 18px;line-height:1.5">Tu sesión se cerrará automáticamente por inactividad en <strong id="inactivityCountdown">60</strong> segundos. Si estás trabajando, podés continuar.</p><div style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap"><button type="button" id="inactivityLogout" class="btn btn-light">Cerrar sesión ahora</button><button type="button" id="inactivityContinue" class="btn btn-blue">Continuar trabajando</button></div></section>';
+  document.body.appendChild(modal);
+  modal.querySelector("#inactivityContinue").onclick=()=>resumeInactivitySession();
+  modal.querySelector("#inactivityLogout").onclick=()=>performInactivityLogout();
+ }
+ function clearInactivityTimers(){if(inactivityTimer){clearTimeout(inactivityTimer);inactivityTimer=null}if(inactivityCountdown){clearInterval(inactivityCountdown);inactivityCountdown=null}}
+ function hideInactivityWarning(){const modal=document.getElementById("inactivityWarning");if(modal)modal.style.display="none";inactivityWarningOpen=false;if(inactivityCountdown){clearInterval(inactivityCountdown);inactivityCountdown=null}}
+ function scheduleInactivityWarning(){
+  clearInactivityTimers();if(!user||!document.getElementById("app")||document.getElementById("app").style.display==="none")return;
+  inactivityTimer=setTimeout(showInactivityWarning,INACTIVITY_LIMIT_MS);
+ }
+ function showInactivityWarning(){
+  if(!user)return;ensureInactivityDialog();inactivityWarningOpen=true;const modal=document.getElementById("inactivityWarning");modal.style.display="flex";
+  let remaining=INACTIVITY_GRACE_SECONDS;document.getElementById("inactivityCountdown").textContent=String(remaining);
+  inactivityCountdown=setInterval(()=>{remaining--;const display=document.getElementById("inactivityCountdown");if(display)display.textContent=String(Math.max(remaining,0));if(remaining<=0){clearInterval(inactivityCountdown);inactivityCountdown=null;performInactivityLogout()}},1000);
+ }
+ function resumeInactivitySession(){hideInactivityWarning();scheduleInactivityWarning()}
+ async function performInactivityLogout(){
+  clearInactivityTimers();hideInactivityWarning();
+  try{await closeCurrentSession()}catch(e){console.warn("No se pudo registrar el cierre automático de sesión:",e)}
+  const {error}=await db.auth.signOut();if(error){console.error("No se pudo cerrar automáticamente la sesión:",error);showLogin("No se pudo cerrar la sesión automáticamente. Cerrala con el botón Cerrar sesión.");return}
+  user=null;organizations=[];activeOrg="";moduleCache={};sessionAccessToken=null;showLogin("La sesión se cerró automáticamente por inactividad.");
+ }
+ ["mousemove","mousedown","keydown","touchstart","scroll","click"].forEach(eventName=>document.addEventListener(eventName,()=>{if(!inactivityWarningOpen)scheduleInactivityWarning()},{passive:true}));
+ async function initialize(){
   if(initializationPromise)return initializationPromise;
   initializationPromise=(async()=>{
   const {data,error}=await db.auth.getUser();if(error)throw error;
@@ -2739,7 +2768,7 @@ async function initialize(){
   activeOrg=organizations[0].id;
   const select=$("orgSelect");
   select.onchange=async()=>{try{await selectActiveEstablishment(select.value)}catch(error){console.error(error);alert("No se pudo seleccionar el establecimiento: "+error.message)}};
-  showApp();buildNav();await updateActiveEstablishmentHeader();await renderHome();
+  showApp();scheduleInactivityWarning();buildNav();await updateActiveEstablishmentHeader();await renderHome();
   })();
   try{return await initializationPromise}finally{initializationPromise=null}
 }
@@ -2752,6 +2781,7 @@ $("loginForm").addEventListener("submit",async e=>{
 $("peopleDetailTabs")?.addEventListener("click",e=>{const b=e.target.closest("[data-people-tab]");if(b&&window.currentPeopleDetail)openPeopleDetail(window.currentPeopleDetail,b.dataset.peopleTab)});
 $("peopleDetailClose")?.addEventListener("click",closePeopleDetail);$("peopleDetailCloseBottom")?.addEventListener("click",closePeopleDetail);$("peopleDetailModal")?.addEventListener("click",e=>{if(e.target.id==="peopleDetailModal")closePeopleDetail()});
 $("logoutButton").addEventListener("click",async()=>{
+   clearInactivityTimers();hideInactivityWarning();
   try{await closeCurrentSession()}catch(e){alert("No se pudo registrar el cierre de sesión: "+e.message);return}
   const {error}=await db.auth.signOut();if(error){alert("No se pudo cerrar sesión: "+error.message);return}
   user=null;organizations=[];activeOrg="";moduleCache={};sessionAccessToken=null;showLogin();
