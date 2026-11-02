@@ -1025,6 +1025,28 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
 .risk-new-card:disabled{opacity:.55;cursor:not-allowed}
 @media(max-width:900px){.risk-evaluation-toolbar{grid-template-columns:1fr 1fr}.risk-current-evaluation{grid-column:1/-1;grid-row:2}.risk-finish-evaluation{min-height:100px}}
 @media(max-width:560px){.risk-evaluation-toolbar{grid-template-columns:1fr}.risk-current-evaluation{grid-column:auto;grid-row:auto}.risk-finish-evaluation{min-height:48px}}
+
+/* Mejora de legibilidad y dimensionado de la matriz de evaluación de riesgos */
+.risk-matrix-widget .risk-level-options{gap:10px}
+.risk-matrix-widget .risk-level-option{min-height:68px;padding:13px 14px;gap:12px;border-radius:11px}
+.risk-matrix-widget .risk-level-option b{font-size:15px;line-height:1.3}
+.risk-matrix-widget .risk-level-option small{font-size:13px;line-height:1.45;margin-top:5px}
+.risk-matrix-widget .risk-level-dot{width:19px;height:19px;flex-basis:19px}
+.risk-matrix-widget .risk-matrix-table{min-width:430px;font-size:14px;border-spacing:4px}
+.risk-matrix-widget .risk-matrix-table th{padding:10px 6px;font-size:14px}
+.risk-matrix-widget .risk-cell{min-width:56px;min-height:58px;padding:12px 4px;font-size:13px;line-height:1.25;font-weight:700;border-radius:6px;white-space:normal;overflow-wrap:anywhere}
+.risk-matrix-widget .risk-result-card{padding:18px;gap:12px;font-size:14px}
+.risk-matrix-widget .risk-result-value{padding:16px 8px;font-size:24px;line-height:1.25}
+.risk-matrix-widget .risk-result-card p{font-size:13px}
+.risk-matrix-widget .risk-result-card>b{font-size:18px}
+@media(max-width:720px){
+ .risk-matrix-widget .risk-level-option{min-height:64px;padding:11px}
+ .risk-matrix-widget .risk-level-option b{font-size:14px}
+ .risk-matrix-widget .risk-level-option small{font-size:12px}
+ .risk-matrix-widget .risk-matrix-table{min-width:370px;font-size:12px}
+ .risk-matrix-widget .risk-matrix-table th{padding:8px 4px;font-size:12px}
+ .risk-matrix-widget .risk-cell{min-width:48px;min-height:50px;padding:9px 2px;font-size:12px}
+}
 </style>
 </head>
 <body>
