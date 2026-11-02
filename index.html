@@ -2070,7 +2070,7 @@ async function updateRiskEvaluationToolbar(){
   start.querySelector("small").textContent="Iniciar el relevamiento integral de la organización";
   finish.disabled=true;start.disabled=false;return;
  }
- const {data,error}=await db.from("riesgos").select("id,puesto_id").eq("evaluacion_id",activeRiskEvaluation.id);
+ const {data,error}=await db.from("riesgos").select("*").eq("evaluacion_id",activeRiskEvaluation.id);
  if(error)throw error;
  const riskRows=data||[],postIds=[...new Set(riskRows.map(r=>r.puesto_id).filter(Boolean))];
  let sectorCount=0;
