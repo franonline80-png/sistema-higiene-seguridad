@@ -2031,21 +2031,56 @@ function renderRiskTable(){
 async function renderRiskEvaluationHistory(){
  const host=$("riskEvaluationHistory");if(!host)return;host.innerHTML='<p class="muted">Consultando evaluaciones…</p>';
  try{
-  const {data:assessments,error}=await db.from("evaluaciones_riesgos").select("id,numero,anio,estado,fecha_inicio,fecha_cierre").eq("organizacion_id",activeOrg).eq("estado","Finalizada").order("anio",{ascending:false}).order("numero",{ascending:false});
+  const {data:assessments,error}=await db.from("evaluaciones_riesgos").select("id,organizacion_id,numero,anio,estado,fecha_inicio,fecha_cierre").eq("organizacion_id",activeOrg).order("anio",{ascending:false}).order("numero",{ascending:false});
   if(error)throw error;
-  if(!assessments?.length){host.innerHTML='<div class="risk-empty" style="grid-column:1/-1;padding:24px;text-align:center"><strong>No hay evaluaciones generales registradas.</strong><p>Cuando finalices una evaluación, aparecerá acá su resumen ejecutivo.</p></div>';return}
+  if(!assessments?.length){host.innerHTML='<div class="risk-empty" style="grid-column:1/-1;padding:24px;text-align:center"><strong>No hay evaluaciones generales registradas.</strong><p>Cuando inicies una evaluación, aparecerá acá su resumen ejecutivo.</p></div>';return}
   const records=await Promise.all(assessments.map(async ev=>{
    const {data:riskRows,error:riskError}=await db.from("riesgos").select("*").eq("evaluacion_id",ev.id);
-   if(riskError)throw riskError;const risks=riskRows||[],postIds=[...new Set(risks.map(r=>r.puesto_id).filter(Boolean))];
-   let posts=[];if(postIds.length){const {data,error:postError}=await db.from("puestos").select("id,sector_id").in("id",postIds);if(postError)throw postError;posts=data||[]}
+   if(riskError)throw riskError;
+   const risks=riskRows||[],postIds=[...new Set(risks.map(r=>r.puesto_id).filter(Boolean))];
+   let posts=[];
+   if(postIds.length){const {data,error:postError}=await db.from("puestos").select("id,sector_id").in("id",postIds);if(postError)throw postError;posts=data||[]}
    return {...ev,risks,postIds,sectorIds:[...new Set(posts.map(p=>p.sector_id).filter(Boolean))]};
   }));
   host.innerHTML=records.map(ev=>{
-   const number=String(ev.numero||0).padStart(2,"0")+"/"+ev.anio,status=ev.estado==="Finalizada"?"Finalizada":"En curso",badge=ev.estado==="Finalizada"?"#dcfce7;color:#166534":"#fef3c7;color:#92400e";
-   return '<article style="border:1px solid #dbe3ee;border-radius:14px;padding:15px;background:#fff;box-shadow:0 2px 8px rgba(15,23,42,.04)"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><strong style="font-size:17px;color:#0f172a">Evaluación N.º '+escapeHtml(number)+'</strong><span style="padding:5px 9px;border-radius:20px;font-size:12px;font-weight:700;background:'+badge+'">'+escapeHtml(status)+'</span></div><p style="font-size:12px;color:#64748b;margin:8px 0 12px">Inicio: '+escapeHtml(formatDateDMY(String(ev.fecha_inicio||"").slice(0,10)))+(ev.fecha_cierre?" · Cierre: "+escapeHtml(formatDateDMY(String(ev.fecha_cierre).slice(0,10))):"")+'</p><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px"><div style="background:#f8fafc;border-radius:9px;padding:9px"><small style="display:block;color:#64748b">Sectores</small><b>'+ev.sectorIds.length+'</b></div><div style="background:#f8fafc;border-radius:9px;padding:9px"><small style="display:block;color:#64748b">Puestos</small><b>'+ev.postIds.length+'</b></div><div style="background:#f8fafc;border-radius:9px;padding:9px"><small style="display:block;color:#64748b">Riesgos</small><b>'+ev.risks.length+'</b></div></div><button type="button" class="btn btn-light btn-sm" data-risk-evaluation-preview="'+escapeHtml(ev.id)+'" style="width:100%">Vista previa ejecutiva</button></article>';
+   const number=String(ev.numero||0).padStart(2,"0")+"/"+ev.anio,status=ev.estado||"Sin estado",badge=status==="Finalizada"?"#dcfce7;color:#166534":status==="En curso"?"#fef3c7;color:#92400e":"#e2e8f0;color:#334155";
+   const escId=escapeHtml(ev.id);
+   return '<article style="border:1px solid #dbe3ee;border-radius:14px;padding:15px;background:#fff;box-shadow:0 2px 8px rgba(15,23,42,.04)"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><strong style="font-size:17px;color:#0f172a">Evaluación N.º '+escapeHtml(number)+'</strong><span style="padding:5px 9px;border-radius:20px;font-size:12px;font-weight:700;background:'+badge+'">'+escapeHtml(status)+'</span></div><p style="font-size:12px;color:#64748b;margin:8px 0 12px">Inicio: '+escapeHtml(formatDateDMY(String(ev.fecha_inicio||"").slice(0,10)))+(ev.fecha_cierre?" · Cierre: "+escapeHtml(formatDateDMY(String(ev.fecha_cierre).slice(0,10))):"")+'</p><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px"><div style="background:#f8fafc;border-radius:9px;padding:9px"><small style="display:block;color:#64748b">Sectores</small><b>'+ev.sectorIds.length+'</b></div><div style="background:#f8fafc;border-radius:9px;padding:9px"><small style="display:block;color:#64748b">Puestos</small><b>'+ev.postIds.length+'</b></div><div style="background:#f8fafc;border-radius:9px;padding:9px"><small style="display:block;color:#64748b">Riesgos</small><b>'+ev.risks.length+'</b></div></div><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px"><button type="button" class="btn btn-light btn-sm" data-risk-evaluation-preview="'+escId+'">Vista previa ejecutiva</button><button type="button" class="btn btn-blue btn-sm" data-risk-evaluation-edit="'+escId+'">'+(status==="Finalizada"?"Editar / reabrir":"Continuar edición")+'</button><button type="button" class="btn btn-red btn-sm" data-risk-evaluation-delete="'+escId+'" style="grid-column:1/-1">Eliminar evaluación</button></div></article>';
   }).join("");
-  host.querySelectorAll("[data-risk-evaluation-preview]").forEach(btn=>btn.onclick=()=>showRiskEvaluationPreview(records.find(ev=>ev.id===btn.dataset.riskEvaluationPreview)));
+  host.querySelectorAll("[data-risk-evaluation-preview]").forEach(btn=>btn.onclick=()=>showRiskEvaluationPreview(records.find(ev=>String(ev.id)===String(btn.dataset.riskEvaluationPreview))));
+  host.querySelectorAll("[data-risk-evaluation-edit]").forEach(btn=>btn.onclick=()=>reopenRiskEvaluation(btn.dataset.riskEvaluationEdit));
+  host.querySelectorAll("[data-risk-evaluation-delete]").forEach(btn=>btn.onclick=()=>deleteRiskEvaluation(btn.dataset.riskEvaluationDelete,records.find(ev=>String(ev.id)===String(btn.dataset.riskEvaluationDelete))));
  }catch(e){console.error(e);host.innerHTML='<p class="status error" style="grid-column:1/-1">No se pudo cargar el historial: '+escapeHtml(e.message||"Error")+'</p>'}
+}
+async function reopenRiskEvaluation(evaluationId){
+ try{
+  const {data:target,error:readError}=await db.from("evaluaciones_riesgos").select("id,organizacion_id,numero,anio,estado").eq("id",evaluationId).eq("organizacion_id",activeOrg).maybeSingle();
+  if(readError)throw readError;if(!target)throw new Error("No se encontró la evaluación en la organización activa.");
+  if(target.estado!=="En curso"){
+   const {data,error}=await db.from("evaluaciones_riesgos").update({estado:"En curso",fecha_cierre:null}).eq("id",target.id).eq("organizacion_id",activeOrg).select("id").maybeSingle();
+   if(error)throw error;if(!data)throw new Error("No se confirmó la reapertura. Verificá los permisos de actualización.");
+  }
+  await loadActiveRiskEvaluation();await renderRiskEvaluationHistory();await updateRiskEvaluationToolbar();
+  if(activeRiskEvaluation&&String(activeRiskEvaluation.id)===String(target.id)){
+   $("riskCurrentEvaluation")?.scrollIntoView({behavior:"smooth",block:"center"});
+   alert("La evaluación N.º "+String(target.numero||0).padStart(2,"0")+"/"+target.anio+" está abierta para edición. Podés agregar riesgos y editar o eliminar los riesgos existentes desde el listado.");
+  }else{throw new Error("La evaluación se actualizó, pero no quedó como evaluación activa. Puede existir otra evaluación en curso para esta organización.");}
+ }catch(e){console.error(e);alert("No se pudo abrir la evaluación para editar: "+(e.message||"Error"))}
+}
+async function deleteRiskEvaluation(evaluationId,assessment){
+ const label="Evaluación N.º "+String(assessment?.numero||0).padStart(2,"0")+"/"+(assessment?.anio||"");
+ if(!confirm("¿Eliminar definitivamente "+label+" y todos los riesgos asociados? Esta acción no se puede deshacer."))return;
+ try{
+  const {data:target,error:readError}=await db.from("evaluaciones_riesgos").select("id,organizacion_id,estado").eq("id",evaluationId).eq("organizacion_id",activeOrg).maybeSingle();
+  if(readError)throw readError;if(!target)throw new Error("No se encontró la evaluación en la organización activa.");
+  const {error:riskDeleteError}=await db.from("riesgos").delete().eq("evaluacion_id",target.id);
+  if(riskDeleteError)throw riskDeleteError;
+  const {data,error}=await db.from("evaluaciones_riesgos").delete().eq("id",target.id).eq("organizacion_id",activeOrg).select("id").maybeSingle();
+  if(error)throw error;if(!data)throw new Error("No se confirmó la eliminación de la evaluación. Verificá los permisos RLS.");
+  if(activeRiskEvaluation&&String(activeRiskEvaluation.id)===String(target.id))activeRiskEvaluation=null;
+  await loadActiveRiskEvaluation();await loadModuleRows("riesgos");await renderRiskEvaluationHistory();await updateRiskEvaluationToolbar();
+  alert(label+" y sus riesgos asociados fueron eliminados.");
+ }catch(e){console.error(e);alert("No se pudo eliminar la evaluación: "+(e.message||"Error"))}
 }
 let selectedRiskEvaluationPreview=null;
 function showRiskEvaluationPreview(ev){
@@ -2053,6 +2088,7 @@ function showRiskEvaluationPreview(ev){
  const risks=ev.risks||[],score=r=>Number(r.nivel_riesgo)||((Number(r.Probabilidad)||0)*(Number(r.consecuencia)||0)),critical=risks.filter(r=>score(r)>=15).length,high=risks.filter(r=>score(r)>=10&&score(r)<15).length,moderate=risks.filter(r=>score(r)>=5&&score(r)<10).length,low=risks.filter(r=>score(r)>0&&score(r)<5).length;
  $("riskEvaluationPreviewTitle").textContent="Evaluación N.º "+String(ev.numero||0).padStart(2,"0")+"/"+ev.anio;
  body.innerHTML='<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px"><span class="risk-level-pill '+(ev.estado==="Finalizada"?"risk-status-active":"risk-status-inactive")+'">'+escapeHtml(ev.estado)+'</span><span class="muted">Inicio: '+escapeHtml(formatDateDMY(String(ev.fecha_inicio||"").slice(0,10)))+'</span>'+(ev.fecha_cierre?'<span class="muted">Cierre: '+escapeHtml(formatDateDMY(String(ev.fecha_cierre).slice(0,10)))+'</span>':"")+'</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px"><div class="dashboard-metric"><div class="dashboard-metric-label">Sectores relevados</div><div class="dashboard-metric-number">'+ev.sectorIds.length+'</div></div><div class="dashboard-metric"><div class="dashboard-metric-label">Puestos incluidos</div><div class="dashboard-metric-number">'+ev.postIds.length+'</div></div><div class="dashboard-metric"><div class="dashboard-metric-label">Riesgos identificados</div><div class="dashboard-metric-number">'+risks.length+'</div></div></div><h4 style="margin:18px 0 10px">Distribución por nivel de riesgo</h4><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px"><div style="padding:12px;border-radius:10px;background:#fef2f2"><small>Críticos</small><strong style="display:block;font-size:22px">'+critical+'</strong></div><div style="padding:12px;border-radius:10px;background:#fff7ed"><small>Altos</small><strong style="display:block;font-size:22px">'+high+'</strong></div><div style="padding:12px;border-radius:10px;background:#fefce8"><small>Moderados</small><strong style="display:block;font-size:22px">'+moderate+'</strong></div><div style="padding:12px;border-radius:10px;background:#f0fdf4"><small>Bajos</small><strong style="display:block;font-size:22px">'+low+'</strong></div></div><p class="muted" style="margin-top:14px">Esta vista resume la evaluación sin mostrar las descripciones individuales, medidas preventivas ni responsables de cada riesgo.</p><button type="button" class="btn btn-blue" id="riskEvaluationExpandDetail" style="width:100%;margin-top:10px">Ampliar detalle de la evaluación</button>'+(risks.length===0?'<div class="status error" style="margin-top:12px">La evaluación quedó finalizada, pero no contiene registros de riesgos guardados. Verificá que cada riesgo se confirme al guardar.</div>':"");
+ const expand=$("riskEvaluationExpandDetail");if(expand)expand.onclick=showRiskEvaluationDetail;
  modal.classList.remove("hidden");
 }
 function showRiskEvaluationDetail(){
@@ -2130,7 +2166,7 @@ async function renderCrud(id){
   $("riskFormModal").addEventListener("click",e=>{if(e.target===$("riskFormModal"))closeForm()});
   
   $("tableSearch").oninput=renderRiskTable;$("riskLevelFilter").onchange=renderRiskTable;$("riskActiveFilter").onchange=renderRiskTable;
-  await loadModuleRows(id);await loadActiveRiskEvaluation();await renderRiskEvaluationHistory();$("riskEvaluationHistoryRefresh").onclick=renderRiskEvaluationHistory;$("riskEvaluationPreviewClose").onclick=()=>$("riskEvaluationPreviewModal").classList.add("hidden");$("riskEvaluationPreviewModal").addEventListener("click",e=>{if(e.target===$("riskEvaluationPreviewModal"))$("riskEvaluationPreviewModal").classList.add("hidden")});$("riskEvaluationExpandDetail").onclick=showRiskEvaluationDetail;$("riskEvaluationDetailClose").onclick=()=>$("riskEvaluationDetailModal").classList.add("hidden");$("riskEvaluationDetailModal").addEventListener("click",e=>{if(e.target===$("riskEvaluationDetailModal"))$("riskEvaluationDetailModal").classList.add("hidden")});$("riskFinishEvaluation").onclick=finishRiskEvaluation;return;
+  await loadModuleRows(id);await loadActiveRiskEvaluation();await renderRiskEvaluationHistory();$("riskEvaluationHistoryRefresh").onclick=renderRiskEvaluationHistory;$("riskEvaluationPreviewClose").onclick=()=>$("riskEvaluationPreviewModal").classList.add("hidden");$("riskEvaluationPreviewModal").addEventListener("click",e=>{if(e.target===$("riskEvaluationPreviewModal"))$("riskEvaluationPreviewModal").classList.add("hidden")});/* El botón de ampliar detalle se enlaza cuando se renderiza la vista previa. */$("riskEvaluationDetailClose").onclick=()=>$("riskEvaluationDetailModal").classList.add("hidden");$("riskEvaluationDetailModal").addEventListener("click",e=>{if(e.target===$("riskEvaluationDetailModal"))$("riskEvaluationDetailModal").classList.add("hidden")});$("riskFinishEvaluation").onclick=finishRiskEvaluation;return;
  }
  const establishmentScopedModules=["sectores","puestos","personas"];
  const selectedName=getSelectedEstablishmentName();
