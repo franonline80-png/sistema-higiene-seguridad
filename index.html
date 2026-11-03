@@ -1047,6 +1047,22 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
  .risk-matrix-widget .risk-matrix-table th{padding:8px 4px;font-size:12px}
  .risk-matrix-widget .risk-cell{min-width:48px;min-height:50px;padding:9px 2px;font-size:12px}
 }
+
+/* Flujo de recuperación de acceso y persistencia elegida por el usuario */
+.login-auth-options{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin:4px 0 14px}
+.login-remember-option{display:flex!important;align-items:center;gap:8px;margin:0!important;font-size:12px!important;font-weight:600!important;color:#4b5563!important}
+.login-remember-option input{width:16px;height:16px;margin:0;accent-color:#80512f}
+.login-text-link{border:0;background:transparent;color:#80512f;font-size:12px;font-weight:750;padding:7px 0;text-align:left;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.login-flow-title{font-family:Georgia,'Times New Roman',serif;font-size:24px;margin:8px 0}
+.login-flow-copy{font-size:13px;line-height:1.5;color:#58616c;margin:0 0 18px}
+.login-back-link{display:block;margin-top:10px}
+.login-flow-message{font-size:13px;line-height:1.5;margin-top:12px;overflow-wrap:anywhere;text-align:left}
+.login-flow-message.success{color:#166534}.login-flow-message.error{color:#b91c1c}
+#passwordRequestForm,#passwordUpdateForm{text-align:left}
+#passwordRequestForm input,#passwordUpdateForm input{margin-bottom:13px;padding:12px;border-radius:10px}
+#passwordRecoveryScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(145deg,#10243a,#245477)}
+#passwordRecoveryScreen .login-scenic-card{max-width:430px;width:100%}
+@media(max-width:600px){.login-auth-options{align-items:flex-start;flex-direction:column;gap:5px}.login-flow-title{font-size:22px}}
 </style>
 </head>
 <body>
@@ -1065,10 +1081,38 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
       <div class="login-input-wrap"><span aria-hidden="true">♙</span><input id="email" type="email" autocomplete="username" required placeholder="Usuario / correo electrónico"></div>
       <label for="password">Contraseña</label>
       <div class="login-input-wrap"><span aria-hidden="true">▣</span><input id="password" type="password" autocomplete="current-password" required placeholder="Ingresá tu contraseña"><button type="button" id="togglePassword" class="password-toggle" aria-label="Mostrar contraseña">◉</button></div>
+      <div class="login-auth-options">
+        <label class="login-remember-option" for="rememberDevice"><input id="rememberDevice" type="checkbox" checked> <span>Recordar sesión en este dispositivo</span></label>
+        <button id="forgotPasswordButton" type="button" class="login-text-link">¿Olvidaste tu contraseña?</button>
+      </div>
       <button id="loginButton" class="btn login-v2-submit" type="submit">Iniciar sesión <span aria-hidden="true">→</span></button>
+    </form>
+    <form id="passwordRequestForm" class="hidden" novalidate>
+      <h2 class="login-flow-title">Recuperar contraseña</h2>
+      <p class="login-flow-copy">Ingresá el correo asociado a tu cuenta. Te enviaremos un enlace para restablecerla.</p>
+      <label for="recoveryEmail">Correo electrónico</label>
+      <input id="recoveryEmail" type="email" autocomplete="email" required placeholder="tu@correo.com">
+      <button id="sendRecoveryButton" class="btn login-v2-submit" type="submit">Enviar enlace</button>
+      <button id="backToLoginButton" class="login-text-link login-back-link" type="button">← Volver al inicio de sesión</button>
+      <div id="recoveryRequestMessage" role="status" class="login-flow-message"></div>
     </form>
     <div id="loginMessage" role="status"></div>
     <div class="login-scenic-footer"><span aria-hidden="true">⬡</span> Sistema de Gestión de Higiene y Seguridad</div>
+  </section>
+</div>
+
+<div id="passwordRecoveryScreen" class="hidden login-scenic" style="display:none">
+  <section class="login-scenic-card" aria-label="Restablecer contraseña">
+    <h1>Elegí una nueva contraseña</h1>
+    <p class="login-scenic-subtitle">Ingresá y confirmá tu nueva contraseña para recuperar el acceso.</p>
+    <form id="passwordUpdateForm">
+      <label for="newPassword">Nueva contraseña</label>
+      <input id="newPassword" type="password" autocomplete="new-password" minlength="8" required placeholder="Mínimo 8 caracteres">
+      <label for="confirmNewPassword">Confirmar contraseña</label>
+      <input id="confirmNewPassword" type="password" autocomplete="new-password" minlength="8" required placeholder="Repetí la contraseña">
+      <button id="updatePasswordButton" class="btn login-v2-submit" type="submit">Guardar contraseña</button>
+    </form>
+    <div id="passwordUpdateMessage" role="status" class="login-flow-message"></div>
   </section>
 </div>
 
@@ -1119,7 +1163,13 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
 
 const SUPABASE_URL="https://dpssgowiftbtclzsaprc.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_NIV3CQpZcbvnOBfY7-_a7g_PtYfNIsG";
-const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+let authStorageRemember=true;
+const authStorage={
+  getItem(key){return (authStorageRemember?localStorage:sessionStorage).getItem(key)},
+  setItem(key,value){(authStorageRemember?localStorage:sessionStorage).setItem(key,value)},
+  removeItem(key){localStorage.removeItem(key);sessionStorage.removeItem(key)}
+};
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{storage:authStorage,persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
 
 let user=null,organizations=[],activeOrg="",activeModule="inicio",editing=null,moduleCache={},searchText="";
@@ -2907,10 +2957,29 @@ let inactivityTimer=null,inactivityCountdown=null,inactivityWarningOpen=false;
   try{return await initializationPromise}finally{initializationPromise=null}
 }
 $("loginForm").addEventListener("submit",async e=>{
-  e.preventDefault();loginInProgress=true;const b=$("loginButton");b.disabled=true;b.textContent="Ingresando...";$("loginMessage").textContent="";
+  e.preventDefault();loginInProgress=true;authStorageRemember=$("rememberDevice")?.checked!==false;const b=$("loginButton");b.disabled=true;b.textContent="Ingresando...";$("loginMessage").textContent="";
   try{const {error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)throw error;await initialize()}
   catch(e){console.error(e);showLogin("No se pudo iniciar sesión: "+e.message)}
-  finally{loginInProgress=false;b.disabled=false;b.textContent="Ingresar"}
+  finally{loginInProgress=false;b.disabled=false;b.innerHTML='Iniciar sesión <span aria-hidden="true">→</span>'}
+});
+$("forgotPasswordButton")?.addEventListener("click",()=>{$("loginForm").classList.add("hidden");$("passwordRequestForm").classList.remove("hidden");$("recoveryEmail").value=$("email").value.trim();$("loginMessage").textContent="";$("recoveryRequestMessage").textContent="";$("recoveryEmail").focus()});
+$("backToLoginButton")?.addEventListener("click",()=>{$("passwordRequestForm").classList.add("hidden");$("loginForm").classList.remove("hidden");$("recoveryRequestMessage").textContent=""});
+$("passwordRequestForm")?.addEventListener("submit",async e=>{
+ e.preventDefault();const button=$("sendRecoveryButton"),message=$("recoveryRequestMessage");button.disabled=true;button.textContent="Enviando…";message.className="login-flow-message";message.textContent="";
+ try{const email=$("recoveryEmail").value.trim();const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});if(error)throw error;message.classList.add("success");message.textContent="Si existe una cuenta asociada a ese correo, recibirás un enlace para restablecer la contraseña. Revisá también correo no deseado."}
+ catch(error){console.error(error);message.classList.add("error");message.textContent="No se pudo enviar el enlace. "+(error.message||"Intentá nuevamente.")}
+ finally{button.disabled=false;button.textContent="Enviar enlace"}
+});
+function showPasswordRecovery(){ $("app").style.display="none";$("loginScreen").style.display="none";$("passwordRecoveryScreen").style.display="flex";$("passwordRecoveryScreen").classList.remove("hidden");$("passwordUpdateMessage").textContent="";$("newPassword").focus()}
+$("passwordUpdateForm")?.addEventListener("submit",async e=>{
+ e.preventDefault();const password=$("newPassword").value,confirm=$("confirmNewPassword").value,button=$("updatePasswordButton"),message=$("passwordUpdateMessage");
+ message.className="login-flow-message";message.textContent="";
+ if(password.length<8){message.classList.add("error");message.textContent="La contraseña debe tener al menos 8 caracteres.";return}
+ if(password!==confirm){message.classList.add("error");message.textContent="Las contraseñas no coinciden.";return}
+ button.disabled=true;button.textContent="Guardando…";
+ try{const {error}=await db.auth.updateUser({password});if(error)throw error;message.classList.add("success");message.textContent="Contraseña actualizada. Volvé a iniciar sesión con tu nueva contraseña.";await db.auth.signOut();$("passwordRecoveryScreen").style.display="none";showLogin("Contraseña actualizada correctamente. Iniciá sesión.")}
+ catch(error){console.error(error);message.classList.add("error");message.textContent="No se pudo actualizar la contraseña. El enlace puede haber vencido. "+(error.message||"")}
+ finally{button.disabled=false;button.textContent="Guardar contraseña"}
 });
 $("peopleDetailTabs")?.addEventListener("click",e=>{const b=e.target.closest("[data-people-tab]");if(b&&window.currentPeopleDetail)openPeopleDetail(window.currentPeopleDetail,b.dataset.peopleTab)});
 $("peopleDetailClose")?.addEventListener("click",closePeopleDetail);$("peopleDetailCloseBottom")?.addEventListener("click",closePeopleDetail);$("peopleDetailModal")?.addEventListener("click",e=>{if(e.target.id==="peopleDetailModal")closePeopleDetail()});
@@ -2926,7 +2995,10 @@ db.auth.getSession().then(async({data,error})=>{
   if(loginInProgress)return;
   if(data.session){try{await initialize()}catch(e){console.error(e);showLogin("No se pudo iniciar la aplicación: "+e.message)}}else showLogin();
 });
-db.auth.onAuthStateChange(event=>{if(event==="SIGNED_OUT")showLogin()});
+db.auth.onAuthStateChange((event,session)=>{
+ if(event==="SIGNED_OUT"){if($("passwordRecoveryScreen")?.style.display==="flex")return;showLogin()}
+ if(event==="PASSWORD_RECOVERY"&&session){showPasswordRecovery()}
+});
 
 const passwordToggle=$("togglePassword");if(passwordToggle)passwordToggle.addEventListener("click",()=>{const field=$("password");if(!field)return;const show=field.type==="password";field.type=show?"text":"password";passwordToggle.setAttribute("aria-label",show?"Ocultar contraseña":"Mostrar contraseña");passwordToggle.textContent=show?"◎":"◉"});
 
