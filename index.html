@@ -1063,6 +1063,8 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
 #passwordRecoveryScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(145deg,#10243a,#245477)}
 #passwordRecoveryScreen .login-scenic-card{max-width:430px;width:100%}
 @media(max-width:600px){.login-auth-options{align-items:flex-start;flex-direction:column;gap:5px}.login-flow-title{font-size:22px}}
+
+.user-admin-card{margin-top:18px;overflow:hidden}.user-admin-card table{width:100%;border-collapse:collapse}.user-admin-card th,.user-admin-card td{padding:12px;border-bottom:1px solid var(--border,#e5e7eb);text-align:left;font-size:13px}.user-admin-card th{font-weight:750;background:var(--surface-2,#f8fafc)}#inviteUserModal{position:fixed;inset:0;z-index:10000;align-items:center;justify-content:center;background:#0f172a88;padding:18px}#inviteUserModal .modal-content{position:relative;background:var(--surface,#fff);padding:24px;border-radius:16px;width:min(480px,100%);max-height:90vh;overflow:auto;box-shadow:0 20px 60px #0003}#inviteUserModal .modal-close{position:absolute;right:14px;top:12px;font-size:24px;background:none;border:0;cursor:pointer}#inviteUserForm label{display:block;font-size:13px;font-weight:700;margin:12px 0}#inviteUserForm input,#inviteUserForm select{display:block;width:100%;margin-top:6px;padding:10px;border:1px solid var(--border,#d1d5db);border-radius:9px;background:var(--surface,#fff)}#inviteUserMessage.success{color:#15803d}#inviteUserMessage.error{color:#b91c1c}@media(max-width:700px){.user-admin-card{overflow-x:auto}.user-admin-card table{min-width:600px}}
 </style>
 </head>
 <body>
@@ -1172,11 +1174,12 @@ const authStorage={
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{storage:authStorage,persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
 
-let user=null,organizations=[],activeOrg="",activeModule="inicio",editing=null,moduleCache={},searchText="";
+let user=null,organizations=[],activeOrg="",activeRole="",activeModule="inicio",editing=null,moduleCache={},searchText="";
 let activeRiskEvaluation=null;
 
 const modules=[
 {id:"inicio",label:"Inicio",icon:"⌂"},
+{id:"usuarios_admin",label:"Administración de usuarios",icon:"♙"},
 {id:"sesiones",label:"Actividad y sesiones",icon:"◷"},
 {id:"reportes",label:"Reportes e informes",icon:"▤"},
 {id:"establecimientos",label:"Establecimientos",icon:"▦"},
@@ -1583,12 +1586,13 @@ async function selectActiveEstablishment(id){
  if(activeModule==="establecimientos"){await renderCrud("establecimientos");return}
  await openModule(activeModule);
 }
-function visibleModules(){return modules.filter(m=>m.id==="inicio"||m.id==="legislacion"||m.id==="sesiones"||m.id==="reportes"||m.id==="mapa_riesgos"||configs[m.id])}
+function visibleModules(){return modules.filter(m=>m.id==="inicio"||m.id==="legislacion"||m.id==="sesiones"||m.id==="reportes"||m.id==="mapa_riesgos"||configs[m.id]||(m.id==="usuarios_admin"&&["administrador_plataforma","administrador_organizacion"].includes(activeRole)))}
 function buildNav(){
   const nav=$("navTabs");nav.replaceChildren();
   const all=visibleModules();
   const groups=[
     {label:"Inicio",icon:"⌂",ids:["inicio"]},
+    {label:"Administración",icon:"♙",ids:["usuarios_admin"]},
     {label:"Organización",icon:"▦",ids:["establecimientos","sectores","puestos","personas"]},
     {label:"Gestión de HyS",icon:"⚠",ids:["riesgos","mapa_riesgos","inspecciones","accidentes_incidentes","mediciones_ambientales","epp"]},
     {label:"Seguimiento",icon:"✓",ids:["capacitaciones","documentacion","acciones_correctivas","equipos_instalaciones","vencimientos","sesiones"]},
@@ -2944,6 +2948,7 @@ let inactivityTimer=null,inactivityCountdown=null,inactivityWarningOpen=false;
   user=data.user;if(!user)throw new Error("No hay una sesión activa.");
   try{await startSessionTracking()}catch(sessionError){console.error("No se pudo registrar la sesión; la aplicación continuará disponible:",sessionError)}
   const {data:members,error:me}=await db.from("usuarios_organizaciones").select("organizacion_id,rol").eq("usuario_id",user.id).eq("activo",true);
+  activeRole=(members||[]).find(x=>x.organizacion_id===activeOrg)?.rol||(members||[])[0]?.rol||"";
   if(me)throw me;
   const ids=[...new Set((members||[]).map(x=>x.organizacion_id).filter(Boolean))];
   if(!ids.length)throw new Error("Tu usuario no tiene una organización activa asignada.");
@@ -3090,7 +3095,42 @@ async function deleteInspectionRecord(id){
 }
 function openModule(id){
  if(id==="inspecciones"){activeModule=id;editing=null;searchText="";peoplePage=1;buildNav();return renderInspectionModule()}
+ if(id==="usuarios_admin"){activeModule=id;editing=null;searchText="";buildNav();return renderUserAdminModule()}
  return openModuleBase(id);
+}
+async function renderUserAdminModule(){
+ if(!["administrador_plataforma","administrador_organizacion"].includes(activeRole)){ $("view").innerHTML='<div class="card"><h2>Acceso restringido</h2><p>Solo un administrador de la organización puede gestionar usuarios.</p></div>';return}
+ const org=organizations.find(o=>o.id===activeOrg);
+ $("view").innerHTML=`<div class="page-header"><div><h1>Administración de usuarios</h1><p class="muted">Gestioná accesos y perfiles de ${escapeHtml(org?.nombre||"la organización")}.</p></div><button class="btn primary" id="openInviteUser">＋ Invitar usuario</button></div>
+ <div class="card user-admin-card"><div class="card-header"><h3>Usuarios asignados</h3><button class="btn secondary" id="refreshUserAdmin">Actualizar</button></div><div class="table-responsive"><table><thead><tr><th>Usuario</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="userAdminRows"><tr><td colspan="5">Cargando usuarios…</td></tr></tbody></table></div><p id="userAdminStatus" class="muted"></p></div>
+ <div id="inviteUserModal" class="modal hidden"><div class="modal-content"><button class="modal-close" id="closeInviteUser">×</button><h2>Invitar usuario</h2><p class="muted">Se enviará un correo de invitación para activar su acceso.</p><form id="inviteUserForm"><label>Nombre<input id="inviteUserName" required maxlength="100"></label><label>Apellido<input id="inviteUserSurname" required maxlength="100"></label><label>Correo electrónico<input id="inviteUserEmail" type="email" required></label><label>Rol<select id="inviteUserRole" required><option value="profesional_hys">Profesional de Higiene y Seguridad</option><option value="responsable_sector">Responsable de sector</option><option value="supervisor">Supervisor</option><option value="consulta">Consulta</option></select></label><button class="btn primary" id="sendInviteUser" type="submit">Enviar invitación</button><p id="inviteUserMessage" role="status"></p></form></div></div>`;
+ $("openInviteUser").onclick=()=>{$("inviteUserModal").classList.remove("hidden");$("inviteUserModal").style.display="flex"};
+ $("closeInviteUser").onclick=()=>{$("inviteUserModal").classList.add("hidden");$("inviteUserModal").style.display="none"};
+ $("refreshUserAdmin").onclick=loadUserAdminRows;
+ $("inviteUserForm").onsubmit=async e=>{e.preventDefault();const button=$("sendInviteUser"),msg=$("inviteUserMessage");button.disabled=true;button.textContent="Enviando…";msg.textContent="";
+ try{const {data,error}=await db.functions.invoke("admin-invite-user",{body:{action:"invite",email:$("inviteUserEmail").value.trim(),nombre:$("inviteUserName").value.trim(),apellido:$("inviteUserSurname").value.trim(),organizacion_id:activeOrg,rol:$("inviteUserRole").value}});if(error)throw error;if(data?.error)throw new Error(data.error);msg.textContent=data?.message||"Invitación enviada.";msg.className="success";await loadUserAdminRows()}
+ catch(err){console.error(err);msg.textContent="No se pudo enviar: "+(err.message||err);msg.className="error"}
+ finally{button.disabled=false;button.textContent="Enviar invitación"}
+ };
+ await loadUserAdminRows();
+}
+async function loadUserAdminRows(){
+ const body=$("userAdminRows"),status=$("userAdminStatus");if(!body)return;body.innerHTML='<tr><td colspan="5">Cargando…</td></tr>';status.textContent="";
+ try{
+  const {data,error}=await db.functions.invoke("admin-invite-user",{body:{action:"list",organizacion_id:activeOrg}});
+  if(error)throw error;if(data?.error)throw new Error(data.error);const users=data?.users||[];
+  body.replaceChildren();
+  if(!users.length){body.innerHTML='<tr><td colspan="5">No hay usuarios asignados.</td></tr>';return}
+  users.forEach(row=>{
+   const tr=document.createElement("tr");
+   const full=[row.apellido,row.nombre].filter(Boolean).join(", ")||"Perfil sin completar";
+   const cells=[full,row.email||"Correo no disponible",row.rol,row.activo?"Activo":"Desactivado"];
+   cells.forEach(value=>{const td=document.createElement("td");td.textContent=value;tr.appendChild(td)});
+   const td=document.createElement("td"),btn=document.createElement("button");btn.className="btn "+(row.activo?"secondary":"primary");btn.textContent=row.activo?"Desactivar":"Activar";btn.disabled=row.usuario_id===user.id;
+   btn.onclick=async()=>{btn.disabled=true;try{const {data,error}=await db.functions.invoke("admin-invite-user",{body:{action:"set_active",organizacion_id:activeOrg,membership_id:row.id,activo:!row.activo}});if(error)throw error;if(data?.error)throw new Error(data.error);await loadUserAdminRows()}catch(err){alert("No se pudo cambiar el estado: "+err.message);btn.disabled=false}};td.appendChild(btn);tr.appendChild(td);body.appendChild(tr)
+  });
+  status.textContent=data.length+" usuario(s) asignado(s) a esta organización.";
+ }catch(err){console.error(err);body.innerHTML='<tr><td colspan="5">No se pudo cargar el listado. Revisá permisos RLS.</td></tr>';status.textContent=err.message||""}
 }
 
 </script>
