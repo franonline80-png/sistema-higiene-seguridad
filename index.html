@@ -1715,8 +1715,7 @@ async function renderRiskMapModule(){
  }catch(e){console.error(e);status("No se pudieron cargar los datos del mapa: "+(e.message||""),true);$m("rmSavedList").innerHTML='<p class="muted">Revisá la conexión y los permisos de tu usuario.</p>'}
 }
 
-function canWriteModule(id){return ["administrador_plataforma","administrador_organizacion","profesional_hys"].includes(activeRole)}
-function openModuleBase(id){if(!visibleModules().some(m=>m.id===id)){alert("No tenés permisos para acceder a este módulo.");return}activeModule=id;editing=null;searchText="";peoplePage=1;buildNav();if(id==="organizacion")return renderOrganizationHub();if(id==="inicio")return renderHome();if(id==="legislacion")return renderLegislation();if(id==="capacitaciones")return renderTrainingModule();if(id==="sesiones")return renderSessionsModule();if(id==="reportes")return renderReportsModule();if(id==="mapa_riesgos")return renderRiskMapModule();if(configs[id])return renderCrud(id)}
+function openModuleBase(id){activeModule=id;editing=null;searchText="";peoplePage=1;buildNav();if(id==="organizacion")return renderOrganizationHub();if(id==="inicio")return renderHome();if(id==="legislacion")return renderLegislation();if(id==="capacitaciones")return renderTrainingModule();if(id==="sesiones")return renderSessionsModule();if(id==="reportes")return renderReportsModule();if(id==="mapa_riesgos")return renderRiskMapModule();if(configs[id])return renderCrud(id)}
 
 async function fetchRows(table,limit=500){
   let q=db.from(table).select("*").limit(limit);
@@ -2589,7 +2588,7 @@ async function startEdit(id,row){
 }
 async function compressEstablishmentPhoto(file){if(!file||!["image/jpeg","image/png","image/webp"].includes(file.type))throw new Error("La fotografía debe estar en formato JPG, PNG o WEBP.");if(file.size>5*1024*1024)throw new Error("La fotografía no puede superar los 5 MB.");const source=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(new Error("No se pudo leer la fotografía."));img.src=reader.result};reader.onerror=()=>reject(new Error("No se pudo leer el archivo."));reader.readAsDataURL(file)});const scale=Math.min(1,1200/source.width,1200/source.height),canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(source.width*scale));canvas.height=Math.max(1,Math.round(source.height*scale));canvas.getContext("2d").drawImage(source,0,0,canvas.width,canvas.height);return canvas.toDataURL("image/jpeg",0.78)}
 async function saveRecord(ev,id){
-  ev.preventDefault();if(!canWriteModule(id)){alert("Tu rol no tiene permisos para crear ni modificar registros en este módulo.");return}const cfg=configs[id],b=$("saveRecord");b.disabled=true;$("formStatus").textContent="Guardando...";
+  ev.preventDefault();const cfg=configs[id],b=$("saveRecord");b.disabled=true;$("formStatus").textContent="Guardando...";
   try{
     const payload={};
     for(const f of cfg.fields){
