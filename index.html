@@ -1180,6 +1180,7 @@ let activeRiskEvaluation=null;
 const modules=[
 {id:"inicio",label:"Inicio",icon:"⌂"},
 {id:"usuarios_admin",label:"Administración de usuarios",icon:"♙"},
+{id:"auditoria",label:"Auditoría de cambios",icon:"▤"},
 {id:"sesiones",label:"Actividad y sesiones",icon:"◷"},
 {id:"reportes",label:"Reportes e informes",icon:"▤"},
 {id:"establecimientos",label:"Establecimientos",icon:"▦"},
@@ -1586,13 +1587,13 @@ async function selectActiveEstablishment(id){
  if(activeModule==="establecimientos"){await renderCrud("establecimientos");return}
  await openModule(activeModule);
 }
-function visibleModules(){return modules.filter(m=>m.id==="inicio"||m.id==="legislacion"||m.id==="sesiones"||m.id==="reportes"||m.id==="mapa_riesgos"||configs[m.id]||(m.id==="usuarios_admin"&&["administrador_plataforma","administrador_organizacion"].includes(activeRole)))}
+function visibleModules(){return modules.filter(m=>m.id==="inicio"||m.id==="legislacion"||m.id==="sesiones"||m.id==="reportes"||m.id==="mapa_riesgos"||(m.id==="auditoria"&&["administrador_plataforma","administrador_organizacion"].includes(activeRole))||configs[m.id]||(m.id==="usuarios_admin"&&["administrador_plataforma","administrador_organizacion"].includes(activeRole)))}
 function buildNav(){
   const nav=$("navTabs");nav.replaceChildren();
   const all=visibleModules();
   const groups=[
     {label:"Inicio",icon:"⌂",ids:["inicio"]},
-    {label:"Administración",icon:"♙",ids:["usuarios_admin"]},
+    {label:"Administración",icon:"♙",ids:["usuarios_admin","auditoria"]},
     {label:"Organización",icon:"▦",ids:["establecimientos","sectores","puestos","personas"]},
     {label:"Gestión de HyS",icon:"⚠",ids:["riesgos","mapa_riesgos","inspecciones","accidentes_incidentes","mediciones_ambientales","epp"]},
     {label:"Seguimiento",icon:"✓",ids:["capacitaciones","documentacion","acciones_correctivas","equipos_instalaciones","vencimientos","sesiones"]},
@@ -3096,6 +3097,7 @@ async function deleteInspectionRecord(id){
 function openModule(id){
  if(id==="inspecciones"){activeModule=id;editing=null;searchText="";peoplePage=1;buildNav();return renderInspectionModule()}
  if(id==="usuarios_admin"){activeModule=id;editing=null;searchText="";buildNav();return renderUserAdminModule()}
+ if(id==="auditoria"){activeModule=id;editing=null;searchText="";buildNav();return renderAuditModule()}
  return openModuleBase(id);
 }
 async function renderUserAdminModule(){
@@ -3114,6 +3116,30 @@ async function renderUserAdminModule(){
  };
  await loadUserAdminRows();
 }
+async function renderAuditModule(){
+ if(!["administrador_plataforma","administrador_organizacion"].includes(activeRole)){
+  $("view").innerHTML='<div class="card"><h2>Acceso restringido</h2><p>Solo administradores pueden consultar la auditoría.</p></div>';return
+ }
+ const org=organizations.find(o=>o.id===activeOrg);
+ $("view").innerHTML=`<div class="page-header"><div><h1>Auditoría de cambios</h1><p class="muted">Registro de altas, modificaciones y eliminaciones en ${escapeHtml(org?.nombre||"la organización")}.</p></div><button class="btn secondary" id="refreshAudit">Actualizar</button></div>
+ <div class="card"><div class="notice">La auditoría conserva el usuario, fecha, acción y registro afectado. Los datos anteriores y posteriores quedan resguardados en la base de datos.</div><div class="table-responsive"><table><thead><tr><th>Fecha y hora</th><th>Usuario (ID)</th><th>Acción</th><th>Módulo / tabla</th><th>Registro</th></tr></thead><tbody id="auditRows"><tr><td colspan="5">Cargando auditoría…</td></tr></tbody></table></div><p class="muted" id="auditStatus"></p></div>`;
+ $("refreshAudit").onclick=loadAuditRows;await loadAuditRows();
+}
+async function loadAuditRows(){
+ const body=$("auditRows"),status=$("auditStatus");if(!body)return;
+ body.innerHTML='<tr><td colspan="5">Cargando…</td></tr>';status.textContent="";
+ try{
+  const {data,error}=await db.from("audit_log").select("changed_at,actor_id,action,table_name,record_id").eq("organization_id",activeOrg).order("changed_at",{ascending:false}).limit(200);
+  if(error)throw error;body.replaceChildren();
+  if(!data?.length){body.innerHTML='<tr><td colspan="5">Todavía no hay cambios registrados.</td></tr>';return}
+  data.forEach(row=>{const tr=document.createElement("tr");
+   [new Date(row.changed_at).toLocaleString("es-AR"),row.actor_id||"Sistema",({INSERT:"Alta",UPDATE:"Modificación",DELETE:"Eliminación"})[row.action]||row.action,row.table_name,row.record_id].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.appendChild(td)});
+   body.appendChild(tr)
+  });
+  status.textContent="Se muestran hasta 200 eventos recientes. Los datos completos de antes/después están almacenados de forma restringida.";
+ }catch(err){console.error(err);body.innerHTML='<tr><td colspan="5">No se pudo consultar la auditoría. Verificá el rol y la organización activa.</td></tr>';status.textContent=err.message||""}
+}
+
 async function loadUserAdminRows(){
  const body=$("userAdminRows"),status=$("userAdminStatus");if(!body)return;body.innerHTML='<tr><td colspan="5">Cargando…</td></tr>';status.textContent="";
  try{
