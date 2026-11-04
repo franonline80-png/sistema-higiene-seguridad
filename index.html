@@ -2150,10 +2150,9 @@ async function deleteRiskEvaluation(evaluationId,assessment){
  try{
   const {data:target,error:readError}=await db.from("evaluaciones_riesgos").select("id,organizacion_id,estado").eq("id",evaluationId).eq("organizacion_id",activeOrg).maybeSingle();
   if(readError)throw readError;if(!target)throw new Error("No se encontró la evaluación en la organización activa.");
-  const {error:riskDeleteError}=await db.from("riesgos").delete().eq("evaluacion_id",target.id);
-  if(riskDeleteError)throw riskDeleteError;
-  const {data,error}=await db.from("evaluaciones_riesgos").delete().eq("id",target.id).eq("organizacion_id",activeOrg).select("id").maybeSingle();
-  if(error)throw error;if(!data)throw new Error("No se confirmó la eliminación de la evaluación. Verificá los permisos RLS.");
+  const {data,error}=await db.rpc("eliminar_evaluacion_riesgos",{p_evaluacion_id:target.id,p_organizacion_id:activeOrg});
+  if(error)throw error;
+  if(data!==true)throw new Error("La operación atómica no confirmó la eliminación. No se informó éxito.");
   if(activeRiskEvaluation&&String(activeRiskEvaluation.id)===String(target.id))activeRiskEvaluation=null;
   await loadActiveRiskEvaluation();await loadModuleRows("riesgos");await renderRiskEvaluationHistory();await updateRiskEvaluationToolbar();
   alert(label+" y sus riesgos asociados fueron eliminados.");
@@ -2221,9 +2220,10 @@ async function finishRiskEvaluation(){
   const sectorIds=[...new Set((posts||[]).map(p=>p.sector_id).filter(Boolean))];
   const msg='¿Finalizar definitivamente esta evaluación general?\\n\\nSectores relevados: '+sectorIds.length+'\\nPuestos incluidos: '+postIds.length+'\\nRiesgos registrados: '+rows.length+'\\n\\nUna vez finalizada no se podrán agregar nuevos riesgos a esta evaluación.';
   if(!confirm(msg))return;
-  const {error:updateError}=await db.from("evaluaciones_riesgos").update({estado:"Finalizada",fecha_cierre:new Date().toISOString()}).eq("id",activeRiskEvaluation.id).eq("estado","En curso");
+  const {data:closed,error:updateError}=await db.from("evaluaciones_riesgos").update({estado:"Finalizada",fecha_cierre:new Date().toISOString()}).eq("id",activeRiskEvaluation.id).eq("organizacion_id",activeOrg).eq("estado","En curso").select("id,estado,fecha_cierre").maybeSingle();
   if(updateError)throw updateError;
-  activeRiskEvaluation=null;await loadActiveRiskEvaluation();await renderRiskEvaluationHistory();alert("La evaluación general quedó finalizada.");
+  if(!closed||closed.estado!=="Finalizada"||!closed.fecha_cierre)throw new Error("La base de datos no confirmó el cierre. La evaluación permanece disponible para revisar.");
+  activeRiskEvaluation=null;await loadActiveRiskEvaluation();await renderRiskEvaluationHistory();alert("La evaluación general quedó finalizada y el cierre fue confirmado por la base de datos.");
  }catch(e){alert("No se pudo finalizar la evaluación: "+e.message)}
 }
 async function renderCrud(id){
@@ -2802,7 +2802,7 @@ function renderReportsModule(){
  $("reportDownload").onclick=downloadReportPdf;
  $("reportPrint").onclick=downloadReportPdf;
  $("reportShare").onclick=shareReport;
- $("view").querySelectorAll("[data-quick-report]").forEach(b=>b.onclick=()=>{const id=b.dataset.quickReport;if(id==="capacitaciones")reportSelected="gestion";else if(id==="acciones_correctivas")reportSelected="inspecciones";else reportSelected=id;updateReportCards();generateReportPreview()});
+ $("view").querySelectorAll("[data-quick-report]").forEach(b=>b.onclick=()=>{const id=b.dataset.quickReport;reportSelected=id==="capacitaciones"?"capacitaciones":id==="acciones_correctivas"?"acciones_correctivas":id;updateReportCards();generateReportPreview()});
  generateReportPreview();
 }
 function updateReportCards(){document.querySelectorAll("[data-report-card]").forEach(b=>b.classList.toggle("selected",b.dataset.reportCard===reportSelected))}
@@ -2822,7 +2822,7 @@ async function getReportRows(id){
    const assessmentById=new Map((assessments||[]).map(a=>[String(a.id),a]));
    reportRowsCache[table]=(riskRows||[]).map(r=>({...r,__assessment:assessmentById.get(String(r.evaluacion_id))||null}));
   }else reportRowsCache[table]=await fetchRows(table,1000);
- }catch(e){console.warn("No se pudieron consultar datos para el reporte",table,e);reportRowsCache[table]=[]}
+ }catch(e){console.error("No se pudieron consultar datos para el reporte",table,e);throw new Error("No se pudieron cargar los datos del reporte («"+table+"»): "+(e.message||"Error de consulta"))}
  return reportRowsCache[table];
 }
 async function getFinalizedRiskAssessments(){
@@ -3080,8 +3080,8 @@ async function saveInspectionRecord(){
 async function loadInspectionSavedList(){
  const host=$("inspSavedRows");if(!host)return;
  try{
-  const rows=await fetchRows("inspecciones");
-  if(!rows.length){host.textContent="Todavía no hay inspecciones guardadas.";return}
+  const rows=(await fetchRows("inspecciones")).filter(r=>!activeOrg||String(r.organizacion_id)===String(activeOrg));
+  if(!rows.length){host.textContent="Todavía no hay inspecciones guardadas para la organización activa.";return}
   host.innerHTML='<div class="inspection-table-wrap"><table class="inspection-table" style="min-width:560px"><thead><tr><th>Código</th><th>Fecha</th><th>Tipo</th><th>Inspector</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>'+rows.slice().sort((a,b)=>String(b.fecha||"").localeCompare(String(a.fecha||""))).map(r=>{let m={};try{m=typeof r.observaciones==="string"?JSON.parse(r.observaciones||"{}"):(r.observaciones||{})}catch(e){}return '<tr><td>'+inspectionEsc(m.numero||"—")+'</td><td>'+inspectionEsc(r.fecha||"—")+'</td><td>'+inspectionEsc(r.tipo||"Inspección")+'</td><td>'+inspectionEsc(r.inspector||"—")+'</td><td>'+inspectionEsc(r.estado||"—")+'</td><td><button type="button" class="btn btn-red btn-sm" data-delete-inspection="'+inspectionEsc(r.id)+'">Eliminar</button></td></tr>';}).join("")+'</tbody></table></div>';
  }catch(e){host.textContent="No se pudo consultar el listado: "+(e.message||"revisá permisos y conexión");return}
  host.querySelectorAll("[data-delete-inspection]").forEach(btn=>btn.addEventListener("click",()=>deleteInspectionRecord(btn.dataset.deleteInspection)));
