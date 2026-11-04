@@ -770,24 +770,30 @@ form .field:has(.risk-matrix-widget),
 form .form-field:has(.risk-matrix-widget),
 form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!important;max-width:none!important;min-width:0!important}
 .risk-matrix-widget{width:100%!important;max-width:none!important;min-width:0!important;box-sizing:border-box!important}
-.risk-matrix-layout{display:grid!important;grid-template-columns:minmax(210px,.9fr) minmax(210px,.9fr) minmax(340px,1.35fr)!important;gap:16px!important;align-items:start!important;width:100%!important}
+.risk-matrix-layout{display:grid!important;grid-template-columns:minmax(210px,.9fr) minmax(210px,.9fr) minmax(390px,1.35fr)!important;gap:16px!important;align-items:stretch!important;width:100%!important}
 .risk-level-pickers{display:contents!important}
-.risk-level-pickers>div{min-width:0!important}
-.risk-matrix-bottom{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:10px!important;margin-top:0!important;min-width:0!important}
-.risk-matrix-wrap{width:100%!important;min-width:0!important;overflow:visible!important}
-.risk-matrix-table{width:100%!important;min-width:0!important;table-layout:fixed!important}
-.risk-matrix-table th{padding:7px 3px!important;overflow-wrap:anywhere}
-.risk-cell{min-width:0!important;padding:9px 1px!important;font-size:10px!important;overflow-wrap:anywhere}
+.risk-level-pickers>div{min-width:0!important;align-self:stretch!important}
+.risk-matrix-bottom{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:10px!important;margin-top:0!important;min-width:0!important;align-content:stretch!important}
+.risk-matrix-wrap{width:100%!important;min-width:0!important;overflow:visible!important;display:flex!important;flex-direction:column!important}
+.risk-matrix-table{width:100%!important;min-width:0!important;table-layout:fixed!important;flex:1 1 auto!important;height:100%!important;border-spacing:3px!important}
+.risk-matrix-table thead{height:38px!important}
+.risk-matrix-table tbody tr{height:62px!important}
+.risk-matrix-table th{padding:7px 3px!important;overflow-wrap:normal!important;word-break:normal!important;white-space:nowrap!important;vertical-align:middle!important}
+.risk-cell{display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;min-width:0!important;min-height:58px!important;height:100%!important;box-sizing:border-box!important;padding:7px 2px!important;font-size:10px!important;line-height:1.15!important;overflow-wrap:normal!important;word-break:normal!important;white-space:nowrap!important;text-align:center!important}
 .risk-result-card{width:100%!important;box-sizing:border-box!important;padding:10px!important}
 @media(max-width:1100px){
- .risk-matrix-layout{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .risk-matrix-layout{grid-template-columns:repeat(2,minmax(0,1fr))!important;align-items:stretch!important}
  .risk-matrix-bottom{grid-column:1/-1!important;grid-template-columns:minmax(0,1.6fr) minmax(180px,.8fr)!important}
+ .risk-matrix-table tbody tr{height:56px!important}
+ .risk-cell{min-height:52px!important;font-size:11px!important}
 }
 @media(max-width:700px){
  .risk-matrix-layout{grid-template-columns:minmax(0,1fr)!important}
  .risk-matrix-bottom{grid-column:auto!important;grid-template-columns:minmax(0,1fr)!important}
  .risk-matrix-table{min-width:280px!important}
  .risk-matrix-wrap{overflow-x:auto!important}
+ .risk-matrix-table tbody tr{height:52px!important}
+ .risk-cell{min-height:48px!important;font-size:11px!important}
 }
 
 /* Fondo completo por opción: rojo, verde, amarillo y celeste */
