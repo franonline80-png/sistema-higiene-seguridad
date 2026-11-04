@@ -3108,7 +3108,7 @@ async function renderUserAdminModule(){
  $("closeInviteUser").onclick=()=>{$("inviteUserModal").classList.add("hidden");$("inviteUserModal").style.display="none"};
  $("refreshUserAdmin").onclick=loadUserAdminRows;
  $("inviteUserForm").onsubmit=async e=>{e.preventDefault();const button=$("sendInviteUser"),msg=$("inviteUserMessage");button.disabled=true;button.textContent="Enviando…";msg.textContent="";
- try{const {data,error}=await db.functions.invoke("admin-invite-user",{body:{email:$("inviteUserEmail").value.trim(),nombre:$("inviteUserName").value.trim(),apellido:$("inviteUserSurname").value.trim(),organizacion_id:activeOrg,rol:$("inviteUserRole").value}});if(error)throw error;if(data?.error)throw new Error(data.error);msg.textContent=data?.message||"Invitación enviada.";msg.className="success";await loadUserAdminRows()}
+ try{const {data,error}=await db.functions.invoke("admin-invite-user",{body:{action:"invite",email:$("inviteUserEmail").value.trim(),nombre:$("inviteUserName").value.trim(),apellido:$("inviteUserSurname").value.trim(),organizacion_id:activeOrg,rol:$("inviteUserRole").value}});if(error)throw error;if(data?.error)throw new Error(data.error);msg.textContent=data?.message||"Invitación enviada.";msg.className="success";await loadUserAdminRows()}
  catch(err){console.error(err);msg.textContent="No se pudo enviar: "+(err.message||err);msg.className="error"}
  finally{button.disabled=false;button.textContent="Enviar invitación"}
  };
@@ -3117,17 +3117,17 @@ async function renderUserAdminModule(){
 async function loadUserAdminRows(){
  const body=$("userAdminRows"),status=$("userAdminStatus");if(!body)return;body.innerHTML='<tr><td colspan="5">Cargando…</td></tr>';status.textContent="";
  try{
-  const {data,error}=await db.from("usuarios_organizaciones").select("id,usuario_id,rol,activo,created_at,perfiles(nombre,apellido)").eq("organizacion_id",activeOrg).order("created_at",{ascending:false});
-  if(error)throw error;
+  const {data,error}=await db.functions.invoke("admin-invite-user",{body:{action:"list",organizacion_id:activeOrg}});
+  if(error)throw error;if(data?.error)throw new Error(data.error);const users=data?.users||[];
   body.replaceChildren();
-  if(!data?.length){body.innerHTML='<tr><td colspan="5">No hay usuarios asignados.</td></tr>';return}
-  data.forEach(row=>{
-   const tr=document.createElement("tr"),profile=Array.isArray(row.perfiles)?row.perfiles[0]:row.perfiles;
-   const full=[profile?.apellido,profile?.nombre].filter(Boolean).join(", ")||"Perfil sin completar";
-   const cells=[full,row.usuario_id,row.rol,row.activo?"Activo":"Desactivado"];
+  if(!users.length){body.innerHTML='<tr><td colspan="5">No hay usuarios asignados.</td></tr>';return}
+  users.forEach(row=>{
+   const tr=document.createElement("tr");
+   const full=[row.apellido,row.nombre].filter(Boolean).join(", ")||"Perfil sin completar";
+   const cells=[full,row.email||"Correo no disponible",row.rol,row.activo?"Activo":"Desactivado"];
    cells.forEach(value=>{const td=document.createElement("td");td.textContent=value;tr.appendChild(td)});
    const td=document.createElement("td"),btn=document.createElement("button");btn.className="btn "+(row.activo?"secondary":"primary");btn.textContent=row.activo?"Desactivar":"Activar";btn.disabled=row.usuario_id===user.id;
-   btn.onclick=async()=>{btn.disabled=true;try{const {error}=await db.from("usuarios_organizaciones").update({activo:!row.activo}).eq("id",row.id).eq("organizacion_id",activeOrg);if(error)throw error;await loadUserAdminRows()}catch(err){alert("No se pudo cambiar el estado: "+err.message);btn.disabled=false}};td.appendChild(btn);tr.appendChild(td);body.appendChild(tr)
+   btn.onclick=async()=>{btn.disabled=true;try{const {data,error}=await db.functions.invoke("admin-invite-user",{body:{action:"set_active",organizacion_id:activeOrg,membership_id:row.id,activo:!row.activo}});if(error)throw error;if(data?.error)throw new Error(data.error);await loadUserAdminRows()}catch(err){alert("No se pudo cambiar el estado: "+err.message);btn.disabled=false}};td.appendChild(btn);tr.appendChild(td);body.appendChild(tr)
   });
   status.textContent=data.length+" usuario(s) asignado(s) a esta organización.";
  }catch(err){console.error(err);body.innerHTML='<tr><td colspan="5">No se pudo cargar el listado. Revisá permisos RLS.</td></tr>';status.textContent=err.message||""}
