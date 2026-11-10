@@ -2297,6 +2297,7 @@ async function loadModuleRows(id){
     moduleCache[id]=rows;
     const refTables=[...new Set(configs[id].fields.filter(f=>String(f[2]).startsWith("ref:")).map(f=>f[2].slice(4)))];
     await Promise.all(refTables.map(async table=>{moduleCache[table]=await fetchRows(table)}));
+    if(id==="personas")moduleCache.establecimientos=await fetchRows("establecimientos");
     if(id==="riesgos"){setupRiskDangerSelector($("f_peligro_id")?.value);updateRiskOverview();renderRiskTable();return}
     $("tableStatus").textContent=`Se encontraron ${rows.length} registro(s).`;
     if(id==="personas")updatePeopleSummary();
