@@ -1194,14 +1194,24 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
 
 const SUPABASE_URL="https://dpssgowiftbtclzsaprc.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_NIV3CQpZcbvnOBfY7-_a7g_PtYfNIsG";
-let authStorageRemember=true;
+let authStorageRemember=localStorage.getItem("hys_remember_session")!=="false";
 const authStorage={
-  getItem(key){return (authStorageRemember?localStorage:sessionStorage).getItem(key)},
-  setItem(key,value){(authStorageRemember?localStorage:sessionStorage).setItem(key,value)},
+  getItem(key){
+    const preferred=authStorageRemember?localStorage:sessionStorage;
+    const fallback=authStorageRemember?sessionStorage:localStorage;
+    return preferred.getItem(key)??fallback.getItem(key);
+  },
+  setItem(key,value){
+    const target=authStorageRemember?localStorage:sessionStorage;
+    const other=authStorageRemember?sessionStorage:localStorage;
+    target.setItem(key,value);
+    other.removeItem(key);
+  },
   removeItem(key){localStorage.removeItem(key);sessionStorage.removeItem(key)}
 };
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{storage:authStorage,persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
+if($("rememberDevice"))$("rememberDevice").checked=authStorageRemember;
 
 let user=null,organizations=[],activeOrg="",activeRole="",activeModule="inicio",editing=null,moduleCache={},searchText="";
 let activeRiskEvaluation=null;
@@ -3065,10 +3075,17 @@ let inactivityTimer=null,inactivityCountdown=null,inactivityWarningOpen=false;
   try{return await initializationPromise}finally{initializationPromise=null}
 }
 $("loginForm").addEventListener("submit",async e=>{
-  e.preventDefault();loginInProgress=true;authStorageRemember=$("rememberDevice")?.checked!==false;const b=$("loginButton");b.disabled=true;b.textContent="Ingresando...";$("loginMessage").textContent="";
-  try{const {error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)throw error;await initialize()}
-  catch(e){console.error(e);showLogin("No se pudo iniciar sesión: "+e.message)}
-  finally{loginInProgress=false;b.disabled=false;b.innerHTML='Iniciar sesión <span aria-hidden="true">→</span>'}
+  e.preventDefault();loginInProgress=true;authStorageRemember=$("rememberDevice")?.checked!==false;localStorage.setItem("hys_remember_session",String(authStorageRemember));const b=$("loginButton");b.disabled=true;b.textContent="Ingresando...";$("loginMessage").textContent="";
+  let authenticated=false;
+  try{
+    const {error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});
+    if(error)throw error;
+    authenticated=true;
+    await initialize();
+  }catch(e){
+    console.error(e);
+    showLogin((authenticated?"La autenticación fue correcta, pero no se pudo cargar el sistema: ":"No se pudo iniciar sesión: ")+(e.message||"Error desconocido."));
+  }finally{loginInProgress=false;b.disabled=false;b.innerHTML='Iniciar sesión <span aria-hidden="true">→</span>'}
 });
 $("forgotPasswordButton")?.addEventListener("click",()=>{$("loginForm").classList.add("hidden");$("passwordRequestForm").classList.remove("hidden");$("recoveryEmail").value=$("email").value.trim();$("loginMessage").textContent="";$("recoveryRequestMessage").textContent="";$("recoveryEmail").focus()});
 $("backToLoginButton")?.addEventListener("click",()=>{$("passwordRequestForm").classList.add("hidden");$("loginForm").classList.remove("hidden");$("recoveryRequestMessage").textContent=""});
