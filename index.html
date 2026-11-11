@@ -770,24 +770,30 @@ form .field:has(.risk-matrix-widget),
 form .form-field:has(.risk-matrix-widget),
 form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!important;max-width:none!important;min-width:0!important}
 .risk-matrix-widget{width:100%!important;max-width:none!important;min-width:0!important;box-sizing:border-box!important}
-.risk-matrix-layout{display:grid!important;grid-template-columns:minmax(210px,.9fr) minmax(210px,.9fr) minmax(340px,1.35fr)!important;gap:16px!important;align-items:start!important;width:100%!important}
+.risk-matrix-layout{display:grid!important;grid-template-columns:minmax(210px,.9fr) minmax(210px,.9fr) minmax(390px,1.35fr)!important;gap:16px!important;align-items:stretch!important;width:100%!important}
 .risk-level-pickers{display:contents!important}
-.risk-level-pickers>div{min-width:0!important}
-.risk-matrix-bottom{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:10px!important;margin-top:0!important;min-width:0!important}
-.risk-matrix-wrap{width:100%!important;min-width:0!important;overflow:visible!important}
-.risk-matrix-table{width:100%!important;min-width:0!important;table-layout:fixed!important}
-.risk-matrix-table th{padding:7px 3px!important;overflow-wrap:anywhere}
-.risk-cell{min-width:0!important;padding:9px 1px!important;font-size:10px!important;overflow-wrap:anywhere}
+.risk-level-pickers>div{min-width:0!important;align-self:stretch!important}
+.risk-matrix-bottom{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:10px!important;margin-top:0!important;min-width:0!important;align-content:stretch!important}
+.risk-matrix-wrap{width:100%!important;min-width:0!important;overflow:visible!important;display:flex!important;flex-direction:column!important}
+.risk-matrix-table{width:100%!important;min-width:0!important;table-layout:fixed!important;flex:1 1 auto!important;height:100%!important;border-spacing:3px!important}
+.risk-matrix-table thead{height:38px!important}
+.risk-matrix-table tbody tr{height:62px!important}
+.risk-matrix-table th{padding:7px 3px!important;overflow-wrap:normal!important;word-break:normal!important;white-space:nowrap!important;vertical-align:middle!important}
+.risk-cell{display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;min-width:0!important;min-height:58px!important;height:100%!important;box-sizing:border-box!important;padding:7px 2px!important;font-size:10px!important;line-height:1.15!important;overflow-wrap:normal!important;word-break:normal!important;white-space:nowrap!important;text-align:center!important}
 .risk-result-card{width:100%!important;box-sizing:border-box!important;padding:10px!important}
 @media(max-width:1100px){
- .risk-matrix-layout{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .risk-matrix-layout{grid-template-columns:repeat(2,minmax(0,1fr))!important;align-items:stretch!important}
  .risk-matrix-bottom{grid-column:1/-1!important;grid-template-columns:minmax(0,1.6fr) minmax(180px,.8fr)!important}
+ .risk-matrix-table tbody tr{height:56px!important}
+ .risk-cell{min-height:52px!important;font-size:11px!important}
 }
 @media(max-width:700px){
  .risk-matrix-layout{grid-template-columns:minmax(0,1fr)!important}
  .risk-matrix-bottom{grid-column:auto!important;grid-template-columns:minmax(0,1fr)!important}
  .risk-matrix-table{min-width:280px!important}
  .risk-matrix-wrap{overflow-x:auto!important}
+ .risk-matrix-table tbody tr{height:52px!important}
+ .risk-cell{min-height:48px!important;font-size:11px!important}
 }
 
 /* Fondo completo por opción: rojo, verde, amarillo y celeste */
@@ -1065,6 +1071,29 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
 @media(max-width:600px){.login-auth-options{align-items:flex-start;flex-direction:column;gap:5px}.login-flow-title{font-size:22px}}
 
 .user-admin-card{margin-top:18px;overflow:hidden}.user-admin-card table{width:100%;border-collapse:collapse}.user-admin-card th,.user-admin-card td{padding:12px;border-bottom:1px solid var(--border,#e5e7eb);text-align:left;font-size:13px}.user-admin-card th{font-weight:750;background:var(--surface-2,#f8fafc)}#inviteUserModal{position:fixed;inset:0;z-index:10000;align-items:center;justify-content:center;background:#0f172a88;padding:18px}#inviteUserModal .modal-content{position:relative;background:var(--surface,#fff);padding:24px;border-radius:16px;width:min(480px,100%);max-height:90vh;overflow:auto;box-shadow:0 20px 60px #0003}#inviteUserModal .modal-close{position:absolute;right:14px;top:12px;font-size:24px;background:none;border:0;cursor:pointer}#inviteUserForm label{display:block;font-size:13px;font-weight:700;margin:12px 0}#inviteUserForm input,#inviteUserForm select{display:block;width:100%;margin-top:6px;padding:10px;border:1px solid var(--border,#d1d5db);border-radius:9px;background:var(--surface,#fff)}#inviteUserMessage.success{color:#15803d}#inviteUserMessage.error{color:#b91c1c}@media(max-width:700px){.user-admin-card{overflow-x:auto}.user-admin-card table{min-width:600px}}
+/* Matriz compacta: columnas de igual ancho, contenido centrado y alineación uniforme */
+#riskMatrixWidget .risk-matrix-table{width:100%!important;min-width:0!important;table-layout:fixed!important;border-spacing:2px!important;height:auto!important;flex:none!important}
+#riskMatrixWidget .risk-matrix-table tr>*{box-sizing:border-box!important;vertical-align:middle!important;text-align:center!important}
+#riskMatrixWidget .risk-matrix-table tr>*:first-child{width:22%!important}
+#riskMatrixWidget .risk-matrix-table tr>*:not(:first-child){width:15.6%!important}
+#riskMatrixWidget .risk-matrix-table thead tr{height:28px!important}
+#riskMatrixWidget .risk-matrix-table tbody tr{height:44px!important}
+#riskMatrixWidget .risk-matrix-table th{padding:3px 1px!important;font-size:10px!important;line-height:1.15!important;white-space:normal!important;text-align:center!important}
+#riskMatrixWidget .risk-cell{display:block!important;width:100%!important;height:40px!important;min-height:40px!important;max-width:100%!important;box-sizing:border-box!important;margin:0!important;padding:4px 1px!important;font-size:10px!important;line-height:1.1!important;font-weight:700!important;text-align:center!important;white-space:normal!important;overflow-wrap:normal!important;word-break:normal!important;border-radius:4px!important}
+@media(max-width:700px){#riskMatrixWidget .risk-matrix-table{min-width:280px!important}#riskMatrixWidget .risk-matrix-table tbody tr{height:42px!important}#riskMatrixWidget .risk-cell{height:38px!important;min-height:38px!important;font-size:10px!important}}
+/* Matriz verdaderamente compacta y cuadriculada: seis columnas iguales */
+#riskMatrixWidget .risk-matrix-wrap{width:100%!important;max-width:540px!important;min-width:0!important;overflow:visible!important;display:block!important}
+#riskMatrixWidget .risk-matrix-table{width:100%!important;min-width:0!important;max-width:540px!important;table-layout:fixed!important;border-collapse:separate!important;border-spacing:3px!important;height:auto!important;flex:none!important}
+#riskMatrixWidget .risk-matrix-table th,
+#riskMatrixWidget .risk-matrix-table td{width:16.6667%!important;max-width:16.6667%!important;box-sizing:border-box!important;padding:2px!important;text-align:center!important;vertical-align:middle!important}
+#riskMatrixWidget .risk-matrix-table thead tr{height:32px!important}
+#riskMatrixWidget .risk-matrix-table tbody tr{height:48px!important}
+#riskMatrixWidget .risk-matrix-table th{font-size:10px!important;line-height:1.1!important;font-weight:700!important;white-space:normal!important;overflow-wrap:normal!important;word-break:normal!important;text-align:center!important}
+#riskMatrixWidget .risk-matrix-table tbody th{height:48px!important}
+#riskMatrixWidget .risk-cell{display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;height:42px!important;min-height:42px!important;max-width:100%!important;box-sizing:border-box!important;margin:0!important;padding:2px!important;font-size:10px!important;line-height:1.05!important;font-weight:700!important;text-align:center!important;white-space:nowrap!important;overflow-wrap:normal!important;word-break:keep-all!important;border-radius:4px!important}
+#riskMatrixWidget .risk-label-moderado{display:block!important;text-align:center!important;white-space:nowrap!important;line-height:1.1!important}
+#riskMatrixWidget .risk-label-critico{display:inline-block!important;white-space:nowrap!important;word-break:keep-all!important}
+@media(max-width:700px){#riskMatrixWidget .risk-matrix-wrap{overflow-x:auto!important}#riskMatrixWidget .risk-matrix-table{min-width:330px!important}#riskMatrixWidget .risk-matrix-table tbody tr{height:46px!important}#riskMatrixWidget .risk-matrix-table tbody th{height:46px!important}#riskMatrixWidget .risk-cell{height:40px!important;min-height:40px!important;font-size:10px!important}}
 </style>
 </head>
 <body>
@@ -1165,14 +1194,24 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
 
 const SUPABASE_URL="https://dpssgowiftbtclzsaprc.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_NIV3CQpZcbvnOBfY7-_a7g_PtYfNIsG";
-let authStorageRemember=true;
+let authStorageRemember=localStorage.getItem("hys_remember_session")!=="false";
 const authStorage={
-  getItem(key){return (authStorageRemember?localStorage:sessionStorage).getItem(key)},
-  setItem(key,value){(authStorageRemember?localStorage:sessionStorage).setItem(key,value)},
+  getItem(key){
+    const preferred=authStorageRemember?localStorage:sessionStorage;
+    const fallback=authStorageRemember?sessionStorage:localStorage;
+    return preferred.getItem(key)??fallback.getItem(key);
+  },
+  setItem(key,value){
+    const target=authStorageRemember?localStorage:sessionStorage;
+    const other=authStorageRemember?sessionStorage:localStorage;
+    target.setItem(key,value);
+    other.removeItem(key);
+  },
   removeItem(key){localStorage.removeItem(key);sessionStorage.removeItem(key)}
 };
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{storage:authStorage,persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
+if($("rememberDevice"))$("rememberDevice").checked=authStorageRemember;
 
 let user=null,organizations=[],activeOrg="",activeRole="",activeModule="inicio",editing=null,moduleCache={},searchText="";
 let activeRiskEvaluation=null;
@@ -1858,7 +1897,7 @@ async function renderField(field,value,moduleId){
     const probs=[[1,"Muy poco probable","Puede ocurrir excepcionalmente."],[2,"Poco probable","Podría ocurrir alguna vez."],[3,"Probable","Podría ocurrir varias veces."],[4,"Muy probable","Ocurrirá frecuentemente."],[5,"Casi seguro","Ocurrirá en la mayoría de las circunstancias."]];
     const cons=[[1,"Insignificante","Lesión sin tratamiento médico."],[2,"Menor","Lesión con tratamiento médico."],[3,"Moderada","Lesión con ausencia laboral."],[4,"Mayor","Lesión grave o incapacidad permanente."],[5,"Catastrófica","Muerte o múltiples víctimas."]];
     const opts=(arr,axis)=>arr.map(x=>'<button type="button" class="risk-level-option" data-risk-axis="'+axis+'" data-risk-value="'+x[0]+'"><span class="risk-level-dot"></span><span><b>'+x[1]+' ('+x[0]+')</b><small>'+x[2]+'</small></span></button>').join("");
-    const cell=(p,c)=>{const n=p*c,l=n>=15?"Crítico":n>=10?"Alto":n>=5?"Moderado":"Bajo",css=n>=15?"muy-alto":n>=10?"alto":n>=5?"medio":"bajo";return '<td><button type="button" data-risk-cell-p="'+p+'" data-risk-cell-c="'+c+'" class="risk-cell risk-cell-'+css+'">'+l+'</button></td>'};
+    const cell=(p,c)=>{const n=p*c,l=n>=15?"Crítico":n>=10?"Alto":n>=5?"Moderado":"Bajo",css=n>=15?"muy-alto":n>=10?"alto":n>=5?"medio":"bajo";return '<td><button type="button" data-risk-cell-p="'+p+'" data-risk-cell-c="'+c+'" class="risk-cell risk-cell-'+css+'">'+(l==="Moderado"?"<span class=\"risk-label-moderado\">Mode-<br>rado</span>":l==="Crítico"?"<span class=\"risk-label-critico\">Crítico</span>":l)+'</button></td>'};
     control='<input type="hidden" id="'+id+'" name="'+escapeHtml(key)+'" value="'+escapeHtml(value??"")+'"><div class="risk-matrix-widget" id="riskMatrixWidget"><div class="risk-matrix-intro"><strong>Valoración interactiva del riesgo</strong><p>Elegí la probabilidad y la consecuencia, o seleccioná directamente una celda de la matriz. El nivel se calcula automáticamente.</p></div><div class="risk-matrix-layout"><div class="risk-level-pickers"><div><h4>1. Probabilidad de ocurrencia</h4><div class="risk-level-options">'+opts(probs,"probability")+'</div></div><div><h4>2. Consecuencia / severidad</h4><div class="risk-level-options">'+opts(cons,"consequence")+'</div></div></div><div class="risk-matrix-bottom"><div class="risk-matrix-wrap"><h4>3. Matriz de riesgo</h4><table class="risk-matrix-table"><thead><tr><th>Prob. ↓ / Cons. →</th>'+[1,2,3,4,5].map(n=>'<th>'+n+'</th>').join("")+'</tr></thead><tbody>'+[5,4,3,2,1].map(p=>'<tr><th>'+p+'</th>'+[1,2,3,4,5].map(c=>cell(p,c)).join("")+'</tr>').join("")+'</tbody></table></div><aside class="risk-result-card"><span>Nivel de riesgo resultante</span><strong id="riskMatrixResult" class="risk-result-value">Sin valorar</strong><p id="riskMatrixExplanation">Seleccioná probabilidad y consecuencia.</p><b id="riskMatrixFormula">P × C = —</b></aside></div></div></div>';
   }else if(moduleId==="riesgos"&&(key==="consecuencia"||key==="nivel_riesgo")){
     control='<input id="'+id+'" name="'+escapeHtml(key)+'" type="hidden" value="'+escapeHtml(value??"")+'">';
@@ -2150,10 +2189,9 @@ async function deleteRiskEvaluation(evaluationId,assessment){
  try{
   const {data:target,error:readError}=await db.from("evaluaciones_riesgos").select("id,organizacion_id,estado").eq("id",evaluationId).eq("organizacion_id",activeOrg).maybeSingle();
   if(readError)throw readError;if(!target)throw new Error("No se encontró la evaluación en la organización activa.");
-  const {error:riskDeleteError}=await db.from("riesgos").delete().eq("evaluacion_id",target.id);
-  if(riskDeleteError)throw riskDeleteError;
-  const {data,error}=await db.from("evaluaciones_riesgos").delete().eq("id",target.id).eq("organizacion_id",activeOrg).select("id").maybeSingle();
-  if(error)throw error;if(!data)throw new Error("No se confirmó la eliminación de la evaluación. Verificá los permisos RLS.");
+  const {data,error}=await db.rpc("eliminar_evaluacion_riesgos",{p_evaluacion_id:target.id,p_organizacion_id:activeOrg});
+  if(error)throw error;
+  if(data!==true)throw new Error("La operación atómica no confirmó la eliminación. No se informó éxito.");
   if(activeRiskEvaluation&&String(activeRiskEvaluation.id)===String(target.id))activeRiskEvaluation=null;
   await loadActiveRiskEvaluation();await loadModuleRows("riesgos");await renderRiskEvaluationHistory();await updateRiskEvaluationToolbar();
   alert(label+" y sus riesgos asociados fueron eliminados.");
@@ -2221,9 +2259,10 @@ async function finishRiskEvaluation(){
   const sectorIds=[...new Set((posts||[]).map(p=>p.sector_id).filter(Boolean))];
   const msg='¿Finalizar definitivamente esta evaluación general?\\n\\nSectores relevados: '+sectorIds.length+'\\nPuestos incluidos: '+postIds.length+'\\nRiesgos registrados: '+rows.length+'\\n\\nUna vez finalizada no se podrán agregar nuevos riesgos a esta evaluación.';
   if(!confirm(msg))return;
-  const {error:updateError}=await db.from("evaluaciones_riesgos").update({estado:"Finalizada",fecha_cierre:new Date().toISOString()}).eq("id",activeRiskEvaluation.id).eq("estado","En curso");
+  const {data:closed,error:updateError}=await db.from("evaluaciones_riesgos").update({estado:"Finalizada",fecha_cierre:new Date().toISOString()}).eq("id",activeRiskEvaluation.id).eq("organizacion_id",activeOrg).eq("estado","En curso").select("id,estado,fecha_cierre").maybeSingle();
   if(updateError)throw updateError;
-  activeRiskEvaluation=null;await loadActiveRiskEvaluation();await renderRiskEvaluationHistory();alert("La evaluación general quedó finalizada.");
+  if(!closed||closed.estado!=="Finalizada"||!closed.fecha_cierre)throw new Error("La base de datos no confirmó el cierre. La evaluación permanece disponible para revisar.");
+  activeRiskEvaluation=null;await loadActiveRiskEvaluation();await renderRiskEvaluationHistory();alert("La evaluación general quedó finalizada y el cierre fue confirmado por la base de datos.");
  }catch(e){alert("No se pudo finalizar la evaluación: "+e.message)}
 }
 async function renderCrud(id){
@@ -2254,7 +2293,7 @@ async function renderCrud(id){
  ${id==="personas"?`<div class="people-summary" id="peopleSummary" aria-label="Resumen de personal"></div><div class="panel" id="bulkPeoplePanel"><h3>Alta masiva desde Excel</h3><p class="muted">Importá varias personas a la vez. Primero descargá la plantilla, elegí el establecimiento, cargá el archivo y validá las filas. No se guardará nada hasta que confirmes.</p><div class="form-grid"><div><label for="bulkEstablishment">Establecimiento de destino *</label><select id="bulkEstablishment" required><option value="">Cargando establecimientos...</option></select></div><div><label for="bulkFile">Archivo Excel (.xlsx)</label><input id="bulkFile" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"></div></div><div class="actions"><button class="btn btn-light" type="button" id="bulkTemplate">Descargar plantilla Excel</button><button class="btn btn-blue" type="button" id="bulkValidate">Validar archivo</button><button class="btn btn-green" type="button" id="bulkConfirm" disabled>Confirmar alta masiva</button></div><div id="bulkStatus" class="status" role="status"></div><div id="bulkSummary"></div><div id="bulkPreview" class="table-wrap" style="margin-top:12px"></div></div>`:""}
  ${id==="peligros"?hazardCategoryCards():""}
  ${id==="establecimientos"?`<section class="panel establishments-create-panel"><button class="btn btn-blue" type="button" id="establishmentsCreateModal">＋ Crear</button><p>Registrá los datos y la fotografía del establecimiento.</p></section><div id="establishmentsCreateModalHost" class="related-modal hidden" role="dialog" aria-modal="true" aria-labelledby="establishmentsModalTitle"><section class="related-dialog establishments-dialog"><header class="related-head"><div><h2 id="establishmentsModalTitle">Registrar establecimiento</h2><p>Completá los datos y, si querés, adjuntá una fotografía.</p></div><button class="btn btn-light" type="button" id="establishmentsModalClose">Cerrar ✕</button></header><form id="recordForm"><h3 id="formTitle" class="hidden">Registrar establecimiento</h3><div id="formFields" class="form-grid"></div><div class="establishment-photo-field"><label for="establishmentPhoto">Fotografía del establecimiento (JPG, PNG o WEBP; máximo 5 MB)</label><input id="establishmentPhoto" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"><div id="establishmentPhotoPreview" class="establishment-photo-preview"><span>Sin fotografía seleccionada</span></div></div><div class="actions"><button class="btn btn-green" type="submit" id="saveRecord">Guardar registro</button><button class="btn btn-light hidden" id="cancelEdit" type="button">Cancelar edición</button></div><div id="formStatus" class="status" role="status"></div></form></section></div>`:["sectores","puestos"].includes(id)?`<section class="panel establishments-create-panel"><button class="btn btn-blue" type="button" id="hierarchyCreateButton">＋ Crear</button><p>${id==="sectores"?"Registrá un sector del establecimiento seleccionado.":"Registrá un puesto y vinculalo con uno de sus sectores."}</p></section><div id="hierarchyCreateModalHost" class="related-modal hidden" role="dialog" aria-modal="true" aria-labelledby="hierarchyModalTitle"><section class="related-dialog establishments-dialog"><header class="related-head"><div><h2 id="hierarchyModalTitle">${id==="sectores"?"Registrar sector":"Registrar puesto"}</h2><p>${id==="sectores"?"Completá los datos del sector.":"Completá los datos del puesto y seleccioná el sector correspondiente."}</p></div><button class="btn btn-light" type="button" id="hierarchyModalClose">Cerrar ✕</button></header><form id="recordForm"><h3 id="formTitle" class="hidden">Registrar</h3><div id="formFields" class="form-grid"></div><div class="actions"><button class="btn btn-green" type="submit" id="saveRecord">Guardar registro</button><button class="btn btn-light hidden" id="cancelEdit" type="button">Cancelar edición</button></div><div id="formStatus" class="status" role="status"></div></form></section></div>`:id==="vencimientos"?`<section class="panel vencimientos-form-panel" id="vencimientosFormPanel"><button class="vencimientos-form-toggle" id="vencimientosFormToggle" type="button" aria-expanded="false" aria-controls="vencimientosFormBody"><span class="vencimientos-form-toggle-main"><span class="vencimientos-form-toggle-icon">＋</span><span><h3 id="formTitle">Registrar vencimiento</h3><p id="vencimientosFormHint">Desplegá el formulario cuando necesites cargar un nuevo vencimiento.</p></span></span><span class="vencimientos-form-toggle-arrow" aria-hidden="true">⌄</span></button><div class="vencimientos-form-body" id="vencimientosFormBody" hidden><form id="recordForm"><div id="formFields" class="form-grid"></div><div class="actions"><button class="btn btn-green" type="submit" id="saveRecord">Guardar registro</button><button class="btn btn-light hidden" id="cancelEdit" type="button">Cancelar edición</button></div><div id="formStatus" class="status" role="status"></div></form></div></section>`:`<div class="panel"><h3 id="formTitle">Registrar ${escapeHtml(cfg.title.toLowerCase())}</h3><form id="recordForm"><div id="formFields" class="form-grid"></div><div class="actions"><button class="btn btn-green" type="submit" id="saveRecord">Guardar registro</button><button class="btn btn-light hidden" id="cancelEdit" type="button">Cancelar edición</button></div><div id="formStatus" class="status" role="status"></div></form></div>`}
- <div class="panel"><h3>Listado</h3><div class="toolbar"><input id="tableSearch" placeholder="Buscar en los registros..." aria-label="Buscar"><span id="rowCount" class="muted"></span>${id==="personas"?`<label for="peopleStatusFilter" class="muted">Estado</label><select id="peopleStatusFilter" aria-label="Filtrar por estado"><option value="todos">Todos</option><option value="activos">Activos</option><option value="inactivos">Inactivos</option></select><label for="peoplePageSize" class="muted">Mostrar</label><select id="peoplePageSize" aria-label="Cantidad de personas por página"><option value="5">5</option><option value="10" selected>10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select><span class="muted">por página</span><button class="btn btn-light btn-sm" type="button" id="peopleExport">Exportar Excel</button>`:""}${id!=="personas"?`<label for="listPageSize" class="muted">Mostrar</label><select id="listPageSize" aria-label="Cantidad de registros por página"><option value="10">10</option><option value="25" selected>25</option><option value="50">50</option><option value="100">100</option></select><span class="muted">por página</span><button class="btn btn-light btn-sm" type="button" id="listExport">Exportar listado CSV</button>`:""}</div>${id==="vencimientos"?`<div id="vencimientosSummary" class="vencimientos-summary"></div><nav id="vencimientosFilters" class="vencimientos-filters" aria-label="Filtrar vencimientos"><button type="button" class="vencimientos-filter active" data-vfilter="todos">Todos</button><button type="button" class="vencimientos-filter" data-vfilter="vencidos">Vencidos</button><button type="button" class="vencimientos-filter" data-vfilter="proximos">Próximos</button><button type="button" class="vencimientos-filter" data-vfilter="cumplidos">Cumplidos</button></nav><div id="vencimientosCards" class="vencimientos-cards"><p class="empty">Cargando vencimientos...</p></div>`:`<div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"><tr><td class="empty">Cargando...</td></tr></tbody></table></div>`}<div id="tableStatus" class="status" role="status"></div>${id==="personas"?`<div id="peoplePagination" class="toolbar" style="justify-content:flex-end;align-items:center;gap:8px;margin-top:12px"></div>`:`<div id="listPagination" class="toolbar" style="justify-content:flex-end;align-items:center;gap:8px;margin-top:12px"></div>`}</div>${id==="personas"?`<div id="peopleDetailModal" class="people-modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="peopleDetailTitle"><section class="people-modal"><header class="people-modal-header"><div><h3 id="peopleDetailTitle">Ficha de personal</h3><p id="peopleDetailSubtitle">Datos del registro seleccionado</p></div><button type="button" class="people-modal-close" id="peopleDetailClose">Cerrar ✕</button></header><nav class="people-modal-tabs" id="peopleDetailTabs" aria-label="Secciones de la ficha"><button type="button" class="people-modal-tab active" data-people-tab="personal">Datos personales</button><button type="button" class="people-modal-tab" data-people-tab="destino">Destino y situación</button><button type="button" class="people-modal-tab" data-people-tab="administrativo">Identificación y estado</button><button type="button" class="people-modal-tab" data-people-tab="fotografia">Fotografía</button></nav><div class="people-modal-content" id="peopleDetailContent"></div><footer class="people-modal-footer"><button type="button" class="btn btn-light" id="peopleDetailCloseBottom">Cerrar</button></footer></section></div>`:""}`;
+ <div class="panel"><h3>Listado</h3><div class="toolbar"><input id="tableSearch" placeholder="Buscar en los registros..." aria-label="Buscar"><span id="rowCount" class="muted"></span>${id==="personas"?`<label for="peopleStatusFilter" class="muted">Estado</label><select id="peopleStatusFilter" aria-label="Filtrar por estado"><option value="todos">Todos</option><option value="activos">Activos</option><option value="inactivos">Inactivos</option></select><label for="peoplePageSize" class="muted">Mostrar</label><select id="peoplePageSize" aria-label="Cantidad de personas por página"><option value="5">5</option><option value="10" selected>10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select><span class="muted">por página</span><button class="btn btn-light btn-sm" type="button" id="peopleExport">Exportar Excel</button>`:""}${id!=="personas"?`<label for="listPageSize" class="muted">Mostrar</label><select id="listPageSize" aria-label="Cantidad de registros por página"><option value="10">10</option><option value="25" selected>25</option><option value="50">50</option><option value="100">100</option></select><span class="muted">por página</span><button class="btn btn-light btn-sm" type="button" id="listExport">Exportar listado CSV</button>`:""}</div>${id==="vencimientos"?`<div id="vencimientosSummary" class="vencimientos-summary"></div><nav id="vencimientosFilters" class="vencimientos-filters" aria-label="Filtrar vencimientos"><button type="button" class="vencimientos-filter active" data-vfilter="todos">Todos</button><button type="button" class="vencimientos-filter" data-vfilter="vencidos">Vencidos</button><button type="button" class="vencimientos-filter" data-vfilter="proximos">Próximos</button><button type="button" class="vencimientos-filter" data-vfilter="cumplidos">Cumplidos</button></nav><div id="vencimientosCards" class="vencimientos-cards"><p class="empty">Cargando vencimientos...</p></div>`:`<div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"><tr><td class="empty">Cargando...</td></tr></tbody></table></div>`}<div id="tableStatus" class="status" role="status"></div>${id==="personas"?`<div id="peoplePagination" class="toolbar" style="justify-content:flex-end;align-items:center;gap:8px;margin-top:12px"></div>`:`<div id="listPagination" class="toolbar" style="justify-content:flex-end;align-items:center;gap:8px;margin-top:12px"></div>`}</div>${id==="personas"?`<div id="peopleDetailModal" class="people-modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="peopleDetailTitle"><section class="people-modal"><header class="people-modal-header"><div><h3 id="peopleDetailTitle">Ficha de personal</h3><p id="peopleDetailSubtitle">Datos del registro seleccionado</p></div><button type="button" class="people-modal-close" id="peopleDetailClose">Cerrar ✕</button></header><nav class="people-modal-tabs" id="peopleDetailTabs" aria-label="Secciones de la ficha"><button type="button" class="people-modal-tab active" data-people-tab="personal">Datos personales</button><button type="button" class="people-modal-tab" data-people-tab="destino">Destino y situación</button><button type="button" class="people-modal-tab" data-people-tab="contacto">Contacto</button><button type="button" class="people-modal-tab" data-people-tab="observaciones">Observaciones</button><button type="button" class="people-modal-tab" data-people-tab="fotografia">Fotografía</button></nav><div class="people-modal-content" id="peopleDetailContent"></div><footer class="people-modal-footer"><button type="button" class="btn btn-light" id="peopleDetailCloseBottom">Cerrar</button></footer></section></div>`:""}`;
  for(const f of cfg.fields)$("formFields").insertAdjacentHTML("beforeend",await renderField(f,f[2]==="checkbox"?true:"",id));
  if(id==="peligros")setupHazardCategoryCards();
  if(id==="sectores"||id==="puestos"){const codeKey=id==="sectores"?"codigo":"Codigo",parentKey=id==="sectores"?"establecimiento_id":"sector_id",parentInput=$("f_"+parentKey),codeInput=$("f_"+codeKey);if(codeInput){codeInput.readOnly=true;codeInput.setAttribute("aria-readonly","true");codeInput.title="El sistema asigna automáticamente el código correlativo"}if(parentInput&&!editing)parentInput.addEventListener("change",async()=>{try{codeInput.value=await getNextCode(id)}catch(e){codeInput.value="";codeInput.placeholder=e.message}});try{if(codeInput&&!editing)codeInput.value=await getNextCode(id)}catch(e){if(codeInput)codeInput.value=""}}
@@ -2268,6 +2307,7 @@ async function loadModuleRows(id){
     moduleCache[id]=rows;
     const refTables=[...new Set(configs[id].fields.filter(f=>String(f[2]).startsWith("ref:")).map(f=>f[2].slice(4)))];
     await Promise.all(refTables.map(async table=>{moduleCache[table]=await fetchRows(table)}));
+    if(id==="personas")moduleCache.establecimientos=await fetchRows("establecimientos");
     if(id==="riesgos"){setupRiskDangerSelector($("f_peligro_id")?.value);updateRiskOverview();renderRiskTable();return}
     $("tableStatus").textContent=`Se encontraron ${rows.length} registro(s).`;
     if(id==="personas")updatePeopleSummary();
@@ -2298,28 +2338,77 @@ function displayCellValue(moduleId,row,key){
   if(field&&field[2]==="date")return formatDateDMY(value);
   return String(value);
 }
+function peopleProfileField(row,key,label,type="text",options=null,readonly=false){
+ const value=row[key]??"";
+ const id="people-edit-"+key.replace(/[^a-zA-Z0-9_-]/g,"_");
+ let control="";
+ if(type==="select"){
+  control='<select id="'+id+'" data-person-field="'+key+'"><option value="">— Seleccionar —</option>'+(options||[]).map(o=>'<option value="'+escapeHtml(String(o.value))+'" '+(String(o.value)===String(value)?"selected":"")+'>'+escapeHtml(o.label)+'</option>').join("")+'</select>';
+ }else if(type==="checkbox"){
+  control='<label class="people-edit-check"><input id="'+id+'" type="checkbox" data-person-field="'+key+'" '+(value===true?"checked":"")+'> <span>Activo</span></label>';
+ }else{
+  control='<input id="'+id+'" type="'+type+'" data-person-field="'+key+'" value="'+escapeHtml(String(value))+'" '+(readonly?"readonly":"")+' autocomplete="off">';
+ }
+ return '<label class="people-edit-field"><span>'+escapeHtml(label)+'</span>'+control+'</label>';
+}
+function peopleProfileOptions(table,labelKey){
+ return (moduleCache[table]||[]).filter(x=>x.Activo!==false&&x.activo!==false).map(x=>({value:x.id,label:labelKey(x)}));
+}
+function renderPeopleProfileTab(row,tab){
+ const content=$("peopleDetailContent");
+ const establishments=peopleProfileOptions("establecimientos",x=>x.Nombre||"Establecimiento");
+ const posts=peopleProfileOptions("puestos",x=>x.Nombre||"Puesto");
+ let fields=[];
+ if(tab==="personal")fields=[
+  ["Apellido","Apellido","text"],["Nombre","Nombre","text"],["Documneto","Documento / DNI","text"],["fecha_nacimiento","Fecha de nacimiento","date"],["genero","Género","select",[{value:"Femenino",label:"Femenino"},{value:"Masculino",label:"Masculino"},{value:"Otro",label:"Otro"},{value:"No especifica",label:"No especifica"}]]
+ ];
+ if(tab==="destino")fields=[
+  ["Legajo","Legajo","text",null,true],["Cargo","Cargo / función","text"],["Fecha de Ingreso","Fecha de ingreso","date"],["establecimiento_id","Establecimiento","select",establishments],["puesto_id","Puesto de trabajo","select",posts],["Activo","Estado del registro","checkbox"]
+ ];
+ if(tab==="contacto")fields=[
+  ["telefono","Teléfono","tel"],["email","Correo electrónico","email"],["domicilio","Domicilio","text"],["localidad","Localidad","text"],["provincia","Provincia","text"],["contacto_emergencia_nombre","Contacto de emergencia","text"],["contacto_emergencia_telefono","Teléfono de emergencia","tel"]
+ ];
+ if(tab==="observaciones")fields=[["observaciones","Observaciones de la ficha","textarea"]];
+ const controls=fields.map(([key,label,type,opts,readonly])=>{
+  if(type==="textarea")return '<label class="people-edit-field people-edit-wide"><span>'+label+'</span><textarea data-person-field="'+key+'" rows="4">'+escapeHtml(String(row[key]||""))+'</textarea></label>';
+  return peopleProfileField(row,key,label,type,Array.isArray(opts)?opts:null,!!readonly);
+ }).join("");
+ const status='<div id="peopleProfileStatus" class="people-photo-status" role="status"></div>';
+ content.innerHTML='<div class="people-profile-banner"><div class="people-profile-avatar">'+escapeHtml((row.Nombre||"?").slice(0,1)+(row.Apellido||"?").slice(0,1)).toUpperCase()+'</div><div><strong>'+escapeHtml([row.Apellido,row.Nombre].filter(Boolean).join(", "))+'</strong><span>Legajo '+escapeHtml(row.Legajo||"sin asignar")+' · '+escapeHtml(row.Cargo||"Sin cargo indicado")+'</span></div></div><div class="people-edit-grid">'+controls+'</div>'+status+'<div class="people-profile-actions"><button type="button" class="btn btn-blue" id="peopleProfileSave">Guardar cambios</button><button type="button" class="btn btn-light" id="peopleProfileCancel">Descartar cambios</button></div>';
+ $("peopleProfileSave").onclick=()=>savePeopleProfile(row,tab);
+ $("peopleProfileCancel").onclick=()=>renderPeopleProfileTab(row,tab);
+}
+async function savePeopleProfile(row,tab){
+ const status=$("peopleProfileStatus"),button=$("peopleProfileSave");button.disabled=true;status.textContent="Guardando cambios…";status.className="people-photo-status";
+ try{
+  const payload={};
+  $("peopleDetailContent").querySelectorAll("[data-person-field]").forEach(el=>{
+   const key=el.dataset.personField;
+   if(el.type==="checkbox")payload[key]=el.checked;
+   else{const v=el.value.trim();payload[key]=v===""?null:v}
+  });
+  if(payload.Documneto!=null&&!/^\\d{1,8}$/.test(String(payload.Documneto)))throw new Error("El documento debe contener únicamente números y hasta 8 dígitos.");
+  if(payload.email&&!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(payload.email))throw new Error("Ingresá un correo electrónico válido.");
+  if(!row?.id||!activeOrg)throw new Error("No se pudo identificar la persona o la organización activa.");
+  if(payload.Documneto!=null&&!/^\d{1,8}$/.test(String(payload.Documneto)))throw new Error("El documento debe contener únicamente números y hasta 8 dígitos.");
+  if(payload.email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(payload.email)))throw new Error("Ingresá un correo electrónico válido.");
+  if(payload.fecha_nacimiento&&payload.fecha_nacimiento>new Date().toISOString().slice(0,10))throw new Error("La fecha de nacimiento no puede ser futura.");
+  const result=await db.from("personas").update(payload).eq("id",row.id).eq("organizacion_id",activeOrg).select("*").maybeSingle();
+  if(result.error)throw result.error;if(!result.data)throw new Error("No se confirmó la actualización. Verificá los permisos de tu usuario y la organización activa.");
+  Object.assign(row,result.data);const cached=(moduleCache.personas||[]).find(x=>String(x.id)===String(row.id));if(cached)Object.assign(cached,result.data);
+  $("peopleDetailTitle").textContent=[row.Apellido,row.Nombre].filter(Boolean).join(", ");$("peopleDetailSubtitle").textContent="Legajo: "+(row.Legajo||"Sin asignar")+" · Ficha de personal";
+  updatePeopleSummary();renderTable("personas");renderPeopleProfileTab(row,tab);
+  const ok=$("peopleProfileStatus");ok.textContent="Cambios guardados correctamente.";ok.className="people-photo-status success";
+ }catch(e){console.error(e);status.textContent=e.message||"No se pudieron guardar los cambios.";status.className="people-photo-status error"}
+ finally{button.disabled=false}
+}
 function openPeopleDetail(row,tab="personal"){
  window.currentPeopleDetail=row;
  const modal=$("peopleDetailModal");if(!modal)return;
  const fullName=[row.Apellido,row.Nombre].filter(Boolean).join(", ")||"Persona sin nombre";
  $("peopleDetailTitle").textContent=fullName;
  $("peopleDetailSubtitle").textContent="Legajo: "+(row.Legajo||"Sin asignar")+" · Ficha de personal";
- const groups={
-  personal:[["Apellido","Apellido"],["Nombre","Nombre"],["Documneto","Documento"]],
-  destino:[["puesto_id","Puesto"],["Cargo","Cargo"],["Fecha de Ingreso","Fecha de ingreso"]],
-  administrativo:[["Legajo","Legajo"],["Activo","Estado"]]
- };
- const content=$("peopleDetailContent");
- if(tab==="fotografia"){renderPeoplePhotoTab(row)}else{
- const active=groups[tab]||groups.personal;
- {
-  content.innerHTML='<div class="people-detail-grid">'+active.map(([key,label])=>{
-   let value=key==="Activo"?(row.Activo===true?"Activo":row.Activo===false?"Inactivo":"Sin especificar"):displayCellValue("personas",row,key);
-   if(key==="Fecha de Ingreso"&&value!=="—"){const d=new Date(value);if(!Number.isNaN(d.getTime()))value=d.toLocaleDateString("es-AR",{timeZone:"UTC"})}
-   return '<div class="people-detail-item"><small>'+escapeHtml(label)+'</small><strong>'+escapeHtml(String(value??"—"))+'</strong></div>';
-  }).join("")+'</div>';
- }
- }
+ if(tab==="fotografia")renderPeoplePhotoTab(row);else renderPeopleProfileTab(row,tab);
  $("peopleDetailTabs").querySelectorAll("[data-people-tab]").forEach(b=>b.classList.toggle("active",b.dataset.peopleTab===tab));
  modal.classList.remove("hidden");document.body.style.overflow="hidden";
 }
@@ -2336,12 +2425,13 @@ async function renderPeoplePhotoTab(row){
   const ext=({"image/jpeg":"jpg","image/png":"png","image/webp":"webp"})[file.type];if(!ext||file.size>5*1024*1024)throw new Error("Formato o tamaño no válido. Usá JPG, PNG o WebP de hasta 5 MB.");
   const oldPath=row.foto_path||"",newPath=activeOrg+"/"+row.id+"/"+Date.now()+"."+ext;
   const up=await db.storage.from("personas-fotos").upload(newPath,file,{upsert:false,contentType:file.type,cacheControl:"3600"});if(up.error)throw up.error;
-  const saved=await db.from("personas").update({foto_path:newPath}).eq("id",row.id);if(saved.error){await db.storage.from("personas-fotos").remove([newPath]);throw saved.error}
+  const saved=await db.from("personas").update({foto_path:newPath}).eq("id",row.id).eq("organizacion_id",activeOrg).select("id").maybeSingle();
+  if(saved.error||!saved.data){await db.storage.from("personas-fotos").remove([newPath]);throw saved.error||new Error("No se confirmó la asociación de la fotografía con la persona.")}
   row.foto_path=newPath;const cached=(moduleCache.personas||[]).find(p=>String(p.id)===String(row.id));if(cached)cached.foto_path=newPath;
   if(oldPath){const rm=await db.storage.from("personas-fotos").remove([oldPath]);if(rm.error)console.warn("La foto anterior no pudo eliminarse:",rm.error)}
   await renderPeoplePhotoTab(row);renderTable("personas");
  }catch(e){console.error(e);status.textContent=peoplePhotoError(e);status.className="people-photo-status error"}finally{upload.disabled=false}};
- const remove=$("peoplePhotoRemove");if(remove)remove.onclick=async()=>{if(!confirm("¿Querés quitar la fotografía de esta persona?"))return;remove.disabled=true;try{const oldPath=row.foto_path;const result=await db.from("personas").update({foto_path:null}).eq("id",row.id);if(result.error)throw result.error;row.foto_path=null;const cached=(moduleCache.personas||[]).find(p=>String(p.id)===String(row.id));if(cached)cached.foto_path=null;if(oldPath){const rm=await db.storage.from("personas-fotos").remove([oldPath]);if(rm.error)console.warn("Foto desvinculada, pero no eliminada del bucket:",rm.error)}await renderPeoplePhotoTab(row);renderTable("personas")}catch(e){status.textContent=peoplePhotoError(e);status.className="people-photo-status error"}finally{remove.disabled=false}};
+ const remove=$("peoplePhotoRemove");if(remove)remove.onclick=async()=>{if(!confirm("¿Querés quitar la fotografía de esta persona?"))return;remove.disabled=true;try{const oldPath=row.foto_path;const result=await db.from("personas").update({foto_path:null}).eq("id",row.id).eq("organizacion_id",activeOrg).select("id").maybeSingle();if(result.error)throw result.error;if(!result.data)throw new Error("No se confirmó la desvinculación de la fotografía.");row.foto_path=null;const cached=(moduleCache.personas||[]).find(p=>String(p.id)===String(row.id));if(cached)cached.foto_path=null;if(oldPath){const rm=await db.storage.from("personas-fotos").remove([oldPath]);if(rm.error)console.warn("Foto desvinculada, pero no eliminada del bucket:",rm.error)}await renderPeoplePhotoTab(row);renderTable("personas")}catch(e){status.textContent=peoplePhotoError(e);status.className="people-photo-status error"}finally{remove.disabled=false}};
 }
 async function getPeoplePhotoUrl(path){if(!path)return "";const r=await db.storage.from("personas-fotos").createSignedUrl(path,3600);if(r.error){console.warn("No se pudo obtener la foto:",r.error.message);return ""}return r.data?.signedUrl||""}
 function peoplePhotoError(e){const msg=String(e?.message||e||"Error desconocido");if(/bucket.*not found|not found/i.test(msg))return "Falta crear el bucket privado «personas-fotos» en Supabase Storage.";if(/foto_path|column/i.test(msg))return "Falta agregar la columna foto_path a la tabla personas en Supabase.";if(/row-level security|permission|policy|unauthorized|403/i.test(msg))return "Supabase rechazó la operación por permisos. Revisá las políticas de Storage para usuarios autenticados.";return "No se pudo completar: "+msg}
@@ -2674,7 +2764,7 @@ async function renderHome(){
     <article class="dashboard-card dashboard-preventive-card"><img class="dashboard-preventive-image" src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=520&q=82" alt="" loading="lazy"><div class="dashboard-preventive-content"><div class="dashboard-card-heading"><h3>⏰ Vencimientos y prioridades</h3><span class="dashboard-count" id="dashVencCount">—</span></div><div id="dashVencList" class="dashboard-alert-list"><div class="dashboard-loading">Consultando vencimientos...</div></div><div class="actions"><button class="btn btn-light btn-sm" data-goto="vencimientos">Ver vencimientos →</button></div></div></article>
     <article class="dashboard-card dashboard-preventive-card"><img class="dashboard-preventive-image" src="https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=520&q=82" alt="" loading="lazy"><div class="dashboard-preventive-content"><div class="dashboard-card-heading"><h3>⚠ Accidentes e incidentes abiertos</h3><span class="dashboard-count" id="dashAccCount">—</span></div><div id="dashAccList" class="dashboard-alert-list"><div class="dashboard-loading">Consultando accidentes...</div></div><div class="actions"><button class="btn btn-light btn-sm" data-goto="accidentes_incidentes">Ver registros →</button></div></div></article>
     <article class="dashboard-card dashboard-preventive-card"><img class="dashboard-preventive-image" src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=520&q=82" alt="" loading="lazy"><div class="dashboard-preventive-content"><div class="dashboard-card-heading"><h3>🎓 Capacitaciones próximas</h3><span class="dashboard-count" id="dashCapCount">—</span></div><div id="dashCapList" class="dashboard-alert-list"><div class="dashboard-loading">Consultando capacitaciones...</div></div><div class="actions"><button class="btn btn-light btn-sm" data-goto="capacitaciones">Ver capacitaciones →</button></div></div></article>
-    <article class="dashboard-card dashboard-preventive-card"><img class="dashboard-preventive-image" src="https://images.unsplash.com/photo-1581093458791-9d42e3c8b5c4?auto=format&fit=crop&w=520&q=82" alt="" loading="lazy"><div class="dashboard-preventive-content"><div class="dashboard-card-heading"><h3>🔎 Inspecciones pendientes</h3><span class="dashboard-count" id="dashInspCount">—</span></div><div id="dashInspList" class="dashboard-alert-list"><div class="dashboard-loading">Consultando inspecciones...</div></div><div class="actions"><button class="btn btn-light btn-sm" data-goto="inspecciones">Ver inspecciones →</button></div></div></article>
+    <article class="dashboard-card dashboard-preventive-card"><img class="dashboard-preventive-image" src="https://images.pexels.com/photos/8960991/pexels-photo-8960991.jpeg?auto=compress&cs=tinysrgb&w=900" alt="Inspector con casco y elementos de protección revisando una obra con una lista de control" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=520&q=82';"><div class="dashboard-preventive-content"><div class="dashboard-card-heading"><h3>🔎 Inspecciones pendientes</h3><span class="dashboard-count" id="dashInspCount">—</span></div><div id="dashInspList" class="dashboard-alert-list"><div class="dashboard-loading">Consultando inspecciones...</div></div><div class="actions"><button class="btn btn-light btn-sm" data-goto="inspecciones">Ver inspecciones →</button></div></div></article>
   </section>
   <div class="dashboard-section-title">Accesos rápidos</div><section class="dashboard-shortcuts" id="dashShortcuts"></section>
   <div id="dashStatus" class="dashboard-refresh-note" role="status">Consultando datos de Supabase...</div>`;
@@ -2802,7 +2892,7 @@ function renderReportsModule(){
  $("reportDownload").onclick=downloadReportPdf;
  $("reportPrint").onclick=downloadReportPdf;
  $("reportShare").onclick=shareReport;
- $("view").querySelectorAll("[data-quick-report]").forEach(b=>b.onclick=()=>{const id=b.dataset.quickReport;if(id==="capacitaciones")reportSelected="gestion";else if(id==="acciones_correctivas")reportSelected="inspecciones";else reportSelected=id;updateReportCards();generateReportPreview()});
+ $("view").querySelectorAll("[data-quick-report]").forEach(b=>b.onclick=()=>{const id=b.dataset.quickReport;reportSelected=id==="capacitaciones"?"capacitaciones":id==="acciones_correctivas"?"acciones_correctivas":id;updateReportCards();generateReportPreview()});
  generateReportPreview();
 }
 function updateReportCards(){document.querySelectorAll("[data-report-card]").forEach(b=>b.classList.toggle("selected",b.dataset.reportCard===reportSelected))}
@@ -2822,7 +2912,7 @@ async function getReportRows(id){
    const assessmentById=new Map((assessments||[]).map(a=>[String(a.id),a]));
    reportRowsCache[table]=(riskRows||[]).map(r=>({...r,__assessment:assessmentById.get(String(r.evaluacion_id))||null}));
   }else reportRowsCache[table]=await fetchRows(table,1000);
- }catch(e){console.warn("No se pudieron consultar datos para el reporte",table,e);reportRowsCache[table]=[]}
+ }catch(e){console.error("No se pudieron consultar datos para el reporte",table,e);throw new Error("No se pudieron cargar los datos del reporte («"+table+"»): "+(e.message||"Error de consulta"))}
  return reportRowsCache[table];
 }
 async function getFinalizedRiskAssessments(){
@@ -2881,7 +2971,34 @@ function downloadReportPdf(){
   const landscape=reportSelected==="riesgos";
   const pageFormat=landscape?($("riskReportPaperFormat")?.value||"A4"):"A4";
   const printLayout=landscape?"body{background:#fff!important;padding:0!important}.report-paper{width:"+(pageFormat==="Legal"?"340mm":"277mm")+";max-width:none;margin:auto;box-shadow:none;border:0;padding:0!important;font-size:8.5pt}.paper-table{width:100%;table-layout:auto;font-size:8pt}.paper-table th,.paper-table td{padding:4px;overflow-wrap:normal;word-break:normal;hyphens:auto;vertical-align:top;white-space:normal}.paper-table th:nth-child(3),.paper-table td:nth-child(3),.paper-table th:nth-child(4),.paper-table td:nth-child(4),.paper-table th:nth-child(5),.paper-table td:nth-child(5){white-space:nowrap;overflow-wrap:normal;word-break:keep-all}.paper-table th:nth-child(3),.paper-table td:nth-child(3){min-width:76px}.paper-table th:nth-child(4),.paper-table td:nth-child(4),.paper-table th:nth-child(5),.paper-table td:nth-child(5){min-width:82px}.paper-table th:nth-child(10),.paper-table td:nth-child(10){width:"+(pageFormat==="Legal"?"34%":"32%")+";min-width:0}.paper-table th:nth-child(9),.paper-table td:nth-child(9){width:14%}@page{size:"+pageFormat+" landscape;margin:7mm}":"body{background:#fff!important;padding:12mm!important}.report-paper{max-width:190mm;margin:auto;box-shadow:none;border:0;padding:0!important;font-size:10pt}@page{size:A4 portrait;margin:12mm}";
-  w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>'+reportEsc(def.title)+'</title><style>'+css+' '+printLayout+'</style></head><body><article class="report-paper">'+paper.innerHTML+'</article><script>window.onload=()=>setTimeout(()=>window.print(),250)<\\/script></body></html>');
+  w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>'+reportEsc(def.title)+'</title><style>'+css+' '+printLayout+
+  `.inspection-hero{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:22px;border-radius:16px;background:linear-gradient(120deg,#17324d,#176b70);color:white;margin-bottom:16px}
+.inspection-hero h2{color:white;margin:0 0 7px}.inspection-hero p{margin:0;color:#dbeafe;max-width:720px;line-height:1.5}
+.inspection-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.inspection-stat{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--panel,#fff)}.inspection-stat span{display:block;color:var(--muted);font-size:12px}.inspection-stat strong{display:block;font-size:25px;margin-top:5px}
+.inspection-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}.inspection-card{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--panel,#fff);margin-bottom:12px}
+.inspection-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}.inspection-card h3{margin:0 0 5px}.inspection-meta{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+.inspection-badge{display:inline-flex;align-items:center;border-radius:99px;padding:4px 9px;font-size:11px;font-weight:700;background:#e2e8f0;color:#334155}.inspection-badge.pending{background:#fef3c7;color:#92400e}.inspection-badge.open{background:#dbeafe;color:#1d4ed8}.inspection-badge.closed{background:#dcfce7;color:#166534}
+.inspection-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.inspection-findings{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}.inspection-findings summary{cursor:pointer;font-weight:700}.inspection-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.inspection-form-grid .wide{grid-column:1/-1}.inspection-form-grid label{display:block;font-size:12px;font-weight:700;margin-bottom:5px}.inspection-form-grid input,.inspection-form-grid select,.inspection-form-grid textarea{width:100%;min-width:0}.inspection-section-title{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}.inspection-section-title h3{margin:0}.inspection-empty{padding:18px;border:1px dashed var(--line);border-radius:12px;text-align:center;color:var(--muted)}
+.inspection-findings-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px}.inspection-findings-table th,.inspection-findings-table td{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top}.inspection-findings-table th{color:var(--muted);font-weight:700}
+@media(max-width:700px){.inspection-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.inspection-form-grid{grid-template-columns:1fr}.inspection-form-grid .wide{grid-column:auto}.inspection-findings{overflow-x:auto}.inspection-findings-table{min-width:620px}}
+@media print{body.inspection-print-mode *{visibility:hidden!important}body.inspection-print-mode #inspectionPrintRoot,body.inspection-print-mode #inspectionPrintRoot *{visibility:visible!important}body.inspection-print-mode #inspectionPrintRoot{position:absolute;left:0;top:0;width:100%;padding:0!important;margin:0!important}.inspection-print-paper{font:10pt Arial,sans-serif;color:#172033}.inspection-print-brand{display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #b8792c;padding-bottom:10px;margin-bottom:14px}.inspection-print-brand svg{width:155px;height:auto}.inspection-print-paper h1{font-size:17pt;margin:14px 0 8px}.inspection-print-paper h2{font-size:12pt;margin:16px 0 6px}.inspection-print-paper table{width:100%;border-collapse:collapse;font-size:9pt}.inspection-print-paper th,.inspection-print-paper td{border:1px solid #cbd5e1;padding:6px;text-align:left;vertical-align:top}.inspection-print-paper th{background:#f1f5f9!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}.inspection-print-note{white-space:pre-wrap;line-height:1.4}.inspection-print-footer{margin-top:24px;border-top:1px solid #cbd5e1;padding-top:7px;font-size:8pt;color:#64748b}}
+
+`
+  + '/* Ficha individual editable del personal */
+.people-profile-banner{display:flex;align-items:center;gap:14px;padding:14px 16px;margin-bottom:18px;border:1px solid #dbe5ef;border-radius:12px;background:linear-gradient(110deg,#f4f8fc,#fff)}
+.people-profile-avatar{width:54px;height:54px;display:grid;place-items:center;flex:0 0 auto;border-radius:12px;background:#dceafe;color:#174b83;font-weight:800;font-size:18px}
+.people-profile-banner strong,.people-profile-banner span{display:block}.people-profile-banner strong{font-size:16px;color:#17324d}.people-profile-banner span{margin-top:4px;font-size:12px;color:#64748b}
+.people-edit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.people-edit-field{display:flex;flex-direction:column;gap:6px;min-width:0;color:#334155;font-size:12px;font-weight:700}
+.people-edit-field input,.people-edit-field select,.people-edit-field textarea{width:100%;min-width:0;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:8px;padding:10px 11px;background:#fff;color:#172033;font:inherit;font-size:14px;font-weight:400}
+.people-edit-field input:focus,.people-edit-field select:focus,.people-edit-field textarea:focus{outline:2px solid #bfdbfe;border-color:#3b82f6}
+.people-edit-field input[readonly]{background:#f1f5f9;color:#64748b}
+.people-edit-wide{grid-column:1/-1}
+.people-edit-check{display:flex;align-items:center;gap:8px;min-height:40px;font-weight:600}.people-edit-check input{width:18px;height:18px}
+.people-profile-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;flex-wrap:wrap}
+@media(max-width:560px){.people-edit-grid{grid-template-columns:1fr}.people-edit-wide{grid-column:auto}.people-profile-actions button{flex:1}}
+</style></head><body><article class="report-paper">'+paper.innerHTML+'</article><script>window.onload=()=>setTimeout(()=>window.print(),250)<\\/script></body></html>');
  w.document.close();
 }
 async function shareReport(){
@@ -2963,10 +3080,17 @@ let inactivityTimer=null,inactivityCountdown=null,inactivityWarningOpen=false;
   try{return await initializationPromise}finally{initializationPromise=null}
 }
 $("loginForm").addEventListener("submit",async e=>{
-  e.preventDefault();loginInProgress=true;authStorageRemember=$("rememberDevice")?.checked!==false;const b=$("loginButton");b.disabled=true;b.textContent="Ingresando...";$("loginMessage").textContent="";
-  try{const {error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)throw error;await initialize()}
-  catch(e){console.error(e);showLogin("No se pudo iniciar sesión: "+e.message)}
-  finally{loginInProgress=false;b.disabled=false;b.innerHTML='Iniciar sesión <span aria-hidden="true">→</span>'}
+  e.preventDefault();loginInProgress=true;authStorageRemember=$("rememberDevice")?.checked!==false;localStorage.setItem("hys_remember_session",String(authStorageRemember));const b=$("loginButton");b.disabled=true;b.textContent="Ingresando...";$("loginMessage").textContent="";
+  let authenticated=false;
+  try{
+    const {error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});
+    if(error)throw error;
+    authenticated=true;
+    await initialize();
+  }catch(e){
+    console.error(e);
+    showLogin((authenticated?"La autenticación fue correcta, pero no se pudo cargar el sistema: ":"No se pudo iniciar sesión: ")+(e.message||"Error desconocido."));
+  }finally{loginInProgress=false;b.disabled=false;b.innerHTML='Iniciar sesión <span aria-hidden="true">→</span>'}
 });
 $("forgotPasswordButton")?.addEventListener("click",()=>{$("loginForm").classList.add("hidden");$("passwordRequestForm").classList.remove("hidden");$("recoveryEmail").value=$("email").value.trim();$("loginMessage").textContent="";$("recoveryRequestMessage").textContent="";$("recoveryEmail").focus()});
 $("backToLoginButton")?.addEventListener("click",()=>{$("passwordRequestForm").classList.add("hidden");$("loginForm").classList.remove("hidden");$("recoveryRequestMessage").textContent=""});
@@ -3009,93 +3133,145 @@ db.auth.onAuthStateChange((event,session)=>{
 const passwordToggle=$("togglePassword");if(passwordToggle)passwordToggle.addEventListener("click",()=>{const field=$("password");if(!field)return;const show=field.type==="password";field.type=show?"text":"password";passwordToggle.setAttribute("aria-label",show?"Ocultar contraseña":"Mostrar contraseña");passwordToggle.textContent=show?"◎":"◉"});
 
 /* Módulo de inspecciones: formulario en matriz e informe imprimible */
-const INSPECTION_SECTIONS=[
-{title:"Condiciones generales",items:[["1.1","Políticas y reglamento interno de trabajo y PRHSI publicado en sitio visible."],["1.2","Rutas de evacuación debidamente señalizadas."],["1.3","Salidas de emergencia libres de obstáculos."],["1.4","Brigada de emergencia constituida y conocida por el personal."],["1.5","MEDEVAC publicado y actualizado."]]},
-{title:"Estructura",items:[["2.1","Iluminación adecuada y suficiente."],["2.2","Equipos eléctricos con conexión a tierra."],["2.3","Conexiones eléctricas en buen estado."],["2.4","Ventilación suficiente y adecuada."],["2.5","Pisos y rutas libres de obstrucción."],["2.6","Paredes, ventanas y puertas en buen estado."],["2.7","Drenajes pluviales en buen estado."]]},
-{title:"Área de puestos de trabajo",items:[["3.1","Espacio de trabajo adecuado."],["3.2","Mesas y sillas en buen estado, ajustables y de dimensiones adecuadas."],["3.3","Archivadores, escritorios en buen estado."],["3.4","Vías de movilización despejadas."],["3.5","Iluminación artificial - Natural suficiente."],["3.6","Ventilación adecuada."],["3.7","Recipientes para recolección de residuos sólidos."],["3.8","Limpieza, orden y aseo en el área de trabajo."]]},
-{title:"Servicios sanitarios",items:[["4.1","Baños en óptimas condiciones."],["4.2","Fugas en las conexiones sanitarias."],["4.3","Cantidad de baños acorde al número de personal."],["4.4","Buenas condiciones de orden y aseo."]]},
-{title:"Almacenamiento",items:[["5.1","Método de almacenamiento adecuado para no causar caída de objetos."],["5.2","Sustancias químicas rotuladas y con hojas de seguridad."],["5.3","Área debidamente señalizada."],["5.4","Orden y aseo en bodega."],["5.5","Otros."]]},
-{title:"Elementos de emergencia",items:[["6.1","Botiquín de primeros auxilios completo."],["6.2","Extintores con fecha de vencimiento vigente, señalizados y soportados."],["6.3","Camilla rígida - correas de amarre."],["6.4","Cuello ortopédico."],["6.5","Linterna con pilas y radio."],["6.6","Sistema de alarma en caso de emergencia."]]}
-];
+/* Módulo de Inspecciones: formulario, hallazgos, seguimiento y reporte imprimible. */
+let inspectionEditingId=null, inspectionFindingEditingId=null, inspectionSelectedId=null, inspectionRows=[], inspectionFindingRows=[];
+const inspectionLogoSvg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 190" role="img" aria-label="Consultor F&S"><rect width="560" height="190" rx="12" fill="#fbfaf5"/><path d="M232 42 L280 8 L328 42" fill="none" stroke="#b8792c" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/><text x="280" y="101" text-anchor="middle" font-family="Georgia,serif" font-size="58" fill="#111827" letter-spacing="1">CONSULTOR</text><path d="M34 125 H83 M477 125 H526" stroke="#9ca3af" stroke-width="3"/><text x="280" y="132" text-anchor="middle" font-family="Georgia,serif" font-size="18" font-weight="bold" fill="#252525">Licenciado en Seguridad e Higiene</text><text x="280" y="166" text-anchor="middle" font-family="Georgia,serif" font-size="26" font-weight="bold" fill="#111827">F&amp;S</text></svg>';
 function inspectionEsc(v){return escapeHtml(String(v??""))}
-function inspectionToday(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
-function inspectionSequence(rows){let max=0;(rows||[]).forEach(r=>{let m={};try{m=typeof r.observaciones==="string"?JSON.parse(r.observaciones||"{}"):(r.observaciones||{})}catch(e){}const n=String(m.numero||"").match(/FT-SST-INS-(\d+)/i);if(n)max=Math.max(max,Number(n[1])||0)});return Math.max(max,(rows||[]).length)+1}
-function inspectionCode(n){return "FT-SST-INS-"+String(n).padStart(4,"0")}
-function inspectionRowHtml(sectionIndex,itemIndex,item){
- const id=sectionIndex+"_"+itemIndex;
- return '<tr data-inspection-row="'+id+'"><td class="inspection-item">'+item[0]+'</td><td class="inspection-condition">'+inspectionEsc(item[1])+'</td>'+
- '<td class="inspection-choice"><input class="inspection-check" type="radio" name="insp_'+id+'" value="si" aria-label="Sí"></td>'+
- '<td class="inspection-choice"><input class="inspection-check" type="radio" name="insp_'+id+'" value="no" aria-label="No"></td>'+
- '<td class="inspection-choice"><input class="inspection-check" type="radio" name="insp_'+id+'" value="na" aria-label="No aplica"></td>'+
- '<td class="inspection-action"><input class="inspection-check" type="checkbox" data-action="preventiva" aria-label="Acción preventiva"></td>'+
- '<td class="inspection-action"><input class="inspection-check" type="checkbox" data-action="correctiva" aria-label="Acción correctiva"></td>'+
- '<td class="inspection-observation"><input type="text" data-observation placeholder="Observación..."></td></tr>';
+const inspectionDate=v=>v?formatDateDMY(v):"—";
+function inspectionOptions(rows,labelFn,selected=""){return '<option value="">Seleccione...</option>'+(rows||[]).map(r=>'<option value="'+inspectionEsc(r.id)+'" '+(String(r.id)===String(selected)?"selected":"")+'>'+inspectionEsc(labelFn(r))+'</option>').join("")}
+async function renderInspectionsModule(){
+ inspectionEditingId=null;inspectionFindingEditingId=null;inspectionSelectedId=null;
+ $("view").innerHTML='<section class="inspection-hero"><div><p style="font-size:11px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase;margin-bottom:7px">Prevención · Verificación · Seguimiento</p><h2>Inspecciones de seguridad</h2><p>Registrá recorridas, documentá hallazgos, asigná responsables y controlá las acciones correctivas hasta su cierre.</p></div><button class="btn btn-light" id="inspReload" type="button">↻ Actualizar</button></section><section class="inspection-stats" id="inspStats"></section><div class="inspection-layout"><section class="panel" id="inspFormPanel"><div class="inspection-section-title"><h3 id="inspFormTitle">Nueva inspección</h3><button class="btn btn-light btn-sm" id="inspCancel" type="button">Cancelar edición</button></div><form id="inspForm"><div class="inspection-form-grid"><div><label for="inspEst">Establecimiento</label><select id="inspEst" required></select></div><div><label for="inspSector">Sector</label><select id="inspSector"></select></div><div><label for="inspPuesto">Puesto de trabajo</label><select id="inspPuesto"></select></div><div><label for="inspTipo">Tipo de inspección *</label><input id="inspTipo" required maxlength="140" placeholder="Ej.: Inspección general, orden y limpieza"></div><div><label for="inspFecha">Fecha *</label><input id="inspFecha" type="date" required></div><div><label for="inspInspector">Inspector</label><input id="inspInspector" maxlength="140" placeholder="Nombre del inspector"></div><div><label for="inspEstado">Estado *</label><select id="inspEstado" required><option>Programada</option><option selected>En curso</option><option>Cerrada</option></select></div><div class="wide"><label for="inspObservaciones">Observaciones generales</label><textarea id="inspObservaciones" rows="3" placeholder="Condiciones observadas, alcance y comentarios generales"></textarea></div></div><div class="actions"><button class="btn btn-green" id="inspSave" type="submit">Guardar inspección</button><button class="btn btn-light" id="inspReset" type="button">Nueva / limpiar</button></div><div class="status" id="inspStatus" role="status"></div></form></section><section class="panel" id="findingFormPanel"><div class="inspection-section-title"><h3 id="findingFormTitle">Registrar hallazgo</h3><span class="muted" id="findingParentLabel">Elegí una inspección del listado</span></div><form id="findingForm"><div class="inspection-form-grid"><div class="wide"><label for="findingInspection">Inspección asociada *</label><select id="findingInspection" required></select></div><div class="wide"><label for="findingDescription">Hallazgo / condición detectada *</label><textarea id="findingDescription" rows="3" required maxlength="3000" placeholder="Describí la condición insegura, evidencia y ubicación concreta"></textarea></div><div><label for="findingRisk">Nivel de riesgo *</label><select id="findingRisk" required><option>Bajo</option><option selected>Moderado</option><option>Alto</option><option>Crítico</option></select></div><div><label for="findingState">Estado de seguimiento *</label><select id="findingState" required><option>Pendiente</option><option>En curso</option><option>Verificación</option><option>Cerrado</option></select></div><div class="wide"><label for="findingAction">Acción correctiva / preventiva</label><textarea id="findingAction" rows="3" maxlength="3000" placeholder="Medida a implementar para eliminar o controlar la condición"></textarea></div><div><label for="findingResponsible">Responsable</label><input id="findingResponsible" maxlength="140"></div><div><label for="findingDue">Fecha compromiso</label><input id="findingDue" type="date"></div><div class="wide"><label for="findingFollowup">Seguimiento / evidencia de avance</label><textarea id="findingFollowup" rows="3" maxlength="3000" placeholder="Avances, evidencia verificada, observaciones y pendientes"></textarea></div><div><label for="findingCloseDate">Fecha de cierre</label><input id="findingCloseDate" type="date"></div></div><div class="actions"><button class="btn btn-green" id="findingSave" type="submit">Guardar hallazgo</button><button class="btn btn-light" id="findingReset" type="button">Limpiar hallazgo</button></div><div class="status" id="findingStatus" role="status"></div></form></section></div><section class="panel" style="margin-top:16px"><div class="inspection-section-title"><div><h3>Inspecciones registradas</h3><p class="muted" style="margin:4px 0 0">Cada inspección permite registrar varios hallazgos y hacer seguimiento individual.</p></div><input id="inspSearch" type="search" placeholder="Buscar por tipo, sector o inspector" aria-label="Buscar inspecciones" style="max-width:300px"></div><div id="inspList"></div></section><div id="inspectionPrintRoot" hidden></div>';
+ $("inspFecha").value=new Date().toISOString().slice(0,10);
+ $("inspReload").onclick=()=>loadInspectionData();
+ $("inspCancel").onclick=()=>resetInspectionForm();$("inspReset").onclick=()=>resetInspectionForm();
+ $("findingReset").onclick=()=>resetFindingForm();
+ $("inspEst").onchange=()=>populateInspectionParents();
+ $("findingInspection").onchange=()=>{inspectionSelectedId=$("findingInspection").value;const row=inspectionRows.find(r=>String(r.id)===String(inspectionSelectedId));$("findingParentLabel").textContent=row?((row.tipo||"Inspección")+" · "+inspectionDate(row.fecha)):"Elegí una inspección del listado"};
+ $("inspForm").onsubmit=saveInspectionForm;$("findingForm").onsubmit=saveInspectionFinding;
+ $("inspSearch").oninput=renderInspectionList;
+ await loadInspectionOptions();await loadInspectionData();
 }
-function inspectionCollect(){
- const rows=[];
- document.querySelectorAll("[data-inspection-row]").forEach(tr=>{
-  const checked=tr.querySelector('input[type="radio"]:checked');
-  rows.push({item:tr.cells[0].textContent,condicion:tr.cells[1].textContent,respuesta:checked?.value||"",preventiva:!!tr.querySelector('[data-action="preventiva"]').checked,correctiva:!!tr.querySelector('[data-action="correctiva"]').checked,observacion:tr.querySelector('[data-observation"]').value.trim()});
- });
- return rows;
+async function loadInspectionOptions(){
+ const {data:estRows,error:estError}=await db.from("establecimientos").select("*").eq("organizacion_id",activeOrg).order("created_at",{ascending:true});
+ if(estError)throw estError;
+ const ests=estRows||[],estIds=ests.map(r=>r.id);
+ const {data:secRows,error:secError}=estIds.length?await db.from("sectores").select("*").in("establecimiento_id",estIds):{data:[],error:null};
+ if(secError)throw secError;
+ const secs=secRows||[],secIds=secs.map(r=>r.id);
+ const {data:puestoRows,error:puestoError}=secIds.length?await db.from("puestos").select("*").in("sector_id",secIds):{data:[],error:null};
+ if(puestoError)throw puestoError;
+ const puestos=puestoRows||[];
+ moduleCache.establecimientos=ests;moduleCache.sectores=secs;moduleCache.puestos=puestos;
+ $("inspEst").innerHTML=inspectionOptions(ests,r=>r.Nombre||r.nombre||"Establecimiento");
+ $("inspSector").innerHTML=inspectionOptions([],r=>r.nombre||r.Nombre||"Sector");
+ $("inspPuesto").innerHTML=inspectionOptions([],r=>r.Nombre||r.nombre||"Puesto");
+ $("findingInspection").innerHTML=inspectionOptions(inspectionRows,r=>(r.tipo||"Inspección")+" · "+inspectionDate(r.fecha));
+ $("inspEst").onchange=()=>populateInspectionParents();populateInspectionParents();
 }
-async function renderInspectionModule(){
- const view=$("view");
- let establishments=[],sectors=[],saved=[];
- try{[establishments,sectors,saved]=await Promise.all([fetchRows("establecimientos"),fetchRows("sectores"),fetchRows("inspecciones")])}catch(e){console.warn("No se pudieron cargar datos de inspecciones",e)}
- establishments=establishments.filter(e=>e.Activo!==false&&e.activo!==false);sectors=sectors.filter(e=>e.activo!==false&&e.Activo!==false);
- const orgName=typeof getOrgName==="function"?getOrgName():"Organización",today=inspectionToday(),code=inspectionCode(inspectionSequence(saved));
- view.innerHTML='<section class="panel">'+
- '<div class="inspection-head"><div><div class="inspection-brand">'+inspectionEsc(orgName)+'</div></div><div class="inspection-title">Formato de inspección<br>Condiciones de seguridad<br>Oficina / áreas administrativas</div><div class="inspection-meta"><span><b>CÓDIGO:</b> <strong id="inspCode">'+code+'</strong></span><span><b>VERSIÓN:</b> 01</span><span><b>FECHA:</b> <span id="inspHeaderDate">'+today.split("-").reverse().join("/")+'</span></span><span><b>PÁGINA:</b> Automática al imprimir</span></div></div>'+
- '<div class="inspection-data"><label>Fecha de inspección<input id="inspDate" type="date" value="'+today+'" required></label><label>Inspección N.º<input id="inspNumber" value="'+code+'" readonly class="readonly-field" aria-readonly="true"></label><label>Frecuencia<select id="inspFrequency"><option>Mensual</option><option>Gerencial</option><option>Copasst/Vigía SST</option></select></label><label>Oficina inspeccionada<select id="inspEstablishment" required><option value="">Seleccionar establecimiento...</option>'+establishments.map(e=>'<option value="'+inspectionEsc(e.id)+'">'+inspectionEsc(e.Nombre||e.nombre||"Establecimiento")+'</option>').join("")+'</select></label><label>Sector / área<select id="inspArea" disabled required><option value="">Primero seleccioná una oficina...</option></select></label><label>Inspector responsable<input id="inspInspector" value="'+inspectionEsc(user?.email||"")+'" placeholder="Nombre y apellido"></label></div>'+
- '<div class="inspection-table-wrap"><table class="inspection-table"><thead><tr class="inspection-instructions"><th colspan="8">MARQUE CON X SEGÚN CORRESPONDA. SÍ, NO, N/A (NO APLICA). INDIQUE EL TIPO DE ACCIÓN Y LAS OBSERVACIONES.</th></tr><tr><th>ÍTEM</th><th>CONDICIONES GENERALES / PUNTOS DE VERIFICACIÓN</th><th>SÍ</th><th>NO</th><th>N/A</th><th colspan="2">TIPO DE ACCIÓN A SEGUIR</th><th>OBSERVACIONES</th></tr><tr><th colspan="5"></th><th>PREV.</th><th>CORR.</th><th></th></tr></thead><tbody>'+INSPECTION_SECTIONS.map((sec,si)=>'<tr class="inspection-section"><th>ÍTEM</th><th colspan="7">'+inspectionEsc(sec.title)+'</th></tr>'+sec.items.map((it,ii)=>inspectionRowHtml(si,ii,it)).join("")).join("")+'</tbody></table></div>'+
- '<label style="display:block;font-weight:800;margin-top:10px">OBSERVACIONES GENERALES<textarea id="inspGeneralNotes" class="inspection-notes" placeholder="Describa las condiciones generales, hallazgos y medidas requeridas..."></textarea></label>'+
- '<table class="inspection-participants"><thead><tr><th colspan="4">PARTICIPANTES DE LA INSPECCIÓN</th></tr><tr><th>N.º</th><th>NOMBRES Y APELLIDOS</th><th>CARGO</th><th>FIRMA / CONSTANCIA</th></tr></thead><tbody>'+[1,2,3].map(n=>'<tr><td>'+n+'</td><td><input data-participant-name="'+n+'" placeholder="Nombre y apellido"></td><td><input data-participant-role="'+n+'" placeholder="Cargo"></td><td><input data-participant-sign="'+n+'" placeholder="Firma / nombre"></td></tr>').join("")+'</tbody></table>'+
- '<div class="inspection-signoff"><div><b>OFICINA</b></div><div><b>ELABORÓ:</b><br><input id="inspPreparedBy" placeholder="Nombre y cargo"></div><div><b>REVISÓ:</b><br><input id="inspReviewedBy" placeholder="Nombre y cargo"></div><div><b>APROBÓ:</b><br><input id="inspApprovedBy" placeholder="Nombre y cargo"></div><div><b>ESTADO</b><br><span id="inspStatus">Borrador</span></div></div>'+
- '<div class="inspection-actions inspection-no-print"><button class="btn btn-blue" id="inspSave" type="button">Guardar inspección</button><button class="btn btn-light" id="inspPrint" type="button">Imprimir / Guardar PDF</button><button class="btn btn-light" id="inspReset" type="button">Nueva inspección</button><span id="inspFeedback" role="status" class="muted"></span></div>'+
- '<section class="inspection-saved-list inspection-no-print"><h3>Inspecciones guardadas</h3><div id="inspSavedRows" class="muted">Cargando registros...</div></section></section>';
- $("inspDate").addEventListener("change",()=>{$("inspHeaderDate").textContent=$("inspDate").value?$("inspDate").value.split("-").reverse().join("/"):""});
- $("inspEstablishment").addEventListener("change",()=>{const eid=$("inspEstablishment").value,area=$("inspArea"),opts=sectors.filter(x=>String(x.establecimiento_id)===String(eid));area.disabled=!eid;area.innerHTML='<option value="">' +(eid?(opts.length?"Seleccionar sector / área...":"No hay sectores activos para esta oficina"):"Primero seleccioná una oficina...") +'</option>'+opts.map(x=>'<option value="'+inspectionEsc(x.id)+'">'+inspectionEsc(x.nombre||x.Nombre||"Sector")+'</option>').join("")});
- $("inspPrint").onclick=()=>{document.body.classList.add("inspection-printing");window.print();setTimeout(()=>document.body.classList.remove("inspection-printing"),1200)};
- $("inspReset").onclick=()=>renderInspectionModule();
- $("inspSave").onclick=saveInspectionRecord;
- await loadInspectionSavedList();
+function populateInspectionParents(sectorId="",puestoId=""){
+ const estId=$("inspEst")?.value||"";
+ const secs=(moduleCache.sectores||[]).filter(r=>String(r.establecimiento_id)===String(estId));
+ const secSelect=$("inspSector");if(!secSelect)return;
+ secSelect.innerHTML=inspectionOptions(secs,r=>r.nombre||r.Nombre||"Sector",sectorId);
+ const ps=(moduleCache.puestos||[]).filter(r=>String(r.sector_id)===String(secSelect.value||sectorId));
+ $("inspPuesto").innerHTML=inspectionOptions(ps,r=>r.Nombre||r.nombre||"Puesto",puestoId);
+ secSelect.onchange=()=>{const filtered=(moduleCache.puestos||[]).filter(r=>String(r.sector_id)===String(secSelect.value));$("inspPuesto").innerHTML=inspectionOptions(filtered,r=>r.Nombre||r.nombre||"Puesto")};
 }
-async function saveInspectionRecord(){
- const feedback=$("inspFeedback"),btn=$("inspSave");
- if(!$("inspDate").value||!$("inspEstablishment").value||!$("inspArea").value){feedback.textContent="Completá la fecha, la oficina y el sector / área.";return}
- const checklist=inspectionCollect();
- const participants=[1,2,3].map(n=>({nombre:document.querySelector('[data-participant-name="'+n+'"]').value.trim(),cargo:document.querySelector('[data-participant-role="'+n+'"]').value.trim(),firma:document.querySelector('[data-participant-sign="'+n+'"]').value.trim()})).filter(p=>p.nombre||p.cargo||p.firma);
- const payload={organizacion_id:activeOrg||null,establecimiento_id:$("inspEstablishment").value,sector_id:$("inspArea").value,puesto_id:null,tipo:"Inspección de condiciones de seguridad — "+$("inspFrequency").value,fecha:$("inspDate").value,inspector:$("inspInspector").value.trim(),estado:checklist.some(r=>r.respuesta==="no")?"Con hallazgos":"Registrada",observaciones:JSON.stringify({numero:$("inspNumber").value,frecuencia:$("inspFrequency").value,area:$("inspArea").selectedOptions[0]?.textContent||"",observaciones_generales:$("inspGeneralNotes").value.trim(),checklist,participantes,elaboro:$("inspPreparedBy").value.trim(),reviso:$("inspReviewedBy").value.trim(),aprobo:$("inspApprovedBy").value.trim()})};
- btn.disabled=true;feedback.textContent="Guardando...";
+async function loadInspectionData(){
+ const status=$("inspStatus");if(status)status.textContent="Cargando inspecciones y hallazgos…";
  try{
-  const {data,error}=await db.from("inspecciones").insert(payload).select("id").single();
-  if(error)throw error;
-  feedback.textContent="Inspección guardada correctamente: "+$("inspNumber").value+"."
-  $("inspStatus").textContent=payload.estado;
-  await loadInspectionSavedList();
- }catch(e){console.error(e);feedback.textContent="No se pudo guardar: "+(e.message||"verificá los permisos de la organización");}
- finally{btn.disabled=false}
+  const rows=await fetchRows("inspecciones",1000);inspectionRows=rows.filter(r=>String(r.organizacion_id)===String(activeOrg)).sort((a,b)=>String(b.fecha||"").localeCompare(String(a.fecha||"")));
+  const ids=inspectionRows.map(r=>r.id);
+  if(ids.length){const {data,error}=await db.from("inspeccion_hallazgos").select("*").in("inspeccion_id",ids).eq("organizacion_id",activeOrg).order("created_at",{ascending:false});if(error)throw error;inspectionFindingRows=data||[]}
+  else inspectionFindingRows=[];
+  $("findingInspection").innerHTML=inspectionOptions(inspectionRows,r=>(r.tipo||"Inspección")+" · "+inspectionDate(r.fecha));
+  const ests=moduleCache.establecimientos||[];const secs=moduleCache.sectores||[];const ps=moduleCache.puestos||[];
+  $("inspStats").innerHTML=[["Inspecciones",inspectionRows.length],["Hallazgos",inspectionFindingRows.length],["Pendientes",inspectionFindingRows.filter(r=>r.estado==="Pendiente").length],["Fuera de plazo",inspectionFindingRows.filter(r=>r.estado!=="Cerrado"&&r.fecha_compromiso&&r.fecha_compromiso<new Date().toISOString().slice(0,10)).length]].map(([l,n])=>'<article class="inspection-stat"><span>'+inspectionEsc(l)+'</span><strong>'+n+'</strong></article>').join("");
+  if(status)status.textContent="Datos actualizados · "+inspectionRows.length+" inspección(es), "+inspectionFindingRows.length+" hallazgo(s).";
+  renderInspectionList();
+ }catch(e){console.error(e);if(status)status.textContent="No se pudieron cargar inspecciones/hallazgos: "+e.message;if($("inspList"))$("inspList").innerHTML='<div class="inspection-empty">Verificá que la migración de hallazgos esté aplicada en Supabase y que tu usuario tenga permisos.</div>'}
 }
-async function loadInspectionSavedList(){
- const host=$("inspSavedRows");if(!host)return;
+function inspectionLookup(table,id){const r=(moduleCache[table]||[]).find(x=>String(x.id)===String(id));return r?(r.Nombre||r.nombre||r.Codigo||""): "—"}
+function renderInspectionList(){
+ const host=$("inspList");if(!host)return;
+ const q=($("inspSearch")?.value||"").trim().toLowerCase();
+ const rows=inspectionRows.filter(r=>[r.tipo,r.inspector,r.estado,r.observaciones,inspectionLookup("establecimientos",r.establecimiento_id),inspectionLookup("sectores",r.sector_id)].join(" ").toLowerCase().includes(q));
+ if(!rows.length){host.innerHTML='<div class="inspection-empty">No hay inspecciones que coincidan. Registrá una inspección nueva para comenzar.</div>';return}
+ host.innerHTML=rows.map(r=>{
+  const findings=inspectionFindingRows.filter(f=>String(f.inspeccion_id)===String(r.id));
+  const open=findings.filter(f=>f.estado!=="Cerrado").length;
+  const statusClass=r.estado==="Cerrada"?"closed":r.estado==="En curso"?"open":"pending";
+  const findRows=findings.length?'<div class="table-wrap"><table class="inspection-findings-table"><thead><tr><th>Hallazgo</th><th>Riesgo</th><th>Responsable / plazo</th><th>Seguimiento</th><th>Acciones</th></tr></thead><tbody>'+findings.map(f=>'<tr><td>'+inspectionEsc(f.descripcion)+'<div class="inspection-meta" style="margin-top:4px">Acción: '+inspectionEsc(f.accion_correctiva||"Sin definir")+'</div></td><td><span class="inspection-badge '+(f.nivel_riesgo==="Crítico"||f.nivel_riesgo==="Alto"?"pending":"")+'">'+inspectionEsc(f.nivel_riesgo)+'</span><div style="margin-top:5px"><span class="inspection-badge '+(f.estado==="Cerrado"?"closed":f.estado==="En curso"||f.estado==="Verificación"?"open":"pending")+'">'+inspectionEsc(f.estado)+'</span></div></td><td>'+inspectionEsc(f.responsable||"Sin asignar")+'<div class="inspection-meta" style="margin-top:4px">Plazo: '+inspectionEsc(inspectionDate(f.fecha_compromiso))+'</div></td><td>'+inspectionEsc(f.seguimiento||"Sin actualización")+(f.fecha_cierre?'<div class="inspection-meta">Cierre: '+inspectionEsc(inspectionDate(f.fecha_cierre))+'</div>':"")+'</td><td><button type="button" class="btn btn-light btn-sm" data-finding-edit="'+inspectionEsc(f.id)+'">Editar / seguimiento</button></td></tr>').join("")+'</tbody></table></div>':'<div class="inspection-empty" style="margin-top:10px">Esta inspección todavía no tiene hallazgos.</div>';
+  return '<article class="inspection-card"><div class="inspection-card-head"><div><h3>'+inspectionEsc(r.tipo||"Inspección")+'</h3><div class="inspection-meta"><span>'+inspectionEsc(inspectionDate(r.fecha))+'</span><span>Establecimiento: '+inspectionEsc(inspectionLookup("establecimientos",r.establecimiento_id))+'</span><span>Sector: '+inspectionEsc(inspectionLookup("sectores",r.sector_id))+'</span><span>Inspector: '+inspectionEsc(r.inspector||"No asignado")+'</span></div></div><div><span class="inspection-badge '+statusClass+'">'+inspectionEsc(r.estado||"Programada")+'</span><div class="inspection-meta" style="margin-top:6px">'+findings.length+' hallazgo(s) · '+open+' abierto(s)</div></div></div><p style="white-space:pre-wrap;margin:12px 0 0">'+inspectionEsc(r.observaciones||"Sin observaciones generales")+'</p><div class="inspection-actions"><button type="button" class="btn btn-light btn-sm" data-insp-edit="'+inspectionEsc(r.id)+'">Editar inspección</button><button type="button" class="btn btn-blue btn-sm" data-finding-add="'+inspectionEsc(r.id)+'">＋ Agregar hallazgo</button><button type="button" class="btn btn-light btn-sm" data-insp-pdf="'+inspectionEsc(r.id)+'">▤ Informe PDF</button><button type="button" class="btn btn-red btn-sm" data-insp-delete="'+inspectionEsc(r.id)+'">Eliminar</button></div><details class="inspection-findings" '+(findings.length?"open":"")+'><summary>Hallazgos y seguimiento ('+findings.length+')</summary>'+findRows+'</details></article>';
+ }).join("");
+ host.querySelectorAll("[data-insp-edit]").forEach(b=>b.onclick=()=>editInspection(b.dataset.inspEdit));
+ host.querySelectorAll("[data-finding-add]").forEach(b=>b.onclick=()=>{resetFindingForm();$("findingInspection").value=b.dataset.findingAdd;inspectionSelectedId=b.dataset.findingAdd;$("findingParentLabel").textContent="Hallazgo para "+(inspectionRows.find(r=>String(r.id)===String(inspectionSelectedId))?.tipo||"inspección");$("findingDescription").focus();$("findingFormPanel").scrollIntoView({behavior:"smooth",block:"start"})});
+ host.querySelectorAll("[data-finding-edit]").forEach(b=>b.onclick=()=>editInspectionFinding(b.dataset.findingEdit));
+ host.querySelectorAll("[data-insp-pdf]").forEach(b=>b.onclick=()=>printInspectionReport(b.dataset.inspPdf));
+ host.querySelectorAll("[data-insp-delete]").forEach(b=>b.onclick=()=>deleteInspection(b.dataset.inspDelete));
+}
+function resetInspectionForm(){
+ inspectionEditingId=null;$("inspForm").reset();$("inspFecha").value=new Date().toISOString().slice(0,10);$("inspEstado").value="En curso";$("inspFormTitle").textContent="Nueva inspección";$("inspSave").textContent="Guardar inspección";$("inspStatus").textContent="";populateInspectionParents();
+}
+function editInspection(id){
+ const r=inspectionRows.find(x=>String(x.id)===String(id));if(!r)return;inspectionEditingId=r.id;
+ $("inspEst").value=r.establecimiento_id||"";populateInspectionParents(r.sector_id||"",r.puesto_id||"");$("inspSector").value=r.sector_id||"";populateInspectionParents(r.sector_id||"",r.puesto_id||"");$("inspPuesto").value=r.puesto_id||"";
+ $("inspTipo").value=r.tipo||"";$("inspFecha").value=r.fecha||"";$("inspInspector").value=r.inspector||"";$("inspEstado").value=r.estado||"Programada";$("inspObservaciones").value=r.observaciones||"";
+ $("inspFormTitle").textContent="Editar inspección";$("inspSave").textContent="Guardar cambios";$("inspFormPanel").scrollIntoView({behavior:"smooth",block:"start"});
+}
+async function saveInspectionForm(ev){
+ ev.preventDefault();const b=$("inspSave");b.disabled=true;$("inspStatus").textContent="Guardando…";
  try{
-  const rows=await fetchRows("inspecciones");
-  if(!rows.length){host.textContent="Todavía no hay inspecciones guardadas.";return}
-  host.innerHTML='<div class="inspection-table-wrap"><table class="inspection-table" style="min-width:560px"><thead><tr><th>Código</th><th>Fecha</th><th>Tipo</th><th>Inspector</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>'+rows.slice().sort((a,b)=>String(b.fecha||"").localeCompare(String(a.fecha||""))).map(r=>{let m={};try{m=typeof r.observaciones==="string"?JSON.parse(r.observaciones||"{}"):(r.observaciones||{})}catch(e){}return '<tr><td>'+inspectionEsc(m.numero||"—")+'</td><td>'+inspectionEsc(r.fecha||"—")+'</td><td>'+inspectionEsc(r.tipo||"Inspección")+'</td><td>'+inspectionEsc(r.inspector||"—")+'</td><td>'+inspectionEsc(r.estado||"—")+'</td><td><button type="button" class="btn btn-red btn-sm" data-delete-inspection="'+inspectionEsc(r.id)+'">Eliminar</button></td></tr>';}).join("")+'</tbody></table></div>';
- }catch(e){host.textContent="No se pudo consultar el listado: "+(e.message||"revisá permisos y conexión");return}
- host.querySelectorAll("[data-delete-inspection]").forEach(btn=>btn.addEventListener("click",()=>deleteInspectionRecord(btn.dataset.deleteInspection)));
+  const payload={organizacion_id:activeOrg,establecimiento_id:$("inspEst").value||null,sector_id:$("inspSector").value||null,puesto_id:$("inspPuesto").value||null,tipo:$("inspTipo").value.trim(),fecha:$("inspFecha").value,inspector:$("inspInspector").value.trim()||null,estado:$("inspEstado").value,observaciones:$("inspObservaciones").value.trim()||null};
+  const q=inspectionEditingId?db.from("inspecciones").update(payload).eq("id",inspectionEditingId).eq("organizacion_id",activeOrg).select("id"):db.from("inspecciones").insert(payload).select("id");
+  const {data,error}=await q;if(error)throw error;if(!data?.length)throw new Error("Supabase no confirmó el guardado. Revisá permisos RLS.");
+  resetInspectionForm();await loadInspectionData();
+ }catch(e){console.error(e);$("inspStatus").textContent="No se pudo guardar la inspección: "+e.message}
+ finally{b.disabled=false}
 }
-async function deleteInspectionRecord(id){
- const rows=await fetchRows("inspecciones");const row=rows.find(x=>String(x.id)===String(id));if(!row){alert("No se encontró la inspección.");return}
- let meta={};try{meta=typeof row.observaciones==="string"?JSON.parse(row.observaciones||"{}"):(row.observaciones||{})}catch(e){}
- const label=meta.numero||row.fecha||id;
- if(!confirm("¿Eliminar definitivamente la inspección "+label+"? Esta acción no se puede deshacer."))return;
- try{const q=db.from("inspecciones").delete().eq("id",id);if(activeOrg)q.eq("organizacion_id",activeOrg);const result=await q;if(result.error)throw result.error;await loadInspectionSavedList();const f=$("inspFeedback");if(f)f.textContent="Inspección "+label+" eliminada."}
- catch(e){console.error(e);alert("No se pudo eliminar la inspección: "+(e.message||"verificá los permisos de eliminación en Supabase."))}
+function resetFindingForm(){
+ inspectionFindingEditingId=null;$("findingForm").reset();$("findingRisk").value="Moderado";$("findingState").value="Pendiente";$("findingFormTitle").textContent="Registrar hallazgo";$("findingSave").textContent="Guardar hallazgo";$("findingStatus").textContent="";
+ if(inspectionSelectedId)$("findingInspection").value=inspectionSelectedId;
 }
+function editInspectionFinding(id){
+ const f=inspectionFindingRows.find(x=>String(x.id)===String(id));if(!f)return;inspectionFindingEditingId=f.id;inspectionSelectedId=f.inspeccion_id;
+ $("findingInspection").value=f.inspeccion_id;$("findingDescription").value=f.descripcion||"";$("findingRisk").value=f.nivel_riesgo||"Moderado";$("findingState").value=f.estado||"Pendiente";$("findingAction").value=f.accion_correctiva||"";$("findingResponsible").value=f.responsable||"";$("findingDue").value=f.fecha_compromiso||"";$("findingFollowup").value=f.seguimiento||"";$("findingCloseDate").value=f.fecha_cierre||"";
+ $("findingFormTitle").textContent="Actualizar hallazgo y seguimiento";$("findingSave").textContent="Guardar seguimiento";$("findingParentLabel").textContent="Editando hallazgo";$("findingFormPanel").scrollIntoView({behavior:"smooth",block:"start"});
+}
+async function saveInspectionFinding(ev){
+ ev.preventDefault();const b=$("findingSave");b.disabled=true;$("findingStatus").textContent="Guardando…";
+ try{
+  const inspectionId=$("findingInspection").value,inspection=inspectionRows.find(r=>String(r.id)===String(inspectionId));if(!inspection)throw new Error("Seleccioná una inspección válida.");
+  const estado=$("findingState").value;
+  const payload={organizacion_id:activeOrg,inspeccion_id:inspectionId,descripcion:$("findingDescription").value.trim(),nivel_riesgo:$("findingRisk").value,accion_correctiva:$("findingAction").value.trim()||null,responsable:$("findingResponsible").value.trim()||null,fecha_compromiso:$("findingDue").value||null,estado,seguimiento:$("findingFollowup").value.trim()||null,fecha_cierre:$("findingCloseDate").value||(estado==="Cerrado"?new Date().toISOString().slice(0,10):null),updated_at:new Date().toISOString()};
+  const q=inspectionFindingEditingId?db.from("inspeccion_hallazgos").update(payload).eq("id",inspectionFindingEditingId).eq("organizacion_id",activeOrg).select("id"):db.from("inspeccion_hallazgos").insert(payload).select("id");
+  const {data,error}=await q;if(error)throw error;if(!data?.length)throw new Error("Supabase no confirmó el guardado. Verificá permisos RLS.");
+  inspectionSelectedId=inspectionId;resetFindingForm();await loadInspectionData();
+ }catch(e){console.error(e);$("findingStatus").textContent="No se pudo guardar el hallazgo: "+e.message}
+ finally{b.disabled=false}
+}
+async function deleteInspection(id){
+ const row=inspectionRows.find(r=>String(r.id)===String(id));if(!row||!confirm("¿Eliminar la inspección y sus hallazgos asociados? Esta acción no se puede deshacer."))return;
+ try{const {error}=await db.from("inspecciones").delete().eq("id",id).eq("organizacion_id",activeOrg);if(error)throw error;await loadInspectionData()}
+ catch(e){alert("No se pudo eliminar la inspección: "+e.message)}
+}
+function printInspectionReport(id){
+ const r=inspectionRows.find(x=>String(x.id)===String(id));if(!r)return;
+ const findings=inspectionFindingRows.filter(f=>String(f.inspeccion_id)===String(id));
+ const title=inspectionEsc(r.tipo||"Inspección");
+ const rows=findings.map(f=>'<tr><td>'+inspectionEsc(f.descripcion)+'</td><td>'+inspectionEsc(f.nivel_riesgo)+'</td><td>'+inspectionEsc(f.accion_correctiva||"—")+'</td><td>'+inspectionEsc(f.responsable||"—")+'</td><td>'+inspectionEsc(inspectionDate(f.fecha_compromiso))+'</td><td>'+inspectionEsc(f.estado)+'</td><td>'+inspectionEsc(f.seguimiento||"—")+'</td></tr>').join("")||'<tr><td colspan="7">Sin hallazgos registrados.</td></tr>';
+ const root=$("inspectionPrintRoot");root.hidden=false;root.innerHTML='<article class="inspection-print-paper"><header class="inspection-print-brand">'+inspectionLogoSvg+'<div style="text-align:right"><strong>INFORME DE INSPECCIÓN</strong><div>Emisión: '+inspectionEsc(inspectionDate(new Date().toISOString().slice(0,10)))+'</div><div>Organización: '+inspectionEsc(getOrgName())+'</div></div></header><h1>'+title+'</h1><table><tbody><tr><th>Fecha</th><td>'+inspectionEsc(inspectionDate(r.fecha))+'</td><th>Estado</th><td>'+inspectionEsc(r.estado||"—")+'</td></tr><tr><th>Establecimiento</th><td>'+inspectionEsc(inspectionLookup("establecimientos",r.establecimiento_id))+'</td><th>Sector</th><td>'+inspectionEsc(inspectionLookup("sectores",r.sector_id))+'</td></tr><tr><th>Puesto</th><td>'+inspectionEsc(inspectionLookup("puestos",r.puesto_id))+'</td><th>Inspector</th><td>'+inspectionEsc(r.inspector||"—")+'</td></tr></tbody></table><h2>Observaciones generales</h2><p class="inspection-print-note">'+inspectionEsc(r.observaciones||"Sin observaciones generales")+'</p><h2>Hallazgos y seguimiento</h2><table><thead><tr><th>Hallazgo</th><th>Riesgo</th><th>Acción correctiva</th><th>Responsable</th><th>Plazo</th><th>Estado</th><th>Seguimiento / evidencia</th></tr></thead><tbody>'+rows+'</tbody></table><div class="inspection-print-footer">Consultor F&amp;S · Higiene y Seguridad en el Trabajo · Documento generado desde el Sistema de Higiene y Seguridad.</div></article>';
+ document.body.classList.add("inspection-print-mode");
+ const cleanup=()=>{document.body.classList.remove("inspection-print-mode");root.hidden=true;window.removeEventListener("afterprint",cleanup)};
+ window.addEventListener("afterprint",cleanup);
+ setTimeout(()=>window.print(),100);
+}
+
+
+
 function openModule(id){
- if(id==="inspecciones"){activeModule=id;editing=null;searchText="";peoplePage=1;buildNav();return renderInspectionModule()}
+ if(id==="inspecciones"){activeModule=id;editing=null;searchText="";peoplePage=1;buildNav();return renderInspectionsModule()}
  if(id==="usuarios_admin"){activeModule=id;editing=null;searchText="";buildNav();return renderUserAdminModule()}
  if(id==="auditoria"){activeModule=id;editing=null;searchText="";buildNav();return renderAuditModule()}
  return openModuleBase(id);
