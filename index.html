@@ -1732,11 +1732,7 @@ async function fetchRows(table,limit=500){
     const ids=(await fetchRows("sectores")).map(x=>x.id);if(!ids.length)return [];q=q.in("sector_id",ids);
   }else if(table==="riesgos"){
     const ids=(await fetchRows("puestos")).map(x=>x.id);if(!ids.length)return [];q=q.in("puesto_id",ids);
-  }else if(selectedEstablishmentId&&table==="personas"){
-    const ids=(await fetchRows("puestos")).map(x=>x.id);
-    if(ids.length)q=q.or("establecimiento_id.eq."+selectedEstablishmentId+",puesto_id.in.("+ids.join(",")+")");
-    else q=q.eq("establecimiento_id",selectedEstablishmentId);
-  }else if(selectedEstablishmentId&&["accidentes_incidentes","inspecciones","mediciones_ambientales","epp","capacitaciones","documentacion","equipos_instalaciones","vencimientos"].includes(table)){
+  }else if(selectedEstablishmentId&&table==="personas"){ q=q.eq("establecimiento_id",selectedEstablishmentId); }else if(selectedEstablishmentId&&["accidentes_incidentes","inspecciones","mediciones_ambientales","epp","capacitaciones","documentacion","equipos_instalaciones","vencimientos"].includes(table)){
     q=q.eq("establecimiento_id",selectedEstablishmentId);
   }
   const {data,error}=await q;if(error)throw error;return data||[];
@@ -2693,32 +2689,31 @@ async function renderHome(){
     if(activeModule!=="inicio")return;
 
     const est=estAll.filter(r=>r.organizacion_id===activeOrg);
-    const estIds=new Set(est.map(r=>r.id));
+    const estIds=selectedEstablishmentId?new Set([selectedEstablishmentId]):new Set(est.map(r=>r.id));
     const sec=secAll.filter(r=>estIds.has(r.establecimiento_id));
     const secIds=new Set(sec.map(r=>r.id));
     const puestos=puestoAll.filter(r=>secIds.has(r.sector_id));
-    const personas=personasAll.filter(r=>r.organizacion_id===activeOrg);
+    const personas=personasAll.filter(r=>r.organizacion_id===activeOrg&&estIds.has(r.establecimiento_id));
 
     $("dashEst").textContent=est.filter(r=>r.Activo===true).length;
     $("dashSec").textContent=sec.filter(r=>r.activo===true).length;
     $("dashPue").textContent=puestos.filter(r=>r.Activo===true).length;
     $("dashPer").textContent=personas.filter(r=>r.Activo===true).length;
 
-    const venc=vencAll.filter(r=>r.organizacion_id===activeOrg)
-      .filter(r=>!["cumplido","cerrado"].includes(estadoTexto(r.estado))&&r.fecha_vencimiento&&r.fecha_vencimiento<=fechaLimite)
+    const venc=vencAll.filter(r=>r.organizacion_id===activeOrg&&(!selectedEstablishmentId||r.establecimiento_id===selectedEstablishmentId)).filter(r=>!["cumplido","cerrado"].includes(estadoTexto(r.estado))&&r.fecha_vencimiento&&r.fecha_vencimiento<=fechaLimite)
       .sort((a,b)=>String(a.fecha_vencimiento).localeCompare(String(b.fecha_vencimiento)));
     $("dashVencCount").textContent=venc.length;
     $("dashVencList").innerHTML=venc.length?`<div class="dashboard-compact-summary"><strong>${venc.length}</strong> vencimiento(s) pendiente(s), vencido(s) o próximo(s).</div>`:`<div class="dashboard-empty">✓ No hay vencimientos pendientes, vencidos ni próximos.</div>`;
 
-    const accidentes=accAll.filter(r=>r.organizacion_id===activeOrg&&!esCerrado(r.estado)).sort((a,b)=>String(b.fecha||"").localeCompare(String(a.fecha||"")));
+    const accidentes=accAll.filter(r=>r.organizacion_id===activeOrg&&(!selectedEstablishmentId||r.establecimiento_id===selectedEstablishmentId)&&!esCerrado(r.estado)).sort((a,b)=>String(b.fecha||"").localeCompare(String(a.fecha||"")));
     $("dashAccCount").textContent=accidentes.length;
     $("dashAccList").innerHTML=listaHTML(accidentes.slice(0,5).map(r=>alertaHTML("⚠","red",`${r.tipo||"Accidente/incidente"} · ${fechaLegible(r.fecha)}`,r.descripcion||r.lugar||"Sin descripción registrada",`Estado: ${r.estado||"Sin estado"}`)),"No hay accidentes o incidentes abiertos registrados.");
 
-    const caps=capAll.filter(r=>r.organizacion_id===activeOrg&&r.fecha&&r.fecha>=hoy&&r.fecha<=fechaLimite).sort((a,b)=>String(a.fecha).localeCompare(String(b.fecha)));
+    const caps=capAll.filter(r=>r.organizacion_id===activeOrg&&(!selectedEstablishmentId||r.establecimiento_id===selectedEstablishmentId)&&r.fecha&&r.fecha>=hoy&&r.fecha<=fechaLimite).sort((a,b)=>String(a.fecha).localeCompare(String(b.fecha)));
     $("dashCapCount").textContent=caps.length;
     $("dashCapList").innerHTML=listaHTML(caps.slice(0,5).map(r=>alertaHTML("🎓","blue",r.titulo||"Capacitación",`${r.tipo||"Tipo no especificado"}${r.duracion_horas?" · "+r.duracion_horas+" horas":""}`,`${fechaLegible(r.fecha)}${r.instructor?" · "+r.instructor:""}`)),"No hay capacitaciones programadas para los próximos 30 días.");
 
-    const inspecciones=inspAll.filter(r=>r.organizacion_id===activeOrg&&!esCerrado(r.estado)).sort((a,b)=>String(a.fecha||"").localeCompare(String(b.fecha||"")));
+    const inspecciones=inspAll.filter(r=>r.organizacion_id===activeOrg&&(!selectedEstablishmentId||r.establecimiento_id===selectedEstablishmentId)&&!esCerrado(r.estado)).sort((a,b)=>String(a.fecha||"").localeCompare(String(b.fecha||"")));
     $("dashInspCount").textContent=inspecciones.length;
     $("dashInspList").innerHTML=listaHTML(inspecciones.slice(0,5).map(r=>alertaHTML("🔎","amber",r.tipo||"Inspección",`${fechaLegible(r.fecha)}${r.inspector?" · "+r.inspector:""}`,`Estado: ${r.estado||"Sin estado"}`)),"No hay inspecciones pendientes registradas.");
 
