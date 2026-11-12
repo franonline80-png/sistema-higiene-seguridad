@@ -1761,6 +1761,7 @@ function formatDateDMY(value){
   return String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+d.getFullYear();
 }
 async function getNextLegajo(){
+  // Valor orientativo para la interfaz: el número definitivo se asigna de forma atómica en Supabase.
   const {data,error}=await db.from("personas").select("Legajo").eq("organizacion_id",activeOrg).limit(5000);
   if(error)throw error;
   let max=0;
@@ -1946,7 +1947,7 @@ async function bulkDownloadTemplate(){
       ["Nombre y Apellido son obligatorios."],
       ["Puesto debe coincidir con un puesto existente en el establecimiento seleccionado."],
       ["Fecha de Ingreso: AAAA-MM-DD (ejemplo: 2026-01-15). Puede quedar vacía."],
-      ["El sistema asigna automáticamente el legajo correlativo (01, 02, 03...); el valor de la columna Legajo se ignora."],
+      ["El sistema asigna automáticamente un legajo único y permanente al guardar; el valor de la columna Legajo se ignora."],
       ["Documento no debe repetirse en el archivo ni en la organización."],
       ["Activo acepta Sí/No, Activo/Inactivo, Verdadero/Falso o 1/0. Vacío significa Sí."],
       ["La validación se realiza antes de guardar; solo se importan las filas válidas."],
@@ -2017,7 +2018,7 @@ async function bulkValidateFile(){
     });
     if(!output.length)throw new Error("No se encontraron filas con datos.");
     let previewLegajo=await getNextLegajo();
-    output.forEach(r=>{r.legajo=r.errors.length?"—":formatLegajo(previewLegajo++)});
+    output.forEach(r=>{r.legajo=r.errors.length?"—":"Automático al guardar"});
     bulkPeopleRows=output;bulkPeopleValid=output.filter(r=>!r.errors.length);
     bulkShowPreview(output);
     status.textContent=bulkPeopleValid.length?"Validación terminada. Revisá los resultados; las filas con errores no se guardarán.":"La validación terminó, pero no hay filas válidas para importar.";
@@ -2030,10 +2031,9 @@ async function bulkConfirmImport(){
   const button=$("bulkConfirm"),status=$("bulkStatus");button.disabled=true;status.textContent="Guardando registros...";
   let inserted=0;
   try{
-    let nextLegajo=await getNextLegajo();
     for(let i=0;i<rows.length;i+=50){
       const batch=rows.slice(i,i+50).map(r=>({
-        organizacion_id:activeOrg,Legajo:formatLegajo(nextLegajo++),Nombre:r.nombre,Apellido:r.apellido,
+        organizacion_id:activeOrg,Nombre:r.nombre,Apellido:r.apellido,
         Documneto:r.documento||null,Cargo:r.cargo||null,"Fecha de Ingreso":r.fecha,
         puesto_id:r.puestoId,establecimiento_id:estId,Activo:r.activo
       }));
@@ -2254,7 +2254,7 @@ async function renderCrud(id){
  for(const f of cfg.fields)$("formFields").insertAdjacentHTML("beforeend",await renderField(f,f[2]==="checkbox"?true:"",id));
  if(id==="peligros")setupHazardCategoryCards();
  if(id==="sectores"||id==="puestos"){const codeKey=id==="sectores"?"codigo":"Codigo",parentKey=id==="sectores"?"establecimiento_id":"sector_id",parentInput=$("f_"+parentKey),codeInput=$("f_"+codeKey);if(codeInput){codeInput.readOnly=true;codeInput.setAttribute("aria-readonly","true");codeInput.title="El sistema asigna automáticamente el código correlativo"}if(parentInput&&!editing)parentInput.addEventListener("change",async()=>{try{codeInput.value=await getNextCode(id)}catch(e){codeInput.value="";codeInput.placeholder=e.message}});try{if(codeInput&&!editing)codeInput.value=await getNextCode(id)}catch(e){if(codeInput)codeInput.value=""}}
- if(id==="personas"){const legajoInput=$("f_Legajo");if(legajoInput){legajoInput.readOnly=true;legajoInput.setAttribute("aria-readonly","true");legajoInput.title="El sistema asigna automáticamente el siguiente legajo"}try{if(legajoInput)legajoInput.value=formatLegajo(await getNextLegajo())}catch(e){console.error(e);if(legajoInput)legajoInput.placeholder="No se pudo calcular; se verificará al guardar"}}
+ if(id==="personas"){const legajoInput=$("f_Legajo");if(legajoInput){legajoInput.readOnly=true;legajoInput.setAttribute("aria-readonly","true");legajoInput.title="El sistema asigna automáticamente el siguiente legajo"}if(legajoInput){legajoInput.value="";legajoInput.placeholder="Se asigna al guardar";}}
  $("recordForm").onsubmit=e=>saveRecord(e,id);if(["sectores","puestos"].includes(id)){const modal=$("hierarchyCreateModalHost"),close=()=>{modal.classList.add("hidden");editing=null};$("hierarchyCreateButton").onclick=()=>{editing=null;$("recordForm").reset();$("formTitle").textContent=id==="sectores"?"Registrar sector":"Registrar puesto";$("hierarchyModalTitle").textContent=id==="sectores"?"Registrar sector":"Registrar puesto";$("saveRecord").textContent="Guardar registro";$("cancelEdit").classList.add("hidden");$("formStatus").textContent="";modal.classList.remove("hidden")};$("hierarchyModalClose").onclick=close;modal.addEventListener("click",e=>{if(e.target===modal)close()})}if(id==="establecimientos"){const modal=$("establishmentsCreateModalHost");const close=()=>modal.classList.add("hidden");$("establishmentsCreateModal").onclick=()=>{editing=null;$("recordForm").reset();const activeCheckbox=$("f_Activo");if(activeCheckbox)activeCheckbox.checked=false;$("formTitle").textContent="Registrar establecimiento";$("establishmentsModalTitle").textContent="Registrar establecimiento";$("saveRecord").textContent="Guardar registro";$("cancelEdit").classList.add("hidden");$("formStatus").textContent="";$("establishmentPhotoPreview").innerHTML="<span>Sin fotografía seleccionada</span>";$("establishmentPhoto").dataset.removePhoto="false";modal.classList.remove("hidden")};$("establishmentsModalClose").onclick=close;modal.addEventListener("click",e=>{if(e.target===modal)close()});$("establishmentPhoto").onchange=async e=>{const file=e.target.files?.[0],preview=$("establishmentPhotoPreview");e.target.dataset.removePhoto="false";if(!file){preview.innerHTML="<span>Sin fotografía seleccionada</span>";return}if(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>5*1024*1024){e.target.value="";preview.innerHTML="<span>Elegí JPG, PNG o WEBP de hasta 5 MB.</span>";return}preview.innerHTML="<span>Preparando vista previa…</span>";try{const data=await compressEstablishmentPhoto(file);preview.innerHTML=`<img src="${data}" alt="Vista previa de la fotografía del establecimiento"><button type="button" class="btn btn-light" id="removeEstablishmentPhoto">Quitar foto</button>`;$("removeEstablishmentPhoto").onclick=()=>{e.target.value="";preview.innerHTML="<span>Sin fotografía seleccionada</span>"}}catch(err){preview.innerHTML="<span>No se pudo abrir la fotografía.</span>"}};}if(id==="vencimientos"){const panel=$("vencimientosFormPanel"),body=$("vencimientosFormBody"),toggle=$("vencimientosFormToggle");toggle.onclick=()=>{const open=body.hidden;body.hidden=!open;panel.classList.toggle("is-open",open);toggle.setAttribute("aria-expanded",String(open));$("vencimientosFormHint").textContent=open?"Completá los datos y guardá el registro.":"Desplegá el formulario cuando necesites cargar un nuevo vencimiento.";};}if(id==="personas")await initPeopleBulkImport();$("reloadModule").onclick=()=>loadModuleRows(id);$("cancelEdit").onclick=()=>{if(id==="establecimientos")$("establishmentsCreateModalHost")?.classList.add("hidden");if(["sectores","puestos"].includes(id))$("hierarchyCreateModalHost")?.classList.add("hidden");renderCrud(id)};$("tableSearch").oninput=e=>{searchText=e.target.value;if(id==="personas")peoplePage=1;else listPage=1;renderTable(id)};if(id!=="personas"){$("listPageSize").value=String(listPageSize);$("listPageSize").onchange=e=>{listPageSize=Number(e.target.value)||25;listPage=1;renderTable(id)};$("listExport").onclick=()=>exportModuleCsv(id)}if(id==="vencimientos"){$("vencimientosFilters")?.querySelectorAll("[data-vfilter]").forEach(b=>b.addEventListener("click",()=>{vencimientosFilter=b.dataset.vfilter;listPage=1;$("vencimientosFilters").querySelectorAll("[data-vfilter]").forEach(x=>x.classList.toggle("active",x===b));renderVencimientosCards()}));}if(id==="personas"){$("peoplePageSize").value=String(peoplePageSize);$("peoplePageSize").onchange=e=>{peoplePageSize=Number(e.target.value)||10;peoplePage=1;renderTable(id)};$("peopleStatusFilter").onchange=()=>{peoplePage=1;renderTable(id)};$("peopleExport").onclick=exportPeopleExcel;$("peopleDetailClose").onclick=closePeopleDetail;$("peopleDetailCloseBottom").onclick=closePeopleDetail;$("peopleDetailModal").addEventListener("click",e=>{if(e.target===$("peopleDetailModal"))closePeopleDetail()});$("peopleDetailTabs").querySelectorAll("[data-people-tab]").forEach(b=>b.onclick=()=>{const row=window.currentPeopleDetail;if(row)openPeopleDetail(row,b.dataset.peopleTab)});}
 await loadModuleRows(id);
 }
@@ -2593,7 +2593,7 @@ async function saveRecord(ev,id){
       else{const v=el.value.trim();payload[f[0]]=v===""?null:((f[2]==="number"||(id==="riesgos"&&["Probabilidad","consecuencia","nivel_riesgo"].includes(f[0])))?Number(v):v)}
     }
     if(id==="establecimientos"){const photoInput=$("establishmentPhoto"),file=photoInput?.files?.[0];if(file)payload.foto_data_url=await compressEstablishmentPhoto(file);else if(photoInput?.dataset.removePhoto==="true")payload.foto_data_url=null;else payload.foto_data_url=editing?.foto_data_url??null;}if(cfg.org&&!editing)payload.organizacion_id=activeOrg;if(id==="riesgos"&&!editing){if(!activeRiskEvaluation)throw new Error("Primero iniciá una evaluación general.");const {data:parent,error:parentError}=await db.from("evaluaciones_riesgos").select("id").eq("id",activeRiskEvaluation.id).eq("organizacion_id",activeOrg).eq("estado","En curso").maybeSingle();if(parentError)throw parentError;if(!parent)throw new Error("La evaluación general ya no está abierta o no pertenece a la organización activa. Actualizá el módulo.");payload.evaluacion_id=parent.id;}if(id==="riesgos"&&editing){if(!editing.evaluacion_id)throw new Error("Este riesgo no está vinculado a una evaluación general. No se modificó para evitar perder su trazabilidad.");const {data:parent,error:parentError}=await db.from("evaluaciones_riesgos").select("id").eq("id",editing.evaluacion_id).eq("organizacion_id",activeOrg).maybeSingle();if(parentError)throw parentError;if(!parent)throw new Error("La evaluación general asociada no pertenece a la organización activa.");payload.evaluacion_id=parent.id;}if(selectedEstablishmentId&&["personas","accidentes_incidentes","inspecciones","mediciones_ambientales","epp","capacitaciones","documentacion","equipos_instalaciones","vencimientos"].includes(id)&&!("establecimiento_id" in payload))payload.establecimiento_id=selectedEstablishmentId;
-    if(id==="personas")payload.Legajo=editing?editing.Legajo:formatLegajo(await getNextLegajo());
+    if(id==="personas")delete payload.Legajo; // Supabase asigna el legajo al insertar y conserva el existente al editar.
     if(id==="sectores")payload.codigo=editing?editing.codigo:await getNextCode(id);
     if(id==="puestos")payload.Codigo=editing?editing.Codigo:await getNextCode(id);
     if(id==="personas"&&payload.Documneto!=null&&payload.Documneto!==""){
