@@ -1691,7 +1691,7 @@ async function renderRiskMapModule(){
   currentId=null;planPath=null;planUrl=null;markers=[];$m("rmTitle").value="";$m("rmFile").value="";$m("rmSymbolLabel").value="";$m("rmSector").value="";$m("rmPlanStage").innerHTML='<div class="riskmap-empty"><span>🗺️</span><strong>Seleccioná o cargá un plano</strong><p>Podés usar una imagen del plano del establecimiento para colocar los riesgos.</p></div>';paintList();status("");
  }
  $m("rmEstablishment").innerHTML='<option value="">Seleccionar establecimiento...</option>'+establishments.map(e=>'<option value="'+esc(e.id)+'">'+esc(e.Nombre)+'</option>').join("");
- $m("rmEstablishment").onchange=()=>{fillSectors();clearEditor()};
+ $m("rmEstablishment").onchange=()=>{if(selectedEstablishmentId&&$m("rmEstablishment").value!==selectedEstablishmentId){$m("rmEstablishment").value=selectedEstablishmentId;status("El mapa debe corresponder al establecimiento seleccionado en la barra superior.",true);return}fillSectors();clearEditor()};
  $m("rmFile").onchange=()=>{const f=$m("rmFile").files[0];if(!f)return;if(objectUrl)URL.revokeObjectURL(objectUrl);if(f.size>10*1024*1024){status("El archivo supera los 10 MB.",true);$m("rmFile").value="";return}if(!/^image\/(png|jpeg|webp)$/.test(f.type)&&f.type!=="application/pdf"){status("Formato no admitido. Usá PNG, JPG, WEBP o PDF.",true);$m("rmFile").value="";return}objectUrl=URL.createObjectURL(f);planUrl=objectUrl;planPath=null;markers=[];paintList();showPlan(objectUrl,f.type==="application/pdf")};
  $m("rmRisk").innerHTML='<option value="">Sin vincular</option>'+risks.map(r=>'<option value="'+esc(r.id)+'">'+esc((r.descripcion||"Evaluación de riesgo").slice(0,100))+'</option>').join("");
  $m("rmNew").onclick=clearEditor;
@@ -1713,7 +1713,7 @@ async function renderRiskMapModule(){
  };
  try{
   const [e,s,p,r]=await Promise.all([fetchRows("establecimientos"),fetchRows("sectores"),fetchRows("puestos"),fetchRows("riesgos")]);
-  establishments=e;sectors=s;const ids=p.map(x=>x.id);risks=r.filter(x=>ids.includes(x.puesto_id));
+  establishments=selectedEstablishmentId?e.filter(x=>x.id===selectedEstablishmentId):e;sectors=s;const ids=p.map(x=>x.id);risks=r.filter(x=>ids.includes(x.puesto_id));
   $m("rmEstablishment").innerHTML='<option value="">Seleccionar establecimiento...</option>'+establishments.map(x=>'<option value="'+esc(x.id)+'">'+esc(x.Nombre)+'</option>').join("");
   await refreshMaps();
  }catch(e){console.error(e);status("No se pudieron cargar los datos del mapa: "+(e.message||""),true);$m("rmSavedList").innerHTML='<p class="muted">Revisá la conexión y los permisos de tu usuario.</p>'}
@@ -2455,7 +2455,7 @@ function renderTable(id){
 /* Ficha de relaciones: consulta los registros vinculados sin duplicar datos. */
 const relatedRecordMap={
  organizaciones:[["establecimientos","organizacion_id","Establecimientos"],["personas","organizacion_id","Personas"],["inspecciones","organizacion_id","Inspecciones"],["accidentes_incidentes","organizacion_id","Accidentes e incidentes"],["capacitaciones","organizacion_id","Capacitaciones"],["mediciones_ambientales","organizacion_id","Mediciones ambientales"],["epp","organizacion_id","Elementos de protección"],["documentacion","organizacion_id","Documentación"],["vencimientos","organizacion_id","Vencimientos"],["equipos_instalaciones","organizacion_id","Equipos e instalaciones"]],
- establecimientos:[["sectores","establecimiento_id","Sectores"],["personas","organizacion_id","Personas de la organización"],["inspecciones","establecimiento_id","Inspecciones"],["mediciones_ambientales","establecimiento_id","Mediciones ambientales"],["accidentes_incidentes","establecimiento_id","Accidentes e incidentes"],["documentacion","establecimiento_id","Documentación"],["vencimientos","establecimiento_id","Vencimientos"],["equipos_instalaciones","establecimiento_id","Equipos e instalaciones"],["mapas_riesgos","establecimiento_id","Mapas de riesgos"]],
+ establecimientos:[["sectores","establecimiento_id","Sectores"],["personas","establecimiento_id","Personas del establecimiento"],["inspecciones","establecimiento_id","Inspecciones"],["mediciones_ambientales","establecimiento_id","Mediciones ambientales"],["accidentes_incidentes","establecimiento_id","Accidentes e incidentes"],["documentacion","establecimiento_id","Documentación"],["vencimientos","establecimiento_id","Vencimientos"],["equipos_instalaciones","establecimiento_id","Equipos e instalaciones"],["mapas_riesgos","establecimiento_id","Mapas de riesgos"]],
  sectores:[["puestos","sector_id","Puestos"],["inspecciones","sector_id","Inspecciones"],["mediciones_ambientales","sector_id","Mediciones ambientales"],["accidentes_incidentes","sector_id","Accidentes e incidentes"],["equipos_instalaciones","sector_id","Equipos e instalaciones"],["mapas_riesgos","sector_id","Mapas de riesgos"]],
  puestos:[["personas","puesto_id","Personas asignadas"],["riesgos","puesto_id","Evaluaciones de riesgos"],["inspecciones","puesto_id","Inspecciones"]],
  peligros:[["riesgos","peligro_id","Riesgos asociados"]],
@@ -2695,7 +2695,7 @@ async function renderHome(){
     const puestos=puestoAll.filter(r=>secIds.has(r.sector_id));
     const personas=personasAll.filter(r=>r.organizacion_id===activeOrg&&estIds.has(r.establecimiento_id));
 
-    $("dashEst").textContent=est.filter(r=>r.Activo===true).length;
+    $("dashEst").textContent=est.filter(r=>estIds.has(r.id)&&r.Activo===true).length;
     $("dashSec").textContent=sec.filter(r=>r.activo===true).length;
     $("dashPue").textContent=puestos.filter(r=>r.Activo===true).length;
     $("dashPer").textContent=personas.filter(r=>r.Activo===true).length;
