@@ -1760,14 +1760,6 @@ function formatDateDMY(value){
   if(Number.isNaN(d.getTime()))return raw;
   return String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+d.getFullYear();
 }
-async function getNextLegajo(){
-  // Valor orientativo para la interfaz: el número definitivo se asigna de forma atómica en Supabase.
-  const {data,error}=await db.from("personas").select("Legajo").eq("organizacion_id",activeOrg).limit(5000);
-  if(error)throw error;
-  let max=0;
-  (data||[]).forEach(p=>{const n=Number(String(p.Legajo??"").trim());if(Number.isSafeInteger(n)&&n>max)max=n});
-  return max+1;
-}
 function formatLegajo(n){return String(n).padStart(2,"0")}
 function alphaCodeToNumber(code){
  let n=0;const s=String(code||"").trim().toUpperCase();
@@ -2017,7 +2009,6 @@ async function bulkValidateFile(){
       output.push({rowNo:i+2,legajo:"",nombre,apellido,documento,cargo,fecha:fecha==="__FECHA_INVALIDA__"?null:fecha,puestoTexto,puestoId:p?.id||null,activo:activo===null?true:activo,errors});
     });
     if(!output.length)throw new Error("No se encontraron filas con datos.");
-    let previewLegajo=await getNextLegajo();
     output.forEach(r=>{r.legajo=r.errors.length?"—":"Automático al guardar"});
     bulkPeopleRows=output;bulkPeopleValid=output.filter(r=>!r.errors.length);
     bulkShowPreview(output);
