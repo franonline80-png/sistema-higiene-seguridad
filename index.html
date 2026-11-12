@@ -1974,7 +1974,6 @@ async function bulkValidateFile(){
   const status=$("bulkStatus"),file=$("bulkFile").files?.[0],estId=selectedEstablishmentId;
   $("bulkConfirm").disabled=true;bulkPeopleRows=[];bulkPeopleValid=[];
   if(!estId){status.textContent="Seleccioná primero un establecimiento.";return}
-  if(!bulkPeopleEstablishments.some(e=>e.id===estId&&e.organizacion_id===activeOrg)){status.textContent="El establecimiento seleccionado no pertenece a la organización activa.";return}
   if(!file){status.textContent="Seleccioná un archivo .xlsx.";return}
   if(!/\.xlsx$/i.test(file.name)){status.textContent="El archivo debe tener formato .xlsx.";return}
   status.textContent="Leyendo y validando el archivo...";
