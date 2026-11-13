@@ -1929,6 +1929,21 @@ function bulkBool(value){
 }
 async function initPeopleBulkImport(){
   if(!$("bulkFile"))return;
+  const showPeopleChoice=choice=>{
+    const bulk=$("bulkPeoplePanel"),individual=$("peopleIndividualPanel");
+    if(!bulk||!individual)return;
+    bulk.classList.toggle("hidden",choice!=="bulk");
+    individual.classList.toggle("hidden",choice!=="individual");
+    document.querySelectorAll("[data-people-choice]").forEach(card=>card.classList.toggle("is-selected",card.dataset.peopleChoice===choice));
+    (choice==="bulk"?bulk:individual).scrollIntoView({behavior:"smooth",block:"start"});
+  };
+  document.querySelectorAll("[data-people-choice]").forEach(card=>card.onclick=()=>showPeopleChoice(card.dataset.peopleChoice));
+  document.querySelectorAll("[data-people-back]").forEach(button=>button.onclick=()=>{
+    $("bulkPeoplePanel")?.classList.add("hidden");
+    $("peopleIndividualPanel")?.classList.add("hidden");
+    document.querySelectorAll("[data-people-choice]").forEach(card=>card.classList.remove("is-selected"));
+    document.querySelector(".people-choice-grid")?.scrollIntoView({behavior:"smooth",block:"start"});
+  });
   $("bulkStatus").textContent=selectedEstablishmentId?"La carga se asignará a "+getSelectedEstablishmentName()+".":"Seleccioná un establecimiento en la barra superior antes de importar personas.";
   $("bulkTemplate").onclick=bulkDownloadTemplate;
   $("bulkValidate").onclick=bulkValidateFile;
