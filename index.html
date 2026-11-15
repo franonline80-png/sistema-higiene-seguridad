@@ -1942,13 +1942,13 @@ async function initPeopleBulkImport(){
     const modal=choice==="bulk"?bulkModal:individualModal;
     modal.classList.remove("hidden");
     document.querySelector('[data-people-choice="'+choice+'"]')?.classList.add("is-selected");
-    modal.querySelector(".related-dialog")?.scrollTo({top:0,behavior:"instant"});
+    modal.querySelector(".related-dialog")?.scrollTo({top:0,behavior:"auto"});
     modal.querySelector("[data-people-close]")?.focus();
   };
   document.querySelectorAll("[data-people-choice]").forEach(card=>card.onclick=()=>showPeopleChoice(card.dataset.peopleChoice));
   document.querySelectorAll("[data-people-close]").forEach(button=>button.onclick=closePeopleEntry);
   document.querySelectorAll(".people-entry-modal").forEach(modal=>modal.addEventListener("click",event=>{if(event.target===modal)closePeopleEntry()}));
-  document.addEventListener("keydown",event=>{if(event.key==="Escape"&&(!$("bulkPeopleModal")?.classList.contains("hidden")||!$("peopleIndividualModal")?.classList.contains("hidden")))closePeopleEntry()});
+  if(!window.__peopleModalEscBound){document.addEventListener("keydown",event=>{if(event.key==="Escape"&&(!$("bulkPeopleModal")?.classList.contains("hidden")||!$("peopleIndividualModal")?.classList.contains("hidden"))){$("bulkPeopleModal")?.classList.add("hidden");$("peopleIndividualModal")?.classList.add("hidden");document.querySelectorAll("[data-people-choice]").forEach(card=>card.classList.remove("is-selected"))}});window.__peopleModalEscBound=true;}
   $("bulkStatus").textContent=selectedEstablishmentId?"La carga se asignará a "+getSelectedEstablishmentName()+".":"Seleccioná un establecimiento en la barra superior antes de importar personas.";
   $("bulkTemplate").onclick=bulkDownloadTemplate;
   $("bulkValidate").onclick=bulkValidateFile;
