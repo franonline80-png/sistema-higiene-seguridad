@@ -1182,7 +1182,7 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
           <footer class="notification-panel-foot"><button type="button" class="btn btn-light btn-sm" id="notificationRefresh">Actualizar</button><button type="button" class="btn btn-blue btn-sm" id="notificationViewAll">Ver vencimientos</button></footer>
         </section>
       </div>
-      <select id="orgSelect" class="org-select" aria-label="Seleccionar establecimiento"></select>
+      <select id="orgSelect" class="org-select" aria-label="Seleccionar organización / establecimiento"></select>
       <button id="refreshAll" class="btn btn-light" type="button">↻ Actualizar</button>
       <button id="logoutButton" class="btn btn-red" type="button">Cerrar sesión</button>
     </div>
@@ -1228,7 +1228,7 @@ const authStorage={
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{storage:authStorage,persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
 
-let user=null,organizations=[],activeOrg="",activeRole="",activeModule="inicio",editing=null,moduleCache={},searchText="";
+let user=null,organizations=[],organizationMemberships=[],canSwitchOrganizations=false,activeOrg="",activeRole="",activeModule="inicio",editing=null,moduleCache={},searchText="";
 let activeRiskEvaluation=null;
 
 const modules=[
@@ -1597,11 +1597,7 @@ function showApp(){$("loginScreen").style.display="none";$("app").style.display=
 function getOrgIds(){return organizations.map(o=>o.id)}
 function getOrgName(){return organizations.find(o=>o.id===activeOrg)?.nombre||"Organización"}
 function getSelectedEstablishmentName(){
- const select=$("orgSelect"),option=select?.selectedOptions?.[0];
- if(option&&String(option.value)===String(selectedEstablishmentId)&&option.value){
-  return option.textContent.replace(/\s*\(inactivo\)\s*$/i,"").trim();
- }
- return "";
+ return organizations.find(o=>String(o.id)===String(activeOrg))?.nombre||"";
 }
 let selectedEstablishmentId="";
 async function updateActiveEstablishmentHeader(){
@@ -1611,41 +1607,35 @@ async function updateActiveEstablishmentHeader(){
   if(error)throw error;
   const rows=data||[];
   const defaultEstablishment=rows.find(row=>row.Activo===true)||rows[0]||null;
+  if(!rows.some(row=>String(row.id)===String(selectedEstablishmentId)))selectedEstablishmentId=defaultEstablishment?.id||"";
+  const visibleOrganizations=canSwitchOrganizations?organizations:organizations.filter(org=>String(org.id)===String(activeOrg));
   select.replaceChildren();
-  const placeholder=document.createElement("option");placeholder.value="";placeholder.textContent=rows.length?"Seleccionar establecimiento…":"No hay establecimientos";select.appendChild(placeholder);
-  rows.slice().sort((a,b)=>String(a.Nombre||"").localeCompare(String(b.Nombre||""),"es")).forEach(row=>{const op=document.createElement("option");op.value=row.id;op.textContent=(row.Nombre||"Sin nombre")+(row.Activo===true?"":" (inactivo)");select.appendChild(op)});
-  if(!rows.some(row=>String(row.id)===String(selectedEstablishmentId))){
-   selectedEstablishmentId=defaultEstablishment?.id||"";
-  }
-  select.value=selectedEstablishmentId;
+  visibleOrganizations.slice().sort((a,b)=>String(a.nombre||"").localeCompare(String(b.nombre||""),"es")).forEach(org=>{
+   const op=document.createElement("option");op.value=org.id;op.textContent=org.nombre||"Organización";select.appendChild(op);
+  });
+  select.value=activeOrg;
   const chosen=rows.find(row=>String(row.id)===String(selectedEstablishmentId));
   if(chosen?.foto_data_url){
-   img.src=chosen.foto_data_url;
-   img.alt="Imagen de "+(chosen.Nombre||"establecimiento seleccionado");
-   img.classList.remove("hidden");
-   header.classList.add("has-establishment");
-  }else{
-   img.removeAttribute("src");
-   img.classList.add("hidden");
-   header.classList.remove("has-establishment");
-  }
+   img.src=chosen.foto_data_url;img.alt="Imagen de "+(chosen.Nombre||getOrgName());img.classList.remove("hidden");header.classList.add("has-establishment");
+  }else{img.removeAttribute("src");img.classList.add("hidden");header.classList.remove("has-establishment")}
  }catch(error){
-  console.error("No se pudo cargar el selector de establecimientos:",error);
-  select.replaceChildren();
-  const op=document.createElement("option");op.value="";op.textContent="Error al cargar establecimientos";select.appendChild(op);
+  console.error("No se pudo cargar la organización seleccionada:",error);
+  select.replaceChildren();const op=document.createElement("option");op.value=activeOrg;op.textContent=getOrgName();select.appendChild(op);select.value=activeOrg;
   img.removeAttribute("src");img.classList.add("hidden");header.classList.remove("has-establishment");
  }
 }
-async function selectActiveEstablishment(id){
- const nextId=id||"";
- if(nextId!==selectedEstablishmentId){
-  selectedEstablishmentId=nextId;moduleCache={};notificationRequestVersion++;
-  notificationItems=[];renderNotificationBell();closeNotificationPanel();
-  const startup=document.getElementById("startupAlertsBackdrop");if(startup)startup.remove();
+async function selectActiveOrganization(id){
+ const nextOrg=String(id||"");
+ const membership=organizationMemberships.find(item=>String(item.organizacion_id)===nextOrg&&item.activo===true);
+ if(!membership||!organizations.some(org=>String(org.id)===nextOrg))throw new Error("No tenés autorización para acceder a esa organización.");
+ if(nextOrg!==String(activeOrg)){
+  activeOrg=nextOrg;activeRole=membership.rol;selectedEstablishmentId="";moduleCache={};
+  notificationRequestVersion++;notificationItems=[];renderNotificationBell();closeNotificationPanel();
+  startupAlertsShownForOrg="";const startup=document.getElementById("startupAlertsBackdrop");if(startup)startup.remove();
+  buildNav();
  }
  await updateActiveEstablishmentHeader();
  await refreshNotificationCenter();
- if(activeModule==="establecimientos"){await renderCrud("establecimientos");return}
  await openModule(activeModule);
 }
 function visibleModules(){return modules.filter(m=>m.id==="inicio"||m.id==="legislacion"||m.id==="sesiones"||m.id==="reportes"||m.id==="mapa_riesgos"||(m.id==="auditoria"&&["administrador_plataforma","administrador_organizacion"].includes(activeRole))||configs[m.id]||(m.id==="usuarios_admin"&&["administrador_plataforma","administrador_organizacion"].includes(activeRole)))}
@@ -3068,17 +3058,19 @@ let inactivityTimer=null,inactivityCountdown=null,inactivityWarningOpen=false;
   const {data,error}=await db.auth.getUser();if(error)throw error;
   user=data.user;if(!user)throw new Error("No hay una sesión activa.");
   try{await startSessionTracking()}catch(sessionError){console.error("No se pudo registrar la sesión; la aplicación continuará disponible:",sessionError)}
-  const {data:members,error:me}=await db.from("usuarios_organizaciones").select("organizacion_id,rol").eq("usuario_id",user.id).eq("activo",true);
-  activeRole=(members||[]).find(x=>x.organizacion_id===activeOrg)?.rol||(members||[])[0]?.rol||"";
+  const {data:members,error:me}=await db.from("usuarios_organizaciones").select("organizacion_id,rol,activo").eq("usuario_id",user.id).eq("activo",true);
   if(me)throw me;
-  const ids=[...new Set((members||[]).map(x=>x.organizacion_id).filter(Boolean))];
+  organizationMemberships=members||[];
+  const ids=[...new Set(organizationMemberships.map(x=>x.organizacion_id).filter(Boolean))];
   if(!ids.length)throw new Error("Tu usuario no tiene una organización activa asignada.");
   const {data:orgs,error:oe}=await db.from("organizaciones").select("id,nombre").in("id",ids);if(oe)throw oe;
   organizations=orgs||[];if(!organizations.length)throw new Error("No se encontraron organizaciones autorizadas.");
-  activeOrg=organizations[0].id;
+  canSwitchOrganizations=organizationMemberships.some(x=>["administrador_plataforma","administrador_organizacion"].includes(x.rol));
+  const preferred=organizationMemberships.find(x=>["administrador_plataforma","administrador_organizacion"].includes(x.rol))||organizationMemberships[0];
+  activeOrg=preferred.organizacion_id;activeRole=preferred.rol;
   const select=$("orgSelect");
-  select.onchange=async()=>{try{await selectActiveEstablishment(select.value)}catch(error){console.error(error);alert("No se pudo seleccionar el establecimiento: "+error.message)}};
-  showApp();scheduleInactivityWarning();buildNav();await updateActiveEstablishmentHeader();await renderHome();
+  select.onchange=async()=>{try{await selectActiveOrganization(select.value)}catch(error){console.error(error);alert("No se pudo cambiar de organización: "+error.message);select.value=activeOrg}};
+  showApp();scheduleInactivityWarning();buildNav();await updateActiveEstablishmentHeader();await refreshNotificationCenter();await renderHome();
   })();
   try{return await initializationPromise}finally{initializationPromise=null}
 }
