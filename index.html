@@ -3005,7 +3005,7 @@ $("forgotPasswordButton")?.addEventListener("click",()=>{$("loginForm").classLis
 $("backToLoginButton")?.addEventListener("click",()=>{$("passwordRequestForm").classList.add("hidden");$("loginForm").classList.remove("hidden");$("recoveryRequestMessage").textContent=""});
 $("passwordRequestForm")?.addEventListener("submit",async e=>{
  e.preventDefault();const button=$("sendRecoveryButton"),message=$("recoveryRequestMessage");button.disabled=true;button.textContent="Enviando…";message.className="login-flow-message";message.textContent="";
- try{const email=$("recoveryEmail").value.trim();const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});if(error)throw error;message.classList.add("success");message.textContent="Si existe una cuenta asociada a ese correo, recibirás un enlace para restablecer la contraseña. Revisá también correo no deseado."}
+ try{const email=$("recoveryEmail").value.trim();const recoveryRedirectUrl="https://sistema-higiene-seguridad.vercel.app/";const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:recoveryRedirectUrl});if(error)throw error;message.classList.add("success");message.textContent="Si existe una cuenta asociada a ese correo, recibirás un enlace para restablecer la contraseña. Revisá también correo no deseado."}
  catch(error){console.error(error);message.classList.add("error");message.textContent="No se pudo enviar el enlace. "+(error.message||"Intentá nuevamente.")}
  finally{button.disabled=false;button.textContent="Enviar enlace"}
 });
