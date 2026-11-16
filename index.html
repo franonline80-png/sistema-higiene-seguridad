@@ -1087,6 +1087,28 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
 .user-admin-card{margin-top:18px;overflow:hidden}.user-admin-card table{width:100%;border-collapse:collapse}.user-admin-card th,.user-admin-card td{padding:12px;border-bottom:1px solid var(--border,#e5e7eb);text-align:left;font-size:13px}.user-admin-card th{font-weight:750;background:var(--surface-2,#f8fafc)}#inviteUserModal{position:fixed;inset:0;z-index:10000;align-items:center;justify-content:center;background:#0f172a88;padding:18px}#inviteUserModal .modal-content{position:relative;background:var(--surface,#fff);padding:24px;border-radius:16px;width:min(480px,100%);max-height:90vh;overflow:auto;box-shadow:0 20px 60px #0003}#inviteUserModal .modal-close{position:absolute;right:14px;top:12px;font-size:24px;background:none;border:0;cursor:pointer}#inviteUserForm label{display:block;font-size:13px;font-weight:700;margin:12px 0}#inviteUserForm input,#inviteUserForm select{display:block;width:100%;margin-top:6px;padding:10px;border:1px solid var(--border,#d1d5db);border-radius:9px;background:var(--surface,#fff)}#inviteUserMessage.success{color:#15803d}#inviteUserMessage.error{color:#b91c1c}@media(max-width:700px){.user-admin-card{overflow-x:auto}.user-admin-card table{min-width:600px}}
 .people-entry-dialog{width:min(980px,100%);max-height:min(90vh,940px);padding:22px}.people-entry-dialog .related-head{position:sticky;top:-22px;background:#fff;z-index:3;padding-top:2px}.people-entry-dialog .people-choice-detail{padding:0}.people-entry-dialog .table-wrap{max-height:360px}@media(max-width:600px){.people-entry-modal{padding:9px}.people-entry-dialog{padding:14px;max-height:94vh}.people-entry-dialog .related-head{top:-14px}.people-entry-dialog .related-head p{max-width:230px}}
 .sector-photo-field{grid-column:1/-1;border:1px solid #dce5ee;border-radius:11px;padding:14px;margin:4px 0 14px;background:#f8fafc}.sector-photo-field input{margin-bottom:8px}.sector-photo-preview{min-height:150px;border:1px dashed #b8c7d8;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;gap:10px;flex-direction:column;padding:12px;color:#64748b;font-size:12px}.sector-photo-preview img{display:block;max-width:100%;max-height:260px;object-fit:contain;border-radius:8px}.sector-avatar-small{width:42px;height:42px;object-fit:cover;border-radius:7px;margin-right:9px;vertical-align:middle;border:1px solid #dce5ee}
+
+/* Centro de notificaciones: advertencias y vencimientos */
+.notification-center{position:relative;display:flex;align-items:center;z-index:120}
+.notification-bell{position:relative;width:42px;height:42px;display:grid;place-items:center;border:1px solid #ffffff45;border-radius:11px;background:#ffffff12;color:#fff;font-size:23px;line-height:1;transition:background .15s,border-color .15s}
+.notification-bell:hover,.notification-bell[aria-expanded="true"]{background:#ffffff25;border-color:#ffffff85}
+.notification-badge{position:absolute;right:-7px;top:-7px;min-width:20px;height:20px;padding:0 5px;display:grid;place-items:center;border:2px solid #173e59;border-radius:20px;background:#dc2626;color:#fff;font-size:10px;font-weight:800;line-height:1}
+.notification-badge.hidden{display:none!important}
+.notification-panel{position:absolute;right:0;top:calc(100% + 12px);width:min(430px,calc(100vw - 24px));max-height:min(620px,78vh);display:flex;flex-direction:column;overflow:hidden;background:#fff;color:#172033;border:1px solid #dce5ee;border-radius:15px;box-shadow:0 18px 48px #071a2d35;z-index:150}
+.notification-panel.hidden{display:none!important}
+.notification-panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 18px;border-bottom:1px solid #e5ebf2}
+.notification-panel-head strong{font-size:15px;letter-spacing:1px}.notification-panel-head span{font-size:11px;color:#64748b}
+.notification-panel-body{overflow:auto;padding:8px 12px;min-height:80px}
+.notification-section-label{padding:10px 5px 7px;font-size:11px;font-weight:800;letter-spacing:1px;color:#64748b}
+.notification-item{display:flex;align-items:flex-start;gap:10px;padding:12px 7px;border-bottom:1px solid #edf1f5;cursor:pointer;text-align:left;width:100%;background:#fff;color:#172033;border:0;border-radius:8px}
+.notification-item:hover{background:#f4f8fc}
+.notification-dot{width:9px;height:9px;flex:0 0 9px;margin-top:5px;border-radius:50%;background:#dc2626}
+.notification-dot.warning{background:#d97706}.notification-dot.info{background:#2563eb}
+.notification-item-content{min-width:0;flex:1}.notification-item-title{display:block;font-size:13px;font-weight:750;line-height:1.4}.notification-item-detail{display:block;margin-top:4px;font-size:12px;color:#64748b;line-height:1.45;overflow-wrap:anywhere}.notification-item-meta{display:block;margin-top:5px;font-size:11px;color:#64748b}
+.notification-item-arrow{color:#64748b;font-size:17px;padding:0 3px}
+.notification-empty{padding:26px 12px;text-align:center;color:#64748b;font-size:13px;line-height:1.5}
+.notification-panel-foot{display:flex;justify-content:space-between;gap:8px;padding:12px 15px;border-top:1px solid #e5ebf2;background:#f8fafc}
+@media(max-width:760px){.notification-panel{position:fixed;top:75px;right:12px;max-height:calc(100vh - 95px)}.notification-bell{width:38px;height:38px}.top-actions{position:relative}}
 </style>
 </head>
 <body>
@@ -1150,6 +1172,16 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
       <img id="activeEstablishmentPhoto" class="active-establishment-photo hidden" alt="Imagen del establecimiento seleccionado">
     </div>
     <div class="top-actions">
+      <div class="notification-center" id="notificationCenter">
+        <button id="notificationBell" class="notification-bell" type="button" aria-label="Abrir notificaciones" aria-expanded="false" aria-controls="notificationPanel">
+          <span aria-hidden="true">♧</span><span class="notification-badge hidden" id="notificationBadge">0</span>
+        </button>
+        <section class="notification-panel hidden" id="notificationPanel" aria-label="Notificaciones">
+          <header class="notification-panel-head"><strong>NOTIFICACIONES</strong><span id="notificationPanelCount">0 pendientes</span></header>
+          <div class="notification-panel-body" id="notificationPanelBody"><div class="notification-empty">Consultando advertencias y vencimientos…</div></div>
+          <footer class="notification-panel-foot"><button type="button" class="btn btn-light btn-sm" id="notificationRefresh">Actualizar</button><button type="button" class="btn btn-blue btn-sm" id="notificationViewAll">Ver vencimientos</button></footer>
+        </section>
+      </div>
       <select id="orgSelect" class="org-select" aria-label="Seleccionar establecimiento"></select>
       <button id="refreshAll" class="btn btn-light" type="button">↻ Actualizar</button>
       <button id="logoutButton" class="btn btn-red" type="button">Cerrar sesión</button>
@@ -2673,6 +2705,39 @@ function showStartupAlerts(items){
   document.addEventListener("keydown",function escHandler(e){if(e.key==="Escape"&&document.getElementById("startupAlertsBackdrop")){close();document.removeEventListener("keydown",escHandler)}});
 }
 
+let notificationItems=[];
+function notificationDate(value){if(!value)return "Sin fecha";return formatDateDMY(String(value).slice(0,10))}
+function setNotificationItems(rows){
+ const today=new Date();today.setHours(0,0,0,0);const limit=new Date(today);limit.setDate(limit.getDate()+30);
+ const day=value=>{if(!value)return null;const d=new Date(String(value).slice(0,10)+"T00:00:00");return Number.isNaN(d.getTime())?null:d};
+ const closed=value=>["cerrado","cerrada","resuelto","resuelta","finalizado","finalizada","completado","completada","cumplido"].includes(String(value||"").trim().toLowerCase());
+ const items=[];
+ (rows.vencimientos||[]).forEach(row=>{if(["cumplido","cerrado"].includes(String(row.estado||"").trim().toLowerCase()))return;const due=day(row.fecha_vencimiento);if(!due||due>limit)return;const overdue=due<today;items.push({id:"vencimiento:"+row.id,type:"vencimiento",module:"vencimientos",row,level:overdue?"critical":"warning",title:row.concepto||row.tipo||"Vencimiento",detail:row.descripcion||"Registro de vencimiento pendiente",meta:(overdue?"Vencido":"Vence")+" · "+notificationDate(row.fecha_vencimiento),date:String(row.fecha_vencimiento||"")})});
+ (rows.accidentes||[]).forEach(row=>{if(closed(row.estado))return;items.push({id:"accidente:"+row.id,type:"accidente",module:"accidentes_incidentes",row,level:"critical",title:row.tipo||"Accidente o incidente abierto",detail:row.descripcion||row.lugar||"Requiere seguimiento",meta:"Estado: "+(row.estado||"Sin estado"),date:String(row.fecha||"")})});
+ (rows.inspecciones||[]).forEach(row=>{if(closed(row.estado))return;items.push({id:"inspeccion:"+row.id,type:"inspeccion",module:"inspecciones",row,level:"warning",title:row.tipo||"Inspección pendiente",detail:row.inspector||"Inspección sin cerrar",meta:"Fecha: "+notificationDate(row.fecha)+" · Estado: "+(row.estado||"Sin estado"),date:String(row.fecha||"")})});
+ (rows.capacitaciones||[]).forEach(row=>{const due=day(row.fecha);if(!due||due<today||due>limit)return;items.push({id:"capacitacion:"+row.id,type:"capacitacion",module:"capacitaciones",row,level:"info",title:row.titulo||"Capacitación próxima",detail:row.tipo||"Actividad programada",meta:"Fecha: "+notificationDate(row.fecha),date:String(row.fecha||"")})});
+ items.sort((a,b)=>(a.level==="critical"?0:a.level==="warning"?1:2)-(b.level==="critical"?0:b.level==="warning"?1:2)||a.date.localeCompare(b.date));
+ notificationItems=items;renderNotificationBell();return items;
+}
+function renderNotificationBell(){
+ const badge=$("notificationBadge"),count=$("notificationPanelCount");if(badge){badge.textContent=notificationItems.length>99?"99+":String(notificationItems.length);badge.classList.toggle("hidden",notificationItems.length===0);badge.setAttribute("aria-label",notificationItems.length+" notificaciones pendientes")}
+ if(count)count.textContent=notificationItems.length+" pendientes";
+ const body=$("notificationPanelBody");if(!body)return;
+ if(!notificationItems.length){body.innerHTML='<div class="notification-empty">✓ No hay advertencias ni vencimientos pendientes para el establecimiento seleccionado.</div>';return}
+ const groups=[["critical","URGENTES"],["warning","PRÓXIMOS / PENDIENTES"],["info","INFORMATIVAS"]];
+ body.innerHTML=groups.map(([level,label])=>{const group=notificationItems.filter(item=>item.level===level);if(!group.length)return "";return '<div class="notification-section-label">'+label+'</div>'+group.map(item=>'<button type="button" class="notification-item" data-notification-id="'+escapeHtml(item.id)+'"><span class="notification-dot '+(level==="warning"?"warning":level==="info"?"info":"")+'"></span><span class="notification-item-content"><span class="notification-item-title">'+escapeHtml(item.title)+'</span><span class="notification-item-detail">'+escapeHtml(item.detail)+'</span><span class="notification-item-meta">'+escapeHtml(item.meta)+'</span></span><span class="notification-item-arrow" aria-hidden="true">↗</span></button>').join("")}).join("");
+ body.querySelectorAll("[data-notification-id]").forEach(button=>button.addEventListener("click",()=>{const item=notificationItems.find(x=>x.id===button.dataset.notificationId);closeNotificationPanel();if(!item)return;if(item.type==="vencimiento")openVencimientoDetail(item.row);else openModule(item.module)}));
+}
+async function refreshNotificationCenter(){
+ const body=$("notificationPanelBody");if(body)body.innerHTML='<div class="notification-empty">Actualizando notificaciones…</div>';
+ try{const [vencimientos,accidentes,capacitaciones,inspecciones]=await Promise.all([fetchRows("vencimientos"),fetchRows("accidentes_incidentes"),fetchRows("capacitaciones"),fetchRows("inspecciones")]);setNotificationItems({vencimientos,accidentes,capacitaciones,inspecciones})}
+ catch(error){console.error("No se pudieron actualizar las notificaciones:",error);if(body)body.innerHTML='<div class="notification-empty">No se pudieron consultar las notificaciones. Revisá la conexión y los permisos de la organización.</div>'}
+}
+function closeNotificationPanel(){const panel=$("notificationPanel"),button=$("notificationBell");panel?.classList.add("hidden");button?.setAttribute("aria-expanded","false")}
+function toggleNotificationPanel(){const panel=$("notificationPanel"),button=$("notificationBell");if(!panel||!button)return;const opening=panel.classList.contains("hidden");if(!opening){closeNotificationPanel();return}panel.classList.remove("hidden");button.setAttribute("aria-expanded","true");refreshNotificationCenter()}
+function bindNotificationCenter(){
+ const button=$("notificationBell"),refresh=$("notificationRefresh"),all=$("notificationViewAll"),center=$("notificationCenter");if(!button||button.dataset.bound)return;button.dataset.bound="1";button.addEventListener("click",toggleNotificationPanel);refresh?.addEventListener("click",refreshNotificationCenter);all?.addEventListener("click",()=>{closeNotificationPanel();openModule("vencimientos")});document.addEventListener("click",event=>{if(center&&!center.contains(event.target))closeNotificationPanel()});document.addEventListener("keydown",event=>{if(event.key==="Escape")closeNotificationPanel()});
+}
 async function renderOrganizationHub(){
  const cards=[
   {id:"establecimientos",title:"Establecimientos",desc:"Administrá las instalaciones y sus datos generales, ubicación e identificación.",icon:"▦",image:"https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=480&q=82"},
@@ -2776,6 +2841,7 @@ async function renderHome(){
     if(accidentes.length)avisos.push({level:"critical",icon:"⚠️",title:accidentes.length+" accidente(s) o incidente(s) abierto(s)",detail:"Hay casos sin cerrar que necesitan seguimiento."});
     if(inspecciones.length)avisos.push({level:"warning",icon:"🔎",title:inspecciones.length+" inspección(es) pendiente(s)",detail:"Hay inspecciones registradas que aún no figuran como cerradas o resueltas."});
     if(caps.length)avisos.push({level:"info",icon:"🎓",title:caps.length+" capacitación(es) próxima(s)",detail:"Hay actividades programadas para los próximos 30 días."});
+    setNotificationItems({vencimientos:venc,accidentes,capacitaciones:caps,inspecciones});
     showStartupAlerts(avisos);
     $("dashStatus").textContent=`Datos consultados en Supabase · Organización: ${getOrgName()} · Actualizado: ${new Date().toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"})}.`;
   }catch(e){
@@ -3028,6 +3094,7 @@ $("logoutButton").addEventListener("click",async()=>{
   const {error}=await db.auth.signOut();if(error){alert("No se pudo cerrar sesión: "+error.message);return}
   user=null;organizations=[];activeOrg="";moduleCache={};sessionAccessToken=null;showLogin();
 });
+bindNotificationCenter();
 $("refreshAll").addEventListener("click",()=>{moduleCache={};updateActiveEstablishmentHeader();openModule(activeModule)});
 db.auth.getSession().then(async({data,error})=>{
   if(error){showLogin("No se pudo verificar la sesión.");return}
