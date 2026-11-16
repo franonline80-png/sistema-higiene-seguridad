@@ -1841,19 +1841,17 @@ function measurementCategoryCards(){
 }
 function setupMeasurementCategoryCards(){
  const select=$("f_tipo");
- if(!select)return;
  document.querySelectorAll("[data-measurement-choice]").forEach(card=>{
-  card.classList.toggle("selected",card.dataset.measurementChoice===select.value);
+  card.classList.toggle("selected",card.dataset.measurementChoice===select?.value);
   card.addEventListener("click",()=>{
-   select.value=card.dataset.measurementChoice;
-   select.dispatchEvent(new Event("change",{bubbles:true}));
+   if(select){select.value=card.dataset.measurementChoice;select.dispatchEvent(new Event("change",{bubbles:true}));}
    document.querySelectorAll("[data-measurement-choice]").forEach(x=>x.classList.toggle("selected",x===card));
-   select.scrollIntoView({behavior:"smooth",block:"center"});
+   const wizard=$("lightingAssistant");
+   if(card.dataset.measurementChoice==="Iluminación"&&wizard){wizard.classList.add("is-open");wizard.scrollIntoView({behavior:"smooth",block:"start"});}
+   else if(wizard){wizard.classList.remove("is-open");if(select)select.scrollIntoView({behavior:"smooth",block:"center"});}
   });
  });
- select.addEventListener("change",()=>{
-  document.querySelectorAll("[data-measurement-choice]").forEach(card=>card.classList.toggle("selected",card.dataset.measurementChoice===select.value));
- });
+ select?.addEventListener("change",()=>document.querySelectorAll("[data-measurement-choice]").forEach(card=>card.classList.toggle("selected",card.dataset.measurementChoice===select.value)));
 }
 
 
@@ -1893,6 +1891,101 @@ function measurementLightingWizardMarkup(){
   </div>
   <div class="lw-section" id="lwResultSection" hidden><h4>04. Resultado de la evaluación</h4><div id="lwFinalResults"></div><div class="lw-fields two" style="margin-top:12px"><div><label>Instrumento / modelo / serie</label><input id="lwInstrument" placeholder="Luxómetro, marca, modelo y serie"></div><div><label>Fecha de calibración</label><input id="lwCalibration" type="date"></div></div><div class="lw-fields two"><div><label>Observaciones</label><textarea id="lwObservations" rows="3" placeholder="Condiciones durante la medición..."></textarea></div><div><label>Recomendaciones</label><textarea id="lwRecommendations" rows="3" placeholder="Medidas correctivas sugeridas..."></textarea></div></div><div class="lw-actions"><button class="btn btn-light" type="button" id="lwBackGrid">← Volver a lecturas</button><button class="btn btn-green" type="button" id="lwSave">Guardar medición</button></div><div id="lwSaveStatus" class="status"></div></div>
  </section>`;
+}
+
+
+function setupLightingMeasurementWizard(){
+ const $w=id=>document.getElementById(id);
+ const wizard=$w("lightingAssistant");if(!wizard)return;
+ const today=new Date();$w("lwDate").value=today.getFullYear()+"-"+String(today.getMonth()+1).padStart(2,"0")+"-"+String(today.getDate()).padStart(2,"0");
+ let gridSide=0,pointCount=0,sessionId="",finalData=null;
+ const num=id=>{const v=String($w(id)?.value||"").trim().replace(",",".");return v===""?NaN:Number(v)};
+ const setStatus=(id,msg,kind="")=>{const el=$w(id);if(el){el.className="status "+(kind==="error"?"error":kind==="success"?"success":"");el.textContent=msg}};
+ const selectedOption=()=> $w("lwLegalCategory").selectedOptions[0];
+ const updateLegal=()=>{
+  const o=selectedOption(),lux=$w("lwLegalLux"),note=$w("lwLegalNote");
+  if(!o||!o.value)return;
+  if(o.dataset.lux){lux.value=o.dataset.lux;lux.readOnly=true;note.textContent="Referencia del Decreto 351/79, Anexo IV, Tabla 2. La categoría debe coincidir con el destino real del local y la tarea efectuada."}
+  else if(o.dataset.min){lux.readOnly=false;lux.min=o.dataset.min;lux.max=o.dataset.max;lux.placeholder=o.dataset.min+" a "+o.dataset.max+" lux";note.textContent="Tabla 1: rango normativo de iluminancia. El profesional debe seleccionar el nivel concreto dentro del rango según la dificultad real de la tarea y dejar su justificación."}
+  else{lux.readOnly=false;lux.removeAttribute("min");lux.removeAttribute("max");lux.value="";lux.placeholder="Ingresá el valor legal verificado";note.textContent="Ingresá el valor exacto verificado en la categoría pertinente de la Tabla 2 y describí la referencia. No se asignará un valor automático sin identificar la categoría."}
+ };
+ $w("lwLegalCategory").addEventListener("change",updateLegal);
+ const loadPlaces=async()=>{
+  try{
+   const est=await fetchRows("establecimientos");
+   $w("lwEstablishment").innerHTML='<option value="">Seleccionar establecimiento</option>'+est.map(x=>'<option value="'+escapeHtml(x.id)+'">'+escapeHtml(x.Nombre||"Establecimiento")+'</option>').join("");
+   if(selectedEstablishmentId&&est.some(x=>x.id===selectedEstablishmentId))$w("lwEstablishment").value=selectedEstablishmentId;
+   await loadSectors();
+  }catch(e){setStatus("lwGeometryStatus","No se pudieron cargar los establecimientos: "+e.message,"error")}
+ };
+ const loadSectors=async()=>{
+  const estId=$w("lwEstablishment").value;
+  $w("lwSector").innerHTML='<option value="">Sin sector específico</option>';
+  if(!estId)return;
+  const sectors=await fetchRows("sectores");
+  $w("lwSector").innerHTML='<option value="">Sin sector específico</option>'+sectors.filter(x=>x.establecimiento_id===estId).map(x=>'<option value="'+escapeHtml(x.id)+'">'+escapeHtml(x.nombre)+'</option>').join("");
+ };
+ $w("lwEstablishment").addEventListener("change",loadSectors);
+ const calcGeometry=()=>{
+  const L=num("lwLength"),A=num("lwWidth"),H=num("lwMount");
+  if(!(L>0&&A>0&&H>0))throw new Error("Ingresá largo, ancho y altura de montaje mayores que cero.");
+  const il=(L*A)/(H*(L+A)),x=il>=3?4:Math.ceil(il),side=x+2,n=side*side;
+  return {L,A,H,il,x,side,n};
+ };
+ const generateGrid=()=>{
+  try{
+   const g=calcGeometry(),legal=Number($w("lwLegalLux").value);
+   if(!$w("lwEstablishment").value)throw new Error("Seleccioná el establecimiento.");
+   if(!$w("lwPlace").value.trim())throw new Error("Indicá el local o puesto de trabajo.");
+   if(!$w("lwLegalCategory").value||!(legal>0))throw new Error("Seleccioná una categoría normativa y su valor mínimo exigible.");
+   if(selectedOption().dataset.min&&(legal<Number(selectedOption().dataset.min)||legal>Number(selectedOption().dataset.max)))throw new Error("El valor elegido debe estar dentro del rango de la Tabla 1.");
+   gridSide=g.side;pointCount=g.n;sessionId=crypto.randomUUID();finalData=null;
+   $w("lwGrid").style.setProperty("--lw-cols",String(g.side));
+   $w("lwGrid").innerHTML=Array.from({length:g.n},(_,i)=>'<div class="lw-point"><label for="lwPoint'+(i+1)+'">Punto '+(i+1)+'</label><input id="lwPoint'+(i+1)+'" type="number" min="0" step="0.1" inputmode="decimal" placeholder="lux" aria-label="Lectura en lux punto '+(i+1)+'"><small>Lectura en lux</small></div>').join("");
+   $w("lwGridSection").hidden=false;$w("lwResultSection").hidden=true;
+   $w("lwGridSummary").innerHTML='<div class="lw-fields"><div><label>Índice del local</label><input readonly value="'+g.il.toFixed(2)+' → '+g.x+'"></div><div><label>Grilla generada</label><input readonly value="'+g.side+' × '+g.side+' = '+g.n+' puntos"></div><div><label>Valor legal de referencia</label><input readonly value="'+legal+' lux"></div></div>';
+   $w("lwGrid").querySelectorAll("input").forEach(el=>el.addEventListener("input",updateLive));
+   updateLive();setStatus("lwGeometryStatus","Grilla generada correctamente. Completá cada punto de medición.","success");
+   $w("lwGridSection").scrollIntoView({behavior:"smooth",block:"start"});
+  }catch(e){setStatus("lwGeometryStatus",e.message,"error")}
+ };
+ const getReadings=()=>Array.from({length:pointCount},(_,i)=>{const raw=$w("lwPoint"+(i+1))?.value;return raw===""||raw===undefined?null:Number(raw)});
+ const updateLive=()=>{
+  if(!pointCount)return;
+  const a=getReadings(),done=a.filter(x=>x!==null&&Number.isFinite(x)&&x>=0).length;
+  $w("lwProgress").style.width=(done/pointCount*100)+"%";
+  if(done===pointCount){const avg=a.reduce((x,y)=>x+y,0)/pointCount,min=Math.min(...a);$w("lwLiveResults").innerHTML='<div class="lw-metrics"><div class="lw-metric"><span>Promedio actual</span><strong>'+avg.toFixed(1)+' lx</strong></div><div class="lw-metric"><span>Mínimo</span><strong>'+min.toFixed(1)+' lx</strong></div><div class="lw-metric"><span>Uniformidad requerida</span><strong>'+(avg/2).toFixed(1)+' lx</strong></div><div class="lw-metric"><span>Lecturas completas</span><strong>'+done+'/'+pointCount+'</strong></div></div>'}
+  else $w("lwLiveResults").innerHTML='<div class="lw-legal-note">Lecturas completas: '+done+' de '+pointCount+'. Faltan '+(pointCount-done)+' puntos.</div>';
+ };
+ const computeFinal=()=>{
+  const readings=getReadings(),missing=readings.some(x=>x===null||!Number.isFinite(x)||x<0);
+  if(missing){setStatus("lwSaveStatus","Completá todas las lecturas con valores válidos antes de calcular.","error");return}
+  const avg=readings.reduce((a,b)=>a+b,0)/readings.length,min=Math.min(...readings),uniformLimit=avg/2,legal=Number($w("lwLegalLux").value);
+  const avgOK=avg>=legal,uniformOK=min>=uniformLimit,table=selectedOption().dataset.table;
+  finalData={readings,avg,min,uniformLimit,avgOK,uniformOK,legal,table};
+  $w("lwFinalResults").innerHTML='<div class="lw-metrics"><div class="lw-metric"><span>Iluminancia media</span><strong>'+avg.toFixed(1)+' lx</strong></div><div class="lw-metric"><span>Iluminancia mínima</span><strong>'+min.toFixed(1)+' lx</strong></div><div class="lw-metric"><span>Exigencia legal</span><strong>'+legal+' lx</strong></div><div class="lw-metric"><span>Umbral uniformidad</span><strong>'+uniformLimit.toFixed(1)+' lx</strong></div></div><div class="lw-status '+(avgOK?"ok":"bad")+'">Nivel medio: '+(avgOK?"CUMPLE":"NO CUMPLE")+' · '+avg.toFixed(1)+' '+(avgOK?"≥":"<")+' '+legal+' lux</div><div class="lw-status '+(uniformOK?"ok":"bad")+'">Uniformidad: '+(uniformOK?"CUMPLE":"NO CUMPLE")+' · E mínima '+min.toFixed(1)+' '+(uniformOK?"≥":"<")+' E media / 2 ('+uniformLimit.toFixed(1)+' lux)</div><p class="lw-hint" style="margin-top:12px">Referencia aplicada: '+escapeHtml(table)+' · Decreto 351/79, Anexo IV, Capítulo 12. El cumplimiento global requiere evaluar por separado el nivel medio y la uniformidad.</p>';
+  $w("lwResultSection").hidden=false;$w("lwResultSection").scrollIntoView({behavior:"smooth",block:"start"});
+ };
+ const save=async()=>{
+  const b=$w("lwSave");b.disabled=true;setStatus("lwSaveStatus","Guardando las lecturas...","");
+  try{
+   if(!finalData)throw new Error("Primero calculá los resultados finales.");
+   const estId=$w("lwEstablishment").value,sectorId=$w("lwSector").value||null;
+   const estRows=await fetchRows("establecimientos");
+   if(!estRows.some(x=>x.id===estId&&x.organizacion_id===activeOrg))throw new Error("El establecimiento no pertenece a la organización activa.");
+   const g=calcGeometry(),o=selectedOption(),meta={sesion:sessionId,establecimiento:estRows.find(x=>x.id===estId)?.Nombre,sector:$w("lwSector").selectedOptions[0]?.textContent||"",local:$w("lwPlace").value.trim(),fecha:$w("lwDate").value,hora:$w("lwTime").value,dimensiones:{largo:g.L,ancho:g.A,altura_montaje:g.H,altura_plano:num("lwPlane")},indice_local:g.il,redondeo_indice:g.x,grilla:g.side+"x"+g.side,puntos:pointCount,clasificacion:o.textContent,tabla:o.dataset.table,valor_legal_lux:finalData.legal,fuente:$w("lwLegalSource").value,tarea:$w("lwTaskDescription").value,tipo_iluminacion:$w("lwLightType").value,fuente_luminica:$w("lwSource").value,condicion:$w("lwNatural").value,instrumento:$w("lwInstrument").value,calibracion:$w("lwCalibration").value,iluminancia_media:finalData.avg,iluminancia_minima:finalData.min,umbral_uniformidad:finalData.uniformLimit,cumple_nivel_medio:finalData.avgOK,cumple_uniformidad:finalData.uniformOK,observaciones:$w("lwObservations").value,recomendaciones:$w("lwRecommendations").value,criterio_calculo:"IL=(L×A)/(H×(L+A)); N=(x+2)²; x redondeado al entero superior; si IL≥3, x=4."};
+   const records=finalData.readings.map((value,i)=>({organizacion_id:activeOrg,establecimiento_id:estId,sector_id:sectorId,tipo:"Iluminación",fecha:$w("lwDate").value||null,punto_medicion:sessionId+" · "+String(i+1).padStart(2,"0")+"/"+pointCount,parametro:"Iluminancia (lux)",valor,unidad:"lux",limite_permitido:finalData.legal,cumple:null,laboratorio:null,observaciones:JSON.stringify({...meta,punto:i+1,lectura_lux:value})}));
+   const {data,error}=await db.from("mediciones_ambientales").insert(records).select("id");
+   if(error)throw error;
+   if(!data||data.length!==records.length)throw new Error("No se confirmó el guardado de todos los puntos.");
+   setStatus("lwSaveStatus","Medición guardada correctamente: "+data.length+" puntos registrados en el establecimiento seleccionado.","success");
+   $w("lwSave").textContent="Medición guardada ✓";
+   await loadModuleRows("mediciones_ambientales");
+  }catch(e){console.error(e);setStatus("lwSaveStatus","No se pudo guardar: "+(e.message||"Error desconocido"),"error")}
+  finally{b.disabled=false}
+ };
+ $w("lwGenerate").onclick=generateGrid;$w("lwRegenerate").onclick=generateGrid;$w("lwFinalize").onclick=computeFinal;$w("lwBackGrid").onclick=()=>$w("lwGridSection").scrollIntoView({behavior:"smooth",block:"start"});$w("lwSave").onclick=save;$w("lwClose").onclick=()=>wizard.classList.remove("is-open");
+ loadPlaces();
 }
 
 function openModuleBase(id){activeModule=id;editing=null;searchText="";peoplePage=1;buildNav();if(id==="organizacion")return renderOrganizationHub();if(id==="inicio")return renderHome();if(id==="legislacion")return renderLegislation();if(id==="capacitaciones")return renderTrainingModule();if(id==="sesiones")return renderSessionsModule();if(id==="reportes")return renderReportsModule();if(id==="mapa_riesgos")return renderRiskMapModule();if(configs[id])return renderCrud(id)}
