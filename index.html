@@ -1638,6 +1638,7 @@ async function updateActiveEstablishmentHeader(){
 }
 async function selectActiveEstablishment(id){
  selectedEstablishmentId=id||"";moduleCache={};await updateActiveEstablishmentHeader();
+ await refreshNotificationCenter();
  if(activeModule==="establecimientos"){await renderCrud("establecimientos");return}
  await openModule(activeModule);
 }
@@ -2674,14 +2675,14 @@ async function saveRecord(ev,id){
     if(result.error)throw result.error;
     if(!result.data?.length)throw new Error("No se confirmó la operación. Verificá los permisos RLS.");
     let sectorPhotoWarning="";if(id==="sectores"){const savedSectorId=result.data[0].id,photoInput=$("sectorPhotoInput"),file=photoInput?.files?.[0],oldPath=editing?.foto_path||"";try{if(file){const ext=({"image/jpeg":"jpg","image/png":"png","image/webp":"webp"})[file.type];if(!ext||file.size>5*1024*1024)throw new Error("Formato o tamaño no válido. Usá JPG, PNG o WEBP de hasta 5 MB.");const estId=payload.establecimiento_id||editing?.establecimiento_id;if(!estId)throw new Error("No se pudo identificar el establecimiento del sector.");const path=estId+"/"+savedSectorId+"/"+Date.now()+"."+ext;const up=await db.storage.from("sectores-fotos").upload(path,file,{upsert:false,contentType:file.type,cacheControl:"3600"});if(up.error)throw up.error;const savedPhoto=await db.from("sectores").update({foto_path:path}).eq("id",savedSectorId).select("id").maybeSingle();if(savedPhoto.error){await db.storage.from("sectores-fotos").remove([path]);throw savedPhoto.error}if(oldPath){const rm=await db.storage.from("sectores-fotos").remove([oldPath]);if(rm.error)console.warn("La fotografía anterior del sector no pudo eliminarse:",rm.error)}}else if(photoInput?.dataset.removePhoto==="true"&&oldPath){const cleared=await db.from("sectores").update({foto_path:null}).eq("id",savedSectorId).select("id").maybeSingle();if(cleared.error)throw cleared.error;const rm=await db.storage.from("sectores-fotos").remove([oldPath]);if(rm.error)console.warn("La fotografía se desvinculó, pero no pudo eliminarse:",rm.error)}}catch(photoError){console.error("No se pudo actualizar la fotografía del sector:",photoError);sectorPhotoWarning="El sector se guardó, pero no se pudo actualizar la fotografía: "+(photoError.message||"Error desconocido")}}
-    editing=null;await renderCrud(id);if(sectorPhotoWarning)alert(sectorPhotoWarning);if(id==="establecimientos")await updateActiveEstablishmentHeader();
+    editing=null;await renderCrud(id);if(sectorPhotoWarning)alert(sectorPhotoWarning);if(id==="establecimientos")await updateActiveEstablishmentHeader();if(["vencimientos","accidentes_incidentes","inspecciones","capacitaciones"].includes(id))await refreshNotificationCenter();
   }catch(e){console.error(e);let msg=e.message||"Error desconocido";if(id==="riesgos"&&/row-level security|permission denied|violates row-level security|RLS/i.test(msg))msg="La evaluación no se guardó porque tu usuario no tiene permisos para este puesto. Se requiere rol profesional de Higiene y Seguridad, administrador de la organización o administrador de plataforma.";$("formStatus").textContent="No se pudo guardar: "+msg;$("formStatus").className="status error"}
   finally{b.disabled=false}
 }
 async function deleteRecord(id,row){
   const name=row.Nombre||row.nombre||row.titulo||row.concepto||row.descripcion||row.id;
   if(!confirm(`¿Querés eliminar el registro "${name}"? Esta acción puede ser irreversible.`))return;
-  try{let query=db.from(configs[id].table).delete().eq("id",row.id);if(id==="riesgos"){if(!row.evaluacion_id)throw new Error("El riesgo no tiene una evaluación general asociada; no se eliminó para preservar la trazabilidad.");const {data:parent,error:parentError}=await db.from("evaluaciones_riesgos").select("id").eq("id",row.evaluacion_id).eq("organizacion_id",activeOrg).maybeSingle();if(parentError)throw parentError;if(!parent)throw new Error("La evaluación asociada no pertenece a la organización activa.");query=query.eq("evaluacion_id",row.evaluacion_id)}const {error}=await query;if(error)throw error;await loadModuleRows(id);if(id==="riesgos"&&activeRiskEvaluation)await updateRiskEvaluationToolbar();if(id==="riesgos")await renderRiskEvaluationHistory()}
+  try{let query=db.from(configs[id].table).delete().eq("id",row.id);if(id==="riesgos"){if(!row.evaluacion_id)throw new Error("El riesgo no tiene una evaluación general asociada; no se eliminó para preservar la trazabilidad.");const {data:parent,error:parentError}=await db.from("evaluaciones_riesgos").select("id").eq("id",row.evaluacion_id).eq("organizacion_id",activeOrg).maybeSingle();if(parentError)throw parentError;if(!parent)throw new Error("La evaluación asociada no pertenece a la organización activa.");query=query.eq("evaluacion_id",row.evaluacion_id)}const {error}=await query;if(error)throw error;await loadModuleRows(id);if(id==="riesgos"&&activeRiskEvaluation)await updateRiskEvaluationToolbar();if(id==="riesgos")await renderRiskEvaluationHistory();if(["vencimientos","accidentes_incidentes","inspecciones","capacitaciones"].includes(id))await refreshNotificationCenter()}
   catch(e){alert("No se pudo eliminar: "+e.message)}
 }
 
@@ -2695,7 +2696,7 @@ function showStartupAlerts(items,force=false,goModule="vencimientos"){
   const backdrop=document.createElement("div");backdrop.id="startupAlertsBackdrop";backdrop.className="startup-alert-backdrop";
   backdrop.setAttribute("role","presentation");
   const content=items.map(item=>'<div class="startup-alert-item '+item.level+'"><div class="startup-alert-item-icon">'+item.icon+'</div><div><strong>'+escapeHtml(item.title)+'</strong><span>'+escapeHtml(item.detail)+'</span></div></div>').join("");
-  backdrop.innerHTML='<section class="startup-alert-modal" role="dialog" aria-modal="true" aria-labelledby="startupAlertsTitle"><header class="startup-alert-head"><div class="startup-alert-mark">⚠</div><div><h2 id="startupAlertsTitle">Advertencias y pendientes</h2><p>Se detectaron asuntos que requieren revisión en '+escapeHtml(getOrgName())+'. Revisá las prioridades antes de continuar.</p></div><button type="button" class="startup-alert-close-x" id="startupAlertsX" aria-label="Cerrar">×</button></header><div class="startup-alert-content">'+content+'</div><footer class="startup-alert-footer"><button type="button" class="btn btn-light" id="startupAlertsClose">Cerrar y continuar</button><button type="button" class="btn btn-blue" id="startupAlertsGo">Revisar vencimientos</button></footer></section>';
+  backdrop.innerHTML='<section class="startup-alert-modal" role="dialog" aria-modal="true" aria-labelledby="startupAlertsTitle"><header class="startup-alert-head"><div class="startup-alert-mark">⚠</div><div><h2 id="startupAlertsTitle">Advertencias y pendientes</h2><p>Se detectaron asuntos que requieren revisión en '+escapeHtml(getOrgName())+'. Revisá las prioridades antes de continuar.</p></div><button type="button" class="startup-alert-close-x" id="startupAlertsX" aria-label="Cerrar">×</button></header><div class="startup-alert-content">'+content+'</div><footer class="startup-alert-footer"><button type="button" class="btn btn-light" id="startupAlertsClose">Cerrar y continuar</button><button type="button" class="btn btn-blue" id="startupAlertsGo">'+(goModule==="vencimientos"?"Revisar vencimientos":"Abrir módulo")+'</button></footer></section>';
   document.body.appendChild(backdrop);
   const close=()=>backdrop.remove();
   backdrop.querySelector("#startupAlertsX").onclick=close;
@@ -3095,7 +3096,7 @@ $("logoutButton").addEventListener("click",async()=>{
   user=null;organizations=[];activeOrg="";moduleCache={};sessionAccessToken=null;showLogin();
 });
 bindNotificationCenter();
-$("refreshAll").addEventListener("click",()=>{moduleCache={};updateActiveEstablishmentHeader();openModule(activeModule)});
+$("refreshAll").addEventListener("click",async()=>{moduleCache={};await updateActiveEstablishmentHeader();await openModule(activeModule);await refreshNotificationCenter()});
 db.auth.getSession().then(async({data,error})=>{
   if(error){showLogin("No se pudo verificar la sesión.");return}
   if(loginInProgress)return;
