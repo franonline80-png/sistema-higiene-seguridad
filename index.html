@@ -142,7 +142,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
 .dashboard-shortcuts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
 .dashboard-shortcut{background:#fff;border:1px solid #e5ebf2;border-radius:12px;padding:15px;text-align:left;cursor:pointer;color:#172033;transition:transform .15s,border-color .15s;min-width:0}
 .dashboard-shortcut:hover{transform:translateY(-2px);border-color:#93c5fd}
-.dashboard-shortcut-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:50%;background:#eff6ff;margin-bottom:11px}.hys-icon{display:inline-block;flex:0 0 auto;width:34px;height:34px;border-radius:50%;background-image:url("/assets/module-icons.webp");background-repeat:no-repeat;background-size:400% 400%;box-shadow:0 1px 3px #0f172a20}.hys-icon.small{width:29px;height:29px}.hys-icon.large{width:44px;height:44px}.hys-icon-fallback{display:inline-grid;place-items:center;background-image:none;background-color:#e8eef5;color:#244b69;font-size:19px;font-weight:800;line-height:1;box-shadow:0 1px 3px #0f172a20}.hys-icon-fallback.small{font-size:17px}.nav-menu-item.active .hys-icon-fallback{background:#173e59;color:#fff}
+.dashboard-shortcut-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:50%;background:#eff6ff;margin-bottom:11px}.hys-icon{display:inline-block;flex:0 0 auto;width:34px;height:34px;border-radius:50%;background-image:url("/assets/module-icons.webp");background-repeat:no-repeat;background-size:400% 400%;box-shadow:0 1px 3px #0f172a20}.hys-icon.small{width:29px;height:29px}.hys-icon.large{width:44px;height:44px}.hys-icon-custom{display:inline-grid;place-items:center;background-image:none;border:1px solid #d7e5ef;box-shadow:0 1px 4px #0f172a30}.hys-icon-tools{background:radial-gradient(circle at 32% 25%,#4d9fcb,#164d79 72%,#0d3659)}.hys-icon-calendar{background:radial-gradient(circle at 32% 25%,#58b9bd,#167b83 72%,#10535f)}.hys-icon-custom svg{display:block;width:76%;height:76%}.nav-menu-item.active .hys-icon-custom{filter:brightness(.88);box-shadow:0 0 0 2px #173e59}
 .dashboard-shortcut strong{display:block;font-size:13px;margin-bottom:5px}
 .dashboard-shortcut span{font-size:11px;color:#64748b;line-height:1.5}
 .dashboard-refresh-note{font-size:11px;color:#64748b;margin-top:12px}
@@ -1587,10 +1587,14 @@ function trainExport(){const lines=[["Nombre","Objetivo","Responsable","Mes","Du
 function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 const moduleIconPositions={inicio:0,establecimientos:1,sectores:2,puestos:3,personas:4,riesgos:5,inspecciones:6,accidentes_incidentes:7,mediciones_ambientales:8,epp:9,capacitaciones:10,documentacion:11,acciones_correctivas:12,equipos_instalaciones:13,vencimientos:14,legislacion:15};
 function moduleIconMarkup(id,size="small"){
- const fallbackIcons={acciones_correctivas:"☑",equipos_instalaciones:"⚙",vencimientos:"◷"};
- if(fallbackIcons[id])return '<span class="hys-icon '+size+' hys-icon-fallback" data-icon="'+escapeHtml(id)+'" role="img" aria-label="'+escapeHtml(id)+'">'+fallbackIcons[id]+'</span>';
+ if(id==="equipos_instalaciones"||id==="vencimientos"){
+  const artwork=id==="equipos_instalaciones"
+   ?'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M29 8a11 11 0 0 0-13 14L7 31a5 5 0 0 0 7 7l9-9a11 11 0 0 0 14-13l-7 7-7-7 6-8Z" fill="none" stroke="white" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="34" r="1.8" fill="white"/></svg>'
+   :'<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="8" y="11" width="32" height="29" rx="4" fill="none" stroke="white" stroke-width="3"/><path d="M8 19h32M16 7v8M32 7v8" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/><circle cx="26" cy="29" r="7" fill="none" stroke="white" stroke-width="2.6"/><path d="M26 24v5l4 2" fill="none" stroke="white" stroke-width="2.6" stroke-linecap="round"/></svg>';
+  return '<span class="hys-icon '+size+' hys-icon-custom '+(id==="vencimientos"?"hys-icon-calendar":"hys-icon-tools")+'" data-icon="'+escapeHtml(id)+'" role="img" aria-label="'+escapeHtml(id)+'">'+artwork+'</span>';
+ }
  const index=moduleIconPositions[id]??0;
- const col=index%3,row=Math.floor(index/3);
+ const col=index%4,row=Math.floor(index/4);
  const posX=col*(100/3),posY=row*(100/3);
  return '<span class="hys-icon '+size+'" data-icon="'+escapeHtml(id)+'" style="background-position:'+posX+'% '+posY+'%" role="img" aria-label="'+escapeHtml(id)+'"></span>';
 }
