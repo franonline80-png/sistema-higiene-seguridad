@@ -1174,7 +1174,7 @@ form div:has(> .risk-matrix-widget){grid-column:1/-1!important;width:100%!import
     <div class="top-actions">
       <div class="notification-center" id="notificationCenter">
         <button id="notificationBell" class="notification-bell" type="button" aria-label="Abrir notificaciones" aria-expanded="false" aria-controls="notificationPanel">
-          <span aria-hidden="true">♧</span><span class="notification-badge hidden" id="notificationBadge">0</span>
+          <span aria-hidden="true">🔔</span><span class="notification-badge hidden" id="notificationBadge">0</span>
         </button>
         <section class="notification-panel hidden" id="notificationPanel" aria-label="Notificaciones">
           <header class="notification-panel-head"><strong>NOTIFICACIONES</strong><span id="notificationPanelCount">0 pendientes</span></header>
@@ -2688,9 +2688,9 @@ async function deleteRecord(id,row){
 
 /* TABLERO DE CONTROL */
 let startupAlertsShownForOrg="";
-function showStartupAlerts(items){
-  if(!items.length||startupAlertsShownForOrg===activeOrg)return;
-  startupAlertsShownForOrg=activeOrg;
+function showStartupAlerts(items,force=false,goModule="vencimientos"){
+  if(!items.length||(!force&&startupAlertsShownForOrg===activeOrg))return;
+  if(!force)startupAlertsShownForOrg=activeOrg;
   const old=document.getElementById("startupAlertsBackdrop");if(old)old.remove();
   const backdrop=document.createElement("div");backdrop.id="startupAlertsBackdrop";backdrop.className="startup-alert-backdrop";
   backdrop.setAttribute("role","presentation");
@@ -2700,7 +2700,7 @@ function showStartupAlerts(items){
   const close=()=>backdrop.remove();
   backdrop.querySelector("#startupAlertsX").onclick=close;
   backdrop.querySelector("#startupAlertsClose").onclick=close;
-  backdrop.querySelector("#startupAlertsGo").onclick=()=>{close();openModule("vencimientos")};
+  backdrop.querySelector("#startupAlertsGo").onclick=()=>{close();openModule(goModule)};
   backdrop.addEventListener("click",e=>{if(e.target===backdrop)close()});
   document.addEventListener("keydown",function escHandler(e){if(e.key==="Escape"&&document.getElementById("startupAlertsBackdrop")){close();document.removeEventListener("keydown",escHandler)}});
 }
@@ -2726,7 +2726,7 @@ function renderNotificationBell(){
  if(!notificationItems.length){body.innerHTML='<div class="notification-empty">✓ No hay advertencias ni vencimientos pendientes para el establecimiento seleccionado.</div>';return}
  const groups=[["critical","URGENTES"],["warning","PRÓXIMOS / PENDIENTES"],["info","INFORMATIVAS"]];
  body.innerHTML=groups.map(([level,label])=>{const group=notificationItems.filter(item=>item.level===level);if(!group.length)return "";return '<div class="notification-section-label">'+label+'</div>'+group.map(item=>'<button type="button" class="notification-item" data-notification-id="'+escapeHtml(item.id)+'"><span class="notification-dot '+(level==="warning"?"warning":level==="info"?"info":"")+'"></span><span class="notification-item-content"><span class="notification-item-title">'+escapeHtml(item.title)+'</span><span class="notification-item-detail">'+escapeHtml(item.detail)+'</span><span class="notification-item-meta">'+escapeHtml(item.meta)+'</span></span><span class="notification-item-arrow" aria-hidden="true">↗</span></button>').join("")}).join("");
- body.querySelectorAll("[data-notification-id]").forEach(button=>button.addEventListener("click",()=>{const item=notificationItems.find(x=>x.id===button.dataset.notificationId);closeNotificationPanel();if(!item)return;if(item.type==="vencimiento")openVencimientoDetail(item.row);else openModule(item.module)}));
+ body.querySelectorAll("[data-notification-id]").forEach(button=>button.addEventListener("click",()=>{const item=notificationItems.find(x=>x.id===button.dataset.notificationId);closeNotificationPanel();if(!item)return;if(item.type==="vencimiento")openVencimientoDetail(item.row);else showStartupAlerts([{level:item.level,icon:item.type==="accidente"?"⚠️":item.type==="inspeccion"?"🔎":"🎓",title:item.title,detail:item.detail+" · "+item.meta}],true,item.module)}));
 }
 async function refreshNotificationCenter(){
  const body=$("notificationPanelBody");if(body)body.innerHTML='<div class="notification-empty">Actualizando notificaciones…</div>';
