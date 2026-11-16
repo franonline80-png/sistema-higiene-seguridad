@@ -1637,7 +1637,13 @@ async function updateActiveEstablishmentHeader(){
  }
 }
 async function selectActiveEstablishment(id){
- selectedEstablishmentId=id||"";moduleCache={};await updateActiveEstablishmentHeader();
+ const nextId=id||"";
+ if(nextId!==selectedEstablishmentId){
+  selectedEstablishmentId=nextId;moduleCache={};notificationRequestVersion++;
+  notificationItems=[];renderNotificationBell();closeNotificationPanel();
+  const startup=document.getElementById("startupAlertsBackdrop");if(startup)startup.remove();
+ }
+ await updateActiveEstablishmentHeader();
  await refreshNotificationCenter();
  if(activeModule==="establecimientos"){await renderCrud("establecimientos");return}
  await openModule(activeModule);
@@ -1775,7 +1781,7 @@ function openModuleBase(id){activeModule=id;editing=null;searchText="";peoplePag
 async function fetchRows(table,limit=500){
   let q=db.from(table).select("*").limit(limit);
   if(table==="organizaciones")q=q.in("id",getOrgIds());
-  else if(["establecimientos","personas","accidentes_incidentes","inspecciones","mediciones_ambientales","epp","capacitaciones","documentacion","equipos_instalaciones","vencimientos"].includes(table))q=q.in("organizacion_id",getOrgIds());
+  else if(["establecimientos","personas","accidentes_incidentes","inspecciones","mediciones_ambientales","epp","capacitaciones","documentacion","equipos_instalaciones","vencimientos"].includes(table))q=q.eq("organizacion_id",activeOrg);
   if(table==="establecimientos"){const {data,error}=await q.order("created_at",{ascending:true});if(error)throw error;return data||[]}
   if(table==="sectores"){
     const ids=selectedEstablishmentId?[selectedEstablishmentId]:(await fetchRows("establecimientos")).map(x=>x.id);if(!ids.length)return [];q=q.in("establecimiento_id",ids);
@@ -2707,6 +2713,8 @@ function showStartupAlerts(items,force=false,goModule="vencimientos"){
 }
 
 let notificationItems=[];
+let notificationRequestVersion=0;
+let notificationContextKey="";
 function notificationDate(value){if(!value)return "Sin fecha";return formatDateDMY(String(value).slice(0,10))}
 function setNotificationItems(rows){
  const today=new Date();today.setHours(0,0,0,0);const limit=new Date(today);limit.setDate(limit.getDate()+30);
@@ -2730,9 +2738,21 @@ function renderNotificationBell(){
  body.querySelectorAll("[data-notification-id]").forEach(button=>button.addEventListener("click",()=>{const item=notificationItems.find(x=>x.id===button.dataset.notificationId);closeNotificationPanel();if(!item)return;if(item.type==="vencimiento")openVencimientoDetail(item.row);else showStartupAlerts([{level:item.level,icon:item.type==="accidente"?"⚠️":item.type==="inspeccion"?"🔎":"🎓",title:item.title,detail:item.detail+" · "+item.meta}],true,item.module)}));
 }
 async function refreshNotificationCenter(){
+ const requestId=++notificationRequestVersion,orgId=activeOrg,establishmentId=selectedEstablishmentId;
+ const contextKey=orgId+"::"+establishmentId;
+ notificationContextKey=contextKey;
  const body=$("notificationPanelBody");if(body)body.innerHTML='<div class="notification-empty">Actualizando notificaciones…</div>';
- try{const [vencimientos,accidentes,capacitaciones,inspecciones]=await Promise.all([fetchRows("vencimientos"),fetchRows("accidentes_incidentes"),fetchRows("capacitaciones"),fetchRows("inspecciones")]);setNotificationItems({vencimientos,accidentes,capacitaciones,inspecciones})}
- catch(error){console.error("No se pudieron actualizar las notificaciones:",error);if(body)body.innerHTML='<div class="notification-empty">No se pudieron consultar las notificaciones. Revisá la conexión y los permisos de la organización.</div>'}
+ const isCurrent=()=>requestId===notificationRequestVersion&&activeOrg===orgId&&selectedEstablishmentId===establishmentId&&notificationContextKey===contextKey;
+ try{
+  const [vencimientos,accidentes,capacitaciones,inspecciones]=await Promise.all([fetchRows("vencimientos"),fetchRows("accidentes_incidentes"),fetchRows("capacitaciones"),fetchRows("inspecciones")]);
+  if(!isCurrent())return;
+  setNotificationItems({vencimientos,accidentes,capacitaciones,inspecciones});
+ }catch(error){
+  if(!isCurrent())return;
+  console.error("No se pudieron actualizar las notificaciones:",error);
+  notificationItems=[];renderNotificationBell();
+  if(body)body.innerHTML='<div class="notification-empty">No se pudieron consultar las notificaciones. Revisá la conexión y los permisos de la organización.</div>';
+ }
 }
 function closeNotificationPanel(){const panel=$("notificationPanel"),button=$("notificationBell");panel?.classList.add("hidden");button?.setAttribute("aria-expanded","false")}
 function toggleNotificationPanel(){const panel=$("notificationPanel"),button=$("notificationBell");if(!panel||!button)return;const opening=panel.classList.contains("hidden");if(!opening){closeNotificationPanel();return}panel.classList.remove("hidden");button.setAttribute("aria-expanded","true");refreshNotificationCenter()}
