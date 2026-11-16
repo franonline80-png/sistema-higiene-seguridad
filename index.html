@@ -1226,6 +1226,8 @@ const authStorage={
   removeItem(key){localStorage.removeItem(key);sessionStorage.removeItem(key)}
 };
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{storage:authStorage,persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const PLATFORM_ADMIN_ID="0ef9abda-a252-4d61-9d39-c0459e3380b2";
+function isPlatformAdministrator(){return user?.id===PLATFORM_ADMIN_ID;}
 const $=id=>document.getElementById(id);
 
 let user=null,organizations=[],organizationMemberships=[],canSwitchOrganizations=false,activeOrg="",activeRole="",activeModule="inicio",editing=null,moduleCache={},searchText="";
@@ -1633,10 +1635,11 @@ async function updateActiveEstablishmentHeader(){
 }
 async function selectActiveOrganization(id){
  const nextOrg=String(id||"");
+ const isPlatformAdmin=isPlatformAdministrator();
  const membership=organizationMemberships.find(item=>String(item.organizacion_id)===nextOrg&&item.activo===true);
- if(!membership||!organizations.some(org=>String(org.id)===nextOrg))throw new Error("No tenés autorización para acceder a esa organización.");
+ if((!isPlatformAdmin&&!membership)||!organizations.some(org=>String(org.id)===nextOrg))throw new Error("No tenés autorización para acceder a esa organización.");
  if(nextOrg!==String(activeOrg)){
-  activeOrg=nextOrg;activeRole=membership.rol;selectedEstablishmentId="";moduleCache={};
+  activeOrg=nextOrg;activeRole=isPlatformAdmin?"administrador_plataforma":membership.rol;selectedEstablishmentId="";moduleCache={};
   notificationRequestVersion++;notificationItems=[];renderNotificationBell();closeNotificationPanel();
   startupAlertsShownForOrg="";const startup=document.getElementById("startupAlertsBackdrop");if(startup)startup.remove();
   buildNav();
@@ -1645,7 +1648,7 @@ async function selectActiveOrganization(id){
  await refreshNotificationCenter();
  await openModule(activeModule);
 }
-function visibleModules(){return modules.filter(m=>m.id==="inicio"||m.id==="legislacion"||m.id==="sesiones"||m.id==="reportes"||m.id==="mapa_riesgos"||(m.id==="auditoria"&&["administrador_plataforma","administrador_organizacion"].includes(activeRole))||configs[m.id]||(m.id==="usuarios_admin"&&["administrador_plataforma","administrador_organizacion"].includes(activeRole)))}
+function visibleModules(){return modules.filter(m=>m.id==="inicio"||m.id==="legislacion"||m.id==="sesiones"||m.id==="reportes"||m.id==="mapa_riesgos"||(m.id==="auditoria"&&isPlatformAdministrator())||configs[m.id]||(m.id==="usuarios_admin"&&isPlatformAdministrator()))}
 function buildNav(){
   const nav=$("navTabs");nav.replaceChildren();
   const all=visibleModules();
@@ -3065,16 +3068,24 @@ let inactivityTimer=null,inactivityCountdown=null,inactivityWarningOpen=false;
   const {data,error}=await db.auth.getUser();if(error)throw error;
   user=data.user;if(!user)throw new Error("No hay una sesión activa.");
   try{await startSessionTracking()}catch(sessionError){console.error("No se pudo registrar la sesión; la aplicación continuará disponible:",sessionError)}
-  const {data:members,error:me}=await db.from("usuarios_organizaciones").select("organizacion_id,rol,activo").eq("usuario_id",user.id).eq("activo",true);
+  const platformAdmin=isPlatformAdministrator();
+  let membershipQuery=db.from("usuarios_organizaciones").select("organizacion_id,rol,activo").eq("activo",true);
+  if(!platformAdmin)membershipQuery=membershipQuery.eq("usuario_id",user.id);
+  const {data:members,error:me}=await membershipQuery;
   if(me)throw me;
   organizationMemberships=members||[];
   const ids=[...new Set(organizationMemberships.map(x=>x.organizacion_id).filter(Boolean))];
-  if(!ids.length)throw new Error("Tu usuario no tiene una organización activa asignada.");
-  const {data:orgs,error:oe}=await db.from("organizaciones").select("id,nombre").in("id",ids);if(oe)throw oe;
+  if(!platformAdmin&&!ids.length)throw new Error("Tu usuario no tiene una organización activa asignada.");
+  let orgQuery=db.from("organizaciones").select("id,nombre");
+  if(!platformAdmin)orgQuery=orgQuery.in("id",ids);
+  const {data:orgs,error:oe}=await orgQuery;if(oe)throw oe;
   organizations=orgs||[];if(!organizations.length)throw new Error("No se encontraron organizaciones autorizadas.");
-  canSwitchOrganizations=organizationMemberships.some(x=>["administrador_plataforma","administrador_organizacion"].includes(x.rol));
-  const preferred=organizationMemberships.find(x=>["administrador_plataforma","administrador_organizacion"].includes(x.rol))||organizationMemberships[0];
-  activeOrg=preferred.organizacion_id;activeRole=preferred.rol;
+  if(platformAdmin)organizationMemberships=organizations.map(o=>({organizacion_id:o.id,rol:"administrador_plataforma",activo:true}));
+  canSwitchOrganizations=platformAdmin;
+  const preferred=platformAdmin
+    ? organizationMemberships.find(x=>String(x.organizacion_id)==="1816b777-fdaf-4c72-bf4d-eab79655a36d")||organizationMemberships[0]
+    : organizationMemberships[0];
+  activeOrg=preferred.organizacion_id;activeRole=platformAdmin?"administrador_plataforma":preferred.rol;
   const select=$("orgSelect");
   select.onchange=async()=>{try{await selectActiveOrganization(select.value)}catch(error){console.error(error);alert("No se pudo cambiar de organización: "+error.message);select.value=activeOrg}};
   showApp();scheduleInactivityWarning();buildNav();await updateActiveEstablishmentHeader();await refreshNotificationCenter();await renderHome();
@@ -3221,24 +3232,24 @@ function openModule(id){
  return openModuleBase(id);
 }
 async function renderUserAdminModule(){
- if(!["administrador_plataforma","administrador_organizacion"].includes(activeRole)){ $("view").innerHTML='<div class="card"><h2>Acceso restringido</h2><p>Solo un administrador de la organización puede gestionar usuarios.</p></div>';return}
+ if(!isPlatformAdministrator()){ $("view").innerHTML='<div class="card"><h2>Acceso restringido</h2><p>La administración de usuarios está reservada al administrador general del sistema.</p></div>';return}
  const org=organizations.find(o=>o.id===activeOrg);
  $("view").innerHTML=`<div class="page-header"><div><h1>Administración de usuarios</h1><p class="muted">Gestioná accesos y perfiles de ${escapeHtml(org?.nombre||"la organización")}.</p></div><button class="btn primary" id="openInviteUser">＋ Invitar usuario</button></div>
  <div class="card user-admin-card"><div class="card-header"><h3>Usuarios asignados</h3><button class="btn secondary" id="refreshUserAdmin">Actualizar</button></div><div class="table-responsive"><table><thead><tr><th>Usuario</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="userAdminRows"><tr><td colspan="5">Cargando usuarios…</td></tr></tbody></table></div><p id="userAdminStatus" class="muted"></p></div>
- <div id="inviteUserModal" class="modal hidden"><div class="modal-content"><button class="modal-close" id="closeInviteUser">×</button><h2>Invitar usuario</h2><p class="muted">Se enviará un correo de invitación para activar su acceso.</p><form id="inviteUserForm"><label>Nombre<input id="inviteUserName" required maxlength="100"></label><label>Apellido<input id="inviteUserSurname" required maxlength="100"></label><label>Correo electrónico<input id="inviteUserEmail" type="email" required></label><label>Rol<select id="inviteUserRole" required><option value="profesional_hys">Usuario avanzado — Profesional de Higiene y Seguridad</option><option value="responsable_sector">Responsable de sector</option><option value="supervisor">Supervisor</option><option value="consulta">Consulta</option></select></label><button class="btn primary" id="sendInviteUser" type="submit">Enviar invitación</button><p id="inviteUserMessage" role="status"></p></form></div></div>`;
+ <div id="inviteUserModal" class="modal hidden"><div class="modal-content"><button class="modal-close" id="closeInviteUser">×</button><h2>Invitar usuario</h2><p class="muted">Se enviará un correo de invitación para activar su acceso.</p><form id="inviteUserForm"><label>Nombre<input id="inviteUserName" required maxlength="100"></label><label>Apellido<input id="inviteUserSurname" required maxlength="100"></label><label>Correo electrónico<input id="inviteUserEmail" type="email" required></label><label>Perfil asignado<input value="Usuario avanzado — Profesional de Higiene y Seguridad" readonly></label><button class="btn primary" id="sendInviteUser" type="submit">Enviar invitación</button><p id="inviteUserMessage" role="status"></p></form></div></div>`;
  $("openInviteUser").onclick=()=>{$("inviteUserModal").classList.remove("hidden");$("inviteUserModal").style.display="flex"};
  $("closeInviteUser").onclick=()=>{$("inviteUserModal").classList.add("hidden");$("inviteUserModal").style.display="none"};
  $("refreshUserAdmin").onclick=loadUserAdminRows;
  $("inviteUserForm").onsubmit=async e=>{e.preventDefault();const button=$("sendInviteUser"),msg=$("inviteUserMessage");button.disabled=true;button.textContent="Enviando…";msg.textContent="";
- try{const {data,error}=await db.functions.invoke("admin-invite-user",{body:{action:"invite",email:$("inviteUserEmail").value.trim(),nombre:$("inviteUserName").value.trim(),apellido:$("inviteUserSurname").value.trim(),organizacion_id:activeOrg,rol:$("inviteUserRole").value}});if(error)throw error;if(data?.error)throw new Error(data.error);msg.textContent=data?.message||"Invitación enviada.";msg.className="success";await loadUserAdminRows()}
+ try{const {data,error}=await db.functions.invoke("admin-invite-user",{body:{action:"invite",email:$("inviteUserEmail").value.trim(),nombre:$("inviteUserName").value.trim(),apellido:$("inviteUserSurname").value.trim(),organizacion_id:activeOrg,rol:"profesional_hys"}});if(error)throw error;if(data?.error)throw new Error(data.error);msg.textContent=data?.message||"Invitación enviada.";msg.className="success";await loadUserAdminRows()}
  catch(err){console.error(err);msg.textContent="No se pudo enviar: "+(err.message||err);msg.className="error"}
  finally{button.disabled=false;button.textContent="Enviar invitación"}
  };
  await loadUserAdminRows();
 }
 async function renderAuditModule(){
- if(!["administrador_plataforma","administrador_organizacion"].includes(activeRole)){
-  $("view").innerHTML='<div class="card"><h2>Acceso restringido</h2><p>Solo administradores pueden consultar la auditoría.</p></div>';return
+ if(!isPlatformAdministrator()){
+  $("view").innerHTML='<div class="card"><h2>Acceso restringido</h2><p>La auditoría está reservada al administrador general del sistema.</p></div>';return
  }
  const org=organizations.find(o=>o.id===activeOrg);
  $("view").innerHTML=`<div class="page-header"><div><h1>Auditoría de cambios</h1><p class="muted">Registro de altas, modificaciones y eliminaciones en ${escapeHtml(org?.nombre||"la organización")}.</p></div><button class="btn secondary" id="refreshAudit">Actualizar</button></div>
