@@ -3049,7 +3049,72 @@ function downloadReportPdf(){
   const landscape=reportSelected==="riesgos";
   const pageFormat=landscape?($("riskReportPaperFormat")?.value||"A4"):"A4";
   const printLayout=landscape?"body{background:#fff!important;padding:0!important}.report-paper{width:"+(pageFormat==="Legal"?"340mm":"277mm")+";max-width:none;margin:auto;box-shadow:none;border:0;padding:0!important;font-size:8.5pt}.paper-table{width:100%;table-layout:auto;font-size:8pt}.paper-table th,.paper-table td{padding:4px;overflow-wrap:normal;word-break:normal;hyphens:auto;vertical-align:top;white-space:normal}.paper-table th:nth-child(3),.paper-table td:nth-child(3),.paper-table th:nth-child(4),.paper-table td:nth-child(4),.paper-table th:nth-child(5),.paper-table td:nth-child(5){white-space:nowrap;overflow-wrap:normal;word-break:keep-all}.paper-table th:nth-child(3),.paper-table td:nth-child(3){min-width:76px}.paper-table th:nth-child(4),.paper-table td:nth-child(4),.paper-table th:nth-child(5),.paper-table td:nth-child(5){min-width:82px}.paper-table th:nth-child(10),.paper-table td:nth-child(10){width:"+(pageFormat==="Legal"?"34%":"32%")+";min-width:0}.paper-table th:nth-child(9),.paper-table td:nth-child(9){width:14%}@page{size:"+pageFormat+" landscape;margin:7mm}":"body{background:#fff!important;padding:12mm!important}.report-paper{max-width:190mm;margin:auto;box-shadow:none;border:0;padding:0!important;font-size:10pt}@page{size:A4 portrait;margin:12mm}";
-  w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>'+reportEsc(def.title)+'</title><style>'+css+' '+printLayout+'</style></head><body><article class="report-paper">'+paper.innerHTML+'</article><script>window.onload=()=>setTimeout(()=>window.print(),250)<\\/script></body></html>');
+  w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>'+reportEsc(def.title)+'</title><style>'+css+' '+printLayout+'
+/* AJUSTE AUTORIZADO: cabecera y navegación compactas */
+@media (min-width:1180px){
+  .topbar{
+    min-height:76px;
+    padding:7px 18px;
+    gap:12px;
+    flex-wrap:nowrap;
+    align-items:center;
+  }
+  .brand{gap:9px;min-width:0;flex:0 1 auto}
+  .consultor-header-logo{width:54px;height:42px;flex-basis:54px}
+  .brand h1{font-size:16px;line-height:1.15;margin:0 0 2px}
+  .brand p{font-size:11px;line-height:1.15;margin:2px 0}
+  .brand-system-name{font-size:10px;line-height:1.1;margin-top:2px}
+  .active-establishment-header{
+    flex:0 1 112px;
+    min-width:68px;
+    max-width:112px;
+    min-height:48px;
+    height:48px;
+    padding:2px 8px;
+  }
+  .active-establishment-photo{height:42px;max-width:96px;flex-basis:96px;padding:2px}
+  .top-actions{gap:6px;flex:0 0 auto;flex-wrap:nowrap}
+  .notification-bell{width:35px;height:35px;font-size:19px;border-radius:9px}
+  .org-select{width:190px;min-width:155px;max-width:190px;font-size:12px;padding:8px 9px}
+  .top-actions>.btn{padding:8px 10px;font-size:12px;white-space:nowrap}
+  #navTabs.nav-tabs{gap:4px;padding:5px 8px;margin:0 0 13px;border-radius:10px}
+  #navTabs .nav-tab{padding:8px 10px;font-size:12px}
+  #navTabs .nav-trigger{gap:5px}
+  #navTabs .nav-trigger-icon{font-size:14px}
+  .layout{padding-top:12px}
+}
+@media (min-width:761px) and (max-width:1179px){
+  .topbar{padding:10px 16px;gap:10px}
+  .brand h1{font-size:16px}
+  .consultor-header-logo{width:56px;height:44px;flex-basis:56px}
+  .active-establishment-header{min-height:52px;max-width:130px}
+  .active-establishment-photo{height:46px}
+  .top-actions{gap:7px}
+  .notification-bell{width:36px;height:36px}
+  .org-select{max-width:190px;min-width:145px}
+  .top-actions>.btn{padding:8px 10px;font-size:12px}
+  #navTabs.nav-tabs{gap:5px;padding:6px 8px;margin-bottom:14px}
+  #navTabs .nav-tab{padding:9px 10px;font-size:12px}
+  .layout{padding-top:13px}
+}
+@media(max-width:760px){
+  .topbar{padding:10px 12px;gap:9px}
+  .brand{gap:8px;min-width:0}
+  .brand h1{font-size:14px;line-height:1.15}
+  .brand p{font-size:10px;margin:2px 0}
+  .brand-system-name{font-size:9px;margin-top:2px}
+  .consultor-header-logo{width:48px;height:38px;flex-basis:48px}
+  .active-establishment-header{flex:0 1 82px;min-width:58px;max-width:82px;min-height:42px;height:42px;padding:2px 5px}
+  .active-establishment-photo{height:36px;max-width:70px}
+  .top-actions{width:100%;gap:6px;flex-wrap:nowrap;justify-content:space-between}
+  .notification-bell{width:34px;height:34px;flex:0 0 34px;font-size:18px}
+  .org-select{min-width:0;max-width:none;flex:1 1 auto;width:1%;font-size:11px;padding:8px 7px}
+  .top-actions>.btn{padding:8px 8px;font-size:11px;white-space:nowrap}
+  #navTabs.nav-tabs{padding:6px;gap:4px;margin-bottom:12px}
+  #navTabs .nav-tab{padding:8px 9px;font-size:11px}
+  .layout{padding-top:10px}
+}
+</style></head><body><article class="report-paper">'+paper.innerHTML+'</article><script>window.onload=()=>setTimeout(()=>window.print(),250)<\\/script></body></html>');
  w.document.close();
 }
 async function shareReport(){
